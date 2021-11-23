@@ -35,6 +35,13 @@ void MainWindow::loadConfiguration()
 void MainWindow::loadJsonFromInternet(QUrl url)
 {
 	m_wakfuJson = QJsonDocument::fromJson(m_fd->downloadedData());
+
+	//save the json file
+	QFile jsonFile(m_themesPath.absolutePath() + "/theme.json");
+	jsonFile.open(QIODevice::WriteOnly);	//todo erreurs
+	jsonFile.write(m_wakfuJson.toJson());
+	jsonFile.close();
+
 	QJsonValue texturesValue = m_wakfuJson["textures"]; //todo erreurs
 	QJsonArray textures = texturesValue.toArray();
 	std::cout << url.fileName().toStdString() << std::endl;
@@ -49,7 +56,7 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 		{
 			QPixmap buttonImage;
 			buttonImage.loadFromData(fd->downloadedData());
-			buttonImage.save(m_themesPath.absolutePath() + "/" + url2.fileName());
+			buttonImage.save(m_themesPath.absolutePath() + "/images/" + url2.fileName());
 			fd->deleteLater();
 		});
 	}

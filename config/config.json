@@ -1,4 +1,4 @@
 {
 	"json_url": "https://wakfu.cdn.ankama.com/gamedata/theme/theme.json",
-	"output_path": "./theme/images"
+	"output_path": "./theme/"
 }
