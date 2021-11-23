@@ -1,4 +1,5 @@
 QT       += core gui
+QT		+=	network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,12 +19,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 INCLUDEPATH += include/
 OBJECTS_DIR = ./.obj
 UI_DIR      = ./ui
+MOC_DIR		= ./.obj
 
 SOURCES += \
+	src/filedownloader.cpp \
 	src/main.cpp \
 	src/mainwindow.cpp
 
 HEADERS += \
+	include/filedownloader.h \
 	include/mainwindow.h
 
 FORMS += \
