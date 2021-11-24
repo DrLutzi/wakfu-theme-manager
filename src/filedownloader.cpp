@@ -20,6 +20,7 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 	//emit a signal
 	pReply->deleteLater();
 	emit downloaded(m_url);
+    return;
 }
 
 QByteArray FileDownloader::downloadedData() const

@@ -28,35 +28,40 @@ void MainWindow::loadConfiguration()
 	QJsonDocument configFileJson = QJsonDocument::fromJson(configFileContent.toUtf8());
 	m_jsonUrl.setUrl(configFileJson["json_url"].toString()); //todo erreurs
 	m_themesPath.setPath(configFileJson["output_path"].toString()); //todo erreurs
-
 	return;
 }
 
 void MainWindow::loadJsonFromInternet(QUrl url)
 {
 	m_wakfuJson = QJsonDocument::fromJson(m_fd->downloadedData());
+    //create useful folders
+    m_themesPath.mkpath(m_themesPath.absolutePath() + "/images/");
 
 	//save the json file
-	QFile jsonFile(m_themesPath.absolutePath() + "/theme.json");
+    QFile file(m_themesPath.absolutePath() + "/theme.json", this);
+    QFile jsonFile(file.fileName());
 	jsonFile.open(QIODevice::WriteOnly);	//todo erreurs
 	jsonFile.write(m_wakfuJson.toJson());
 	jsonFile.close();
 
-	QJsonValue texturesValue = m_wakfuJson["textures"]; //todo erreurs
-	QJsonArray textures = texturesValue.toArray();
-	std::cout << url.fileName().toStdString() << std::endl;
+    const QJsonValue &texturesValue = m_wakfuJson["textures"]; //todo erreurs
+    const QJsonArray &textures = texturesValue.toArray();
 	QFile textureFile;
 	//create directory if it does not exist
-	m_themesPath.mkpath(m_themesPath.absolutePath());
 	for(QJsonArray::ConstIterator cit = textures.constBegin(); cit!=textures.constEnd(); ++cit)
 	{
-		QString textureId = (*cit)["id"].toString();
+        const QJsonValue &value = (*cit);
+        QString textureId = value["id"].toString();
 		FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + textureId + ".png");
-		connect(fd, &FileDownloader::downloaded, this, [fd, this](QUrl url2)
+        connect(fd, &FileDownloader::downloaded, this, [&, fd](QUrl url2)
 		{
 			QPixmap buttonImage;
 			buttonImage.loadFromData(fd->downloadedData());
-			buttonImage.save(m_themesPath.absolutePath() + "/images/" + url2.fileName());
+            QFile file(m_themesPath.absolutePath() + "/images/" + url2.fileName(), this);
+            if(!buttonImage.save(file.fileName(), "PNG", 100))
+            {
+                qDebug() << QString("Failed to save Image ") + file.fileName();
+            }
 			fd->deleteLater();
 		});
 	}
