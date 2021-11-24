@@ -38,8 +38,7 @@ void MainWindow::loadJsonFromInternet(QUrl url)
     m_themesPath.mkpath(m_themesPath.absolutePath() + "/images/");
 
 	//save the json file
-    QFile file(m_themesPath.absolutePath() + "/theme.json", this);
-    QFile jsonFile(file.fileName());
+	QFile jsonFile(m_themesPath.absolutePath() + "/theme.json", this);
 	jsonFile.open(QIODevice::WriteOnly);	//todo erreurs
 	jsonFile.write(m_wakfuJson.toJson());
 	jsonFile.close();
@@ -51,8 +50,10 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 	for(QJsonArray::ConstIterator cit = textures.constBegin(); cit!=textures.constEnd(); ++cit)
 	{
         const QJsonValue &value = (*cit);
-        QString textureId = value["id"].toString();
-		FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + textureId + ".png");
+		QString texturePath = value["path"].toString();
+		QFileInfo fileInfo(texturePath);
+		texturePath = fileInfo.baseName() + ".png";
+		FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + texturePath);
         connect(fd, &FileDownloader::downloaded, this, [&, fd](QUrl url2)
 		{
 			QPixmap buttonImage;
