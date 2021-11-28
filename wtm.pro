@@ -16,21 +16,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += include/
+INCLUDEPATH += include
 OBJECTS_DIR = ./.obj
 UI_DIR      = ./ui
 MOC_DIR		= ./.obj
+SRC_DIR		= ./src
+INCLUDE_DIR = ./include
 
 SOURCES += \
-	src/filedownloader.cpp \
-	src/main.cpp \
-	src/mainwindow.cpp
+	$${SRC_DIR}/pixmap.cpp \
+	$${SRC_DIR}/filedownloader.cpp \
+	$${SRC_DIR}/main.cpp \
+	$${SRC_DIR}/mainwindow.cpp \
+	$${SRC_DIR}/texture.cpp \
+	$${SRC_DIR}/theme.cpp \
+	$${SRC_DIR}/themewidget.cpp
 
 HEADERS += \
-	include/filedownloader.h \
-	include/mainwindow.h
+	$${INCLUDE_DIR}/filedownloader.h \
+	$${INCLUDE_DIR}/mainwindow.h \
+	$${INCLUDE_DIR}/pixmap.h \
+	$${INCLUDE_DIR}/texture.h \
+	$${INCLUDE_DIR}/theme.h \
+	$${INCLUDE_DIR}/themewidget.h
 
 FORMS += \
+	ui/themewidget.ui \
 	ui/mainwindow.ui
 
 TRANSLATIONS += \
