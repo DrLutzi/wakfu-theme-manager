@@ -10,7 +10,9 @@ std::mutex nbThreads_mutex;
 MainWindow::MainWindow(QWidget *parent)
 	:QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	m_configFile("./config.json")
+	m_fd(nullptr),
+	m_configFile("./config.json"),
+	m_pixmapRelativePath("/pixmaps/")
 {
 	ui->setupUi(this);
 	loadConfigurationFile();
@@ -29,7 +31,8 @@ void MainWindow::loadConfigurationFile()
 	m_configFile.close();
 	QJsonDocument configFileJson = QJsonDocument::fromJson(configFileContent.toUtf8());
 	m_jsonUrl.setUrl(configFileJson["json_url"].toString()); //todo erreurs
-	m_themesPath.setPath(configFileJson["output_path"].toString()); //todo erreurs
+	m_themesPath.setPath(configFileJson["themes_path"].toString()); //todo erreurs
+	m_defaultThemePath.setPath(m_themesPath.absolutePath() + "/default");
 	return;
 }
 
@@ -37,8 +40,8 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 {
 	_jsonThemes = QJsonDocument::fromJson(m_fd->downloadedData());
     //create useful folders
-	QDir defaultThemePath(m_themesPath.absolutePath() + "/images/");
-	m_themesPath.mkpath(defaultThemePath.absolutePath());
+	QDir defaultThemeImagePath(m_defaultThemePath.absolutePath() + "/images");
+	m_defaultThemePath.mkpath(defaultThemeImagePath.absolutePath());
 
 	//save the json file
 	QFile jsonFile(m_themesPath.absolutePath() + "/theme.json", this);
@@ -60,9 +63,10 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 		FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + texturePath);
 		connect(fd, &FileDownloader::downloaded, this, [&, fd](QUrl url2)
 		{
+			QDir defaultThemeImagePath(m_defaultThemePath.absolutePath() + "/images");
 			QPixmap buttonImage;
 			buttonImage.loadFromData(fd->downloadedData());
-			QFile file(m_themesPath.absolutePath() + "/images/" + url2.fileName(), this);
+			QFile file(defaultThemeImagePath.absolutePath() + "/" + url2.fileName(), this);
 			if(!buttonImage.save(file.fileName(), "PNG"))
 			{
 				qDebug() << QString("Failed to save Image ") + file.fileName();
@@ -73,14 +77,17 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 			if(nbThreads == 0)
 			{
 				//Load default theme
-				QDir defaultTheme(m_themesPath.absolutePath() + "/images");
+				QDir defaultTheme(defaultThemeImagePath.absolutePath());
 				if(defaultTheme.exists())
 				{
 					m_defaultTheme.load(defaultTheme);
+					m_defaultTheme.unpack();
 				}
 			}
 		});
 	}
+	const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
+	Texture::initPathToIdMapFromJson(textureArray);
 	return;
 }
 
@@ -94,5 +101,26 @@ void MainWindow::on_actionDownload_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
+	QFile jsonThemeFile(m_themesPath.absolutePath() + "/theme.json");
+	jsonThemeFile.open(QIODevice::ReadOnly);
+	_jsonThemes = QJsonDocument::fromJson(jsonThemeFile.readAll());
+	const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
+	Texture::initPathToIdMapFromJson(textureArray);
+	QDir defaultTheme(m_defaultThemePath.absolutePath() + "/images");
+	if(defaultTheme.exists())
+	{
+		m_defaultTheme.load(defaultTheme);
+		m_defaultTheme.unpack();
+	}
+}
+
+
+void MainWindow::on_actionExport_triggered()
+{
+	QDir defaultThemeImages(m_defaultThemePath.absolutePath() + "/images");
+	if(defaultThemeImages.exists())
+	{
+		m_defaultTheme.savePixmaps(m_defaultThemePath.absolutePath() + m_pixmapRelativePath);
+	}
 }
 

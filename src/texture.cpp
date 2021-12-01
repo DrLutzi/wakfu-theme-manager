@@ -1,9 +1,10 @@
 #include "texture.h"
 
 extern QJsonDocument _jsonThemes;
+std::map<QString, QString, std::less<QString>> Texture::ms_pathToIdMap;
 
 Texture::Texture(const QString &id) :
-	m_id(id)
+	m_pathId(id)
 {}
 
 bool Texture::save(const QFile &file) const
@@ -14,7 +15,7 @@ bool Texture::save(const QFile &file) const
 bool Texture::load(const QFile &file)
 {
 	QFileInfo fileInfo(file);
-	m_id = fileInfo.baseName();
+	m_pathId = fileInfo.baseName();
 	return m_image.load(file.fileName());
 }
 
@@ -30,15 +31,15 @@ bool Texture::savePixmaps(const QDir &dir) const
 
 bool Texture::loadPixmaps(const QDir &dir)
 {
-	QStringList ls = dir.entryList(QStringList() << "*.png", QDir::Files);
+	m_pixmaps.clear();
+	QFileInfoList ls = dir.entryInfoList(QStringList() << "*.png", QDir::Files);
 	const QJsonValue &pixmapValues = _jsonThemes["pixmaps"];
-	for(QStringList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
+	for(QFileInfoList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
 	{
-		QFile file(dir.absolutePath() + "/" + (*cit));
-		QFileInfo fileInfo(file);
+		const QFileInfo &fileInfo = (*cit);
 		QString baseName = fileInfo.baseName();
 		Pixmap pixmap;
-		pixmap.load(file);
+		pixmap.load(fileInfo.absoluteFilePath());
 		int index = pixmap.index();
 		if(index == -1)
 		{
@@ -93,40 +94,98 @@ void Texture::unpack()
 	assert(!m_image.isNull());
 	m_pixmaps.clear();
 	const QJsonValue &pixmapValues = _jsonThemes["pixmaps"];
-	QJsonArray jsonArray = pixmapValues.toArray();
+	const QJsonArray &jsonArray = pixmapValues.toArray();
 	unsigned int index=0;
+	bool isSpecific = false;
 	for(QJsonArray::ConstIterator cit = jsonArray.constBegin(); cit != jsonArray.constEnd(); ++cit, ++index)
 	{
 		const QJsonValue &pixmapJson = (*cit);
 		const QString &textureId = pixmapJson["texture"].toString();
-		if(textureId == m_id)
+		if(textureId == ms_pathToIdMap[m_pathId])
 		{
-			Pixmap pixmap(index);
 			const QJsonValue &pixmapJson(pixmapValues[index]);
 			const QJsonObject &objectJson = pixmapJson.toObject();
-			QString id = objectJson["id"].toString();
-			QSize size;
-			size.setWidth(objectJson["width"].toInt());
-			size.setHeight(objectJson["height"].toInt());
-			Pixmap::Position position = Pixmap::positionToEnum(objectJson["position"].toString());
-			//Pixmap::Rotation rotation = Pixmap::rotationToEnum(objectJson["rotation"].toString());
-			Pixmap::Rotation rotation = Pixmap::Normal;
-			QSize xy;
-			xy.setWidth(objectJson["x"].toInt());
-			xy.setHeight(objectJson["y"].toInt());
-			bool flipHorizontally;
-			flipHorizontally = objectJson["flipHorizontally"].toBool();
-			bool flipVertically;
-			flipVertically = objectJson["flipVertically"].toBool();
-			QImage pixmapImage = m_image.copy(xy.width(), xy.height(), size.width(), size.height());
-			pixmap.setImage(pixmapImage);
-			pixmap.set(id, size, position, rotation, xy, flipHorizontally, flipVertically);
-			m_pixmaps.emplace(std::make_pair(id, pixmap));
+			const QString &id = objectJson["id"].toString();
+			createAndAppendPixmap(objectJson, id, index, isSpecific, -1, -1);
 		}
 	}
+	unpackSpecific();
+}
+
+void Texture::initPathToIdMapFromJson(const QJsonArray &textureJsonArray)
+{
+	for(QJsonArray::ConstIterator cit = textureJsonArray.constBegin(); cit !=textureJsonArray.constEnd(); ++cit)
+	{
+		QFileInfo fileInfo((*cit)["path"].toString());
+		ms_pathToIdMap.insert(std::make_pair(fileInfo.baseName(), (*cit)["id"].toString()));
+	}
+}
+
+void Texture::unpackSpecific()
+{
+	assert(!m_image.isNull());
+
+	const QJsonValue &themeElementValues = _jsonThemes["themeElement"];
+	const QJsonArray &jsonArray = themeElementValues.toArray();
+	unsigned int index=0;
+	bool isSpecific = true;
+	std::function<void (const QJsonObject &, const QString &, int)> lmbd_rec_unpackAllSpecificPixmaps = [&](const QJsonObject &jsonObject, const QString &id, int depth)
+	{
+		const QJsonValue &specificPixmapsValue = jsonObject["specificPixmaps"];
+		const QJsonArray &specificPixmapsArray = specificPixmapsValue.toArray();
+		int specificIndex = 0;
+		for(QJsonArray::ConstIterator cit = specificPixmapsArray.constBegin(); cit != specificPixmapsArray.constEnd(); ++cit, ++specificIndex)
+		{
+			const QJsonObject &specificPixmapObject = (*cit).toObject();
+			const QString &textureId = specificPixmapObject["texture"].toString();
+			if(textureId == ms_pathToIdMap[m_pathId])
+			{
+				createAndAppendPixmap(specificPixmapObject, id, index, isSpecific, depth, specificIndex);
+			}
+		}
+		const QJsonValue &subThemeElements = jsonObject["childrenThemeElements"];
+		if(!subThemeElements.isNull() && !subThemeElements.isUndefined())
+		{
+			const QJsonArray &subThemeElementsArray = subThemeElements.toArray();
+			for(QJsonArray::ConstIterator cit = subThemeElementsArray.constBegin(); cit != subThemeElementsArray.constEnd(); ++cit)
+			{
+				lmbd_rec_unpackAllSpecificPixmaps((*cit).toObject(), id, depth+1);
+			}
+		}
+	};
+
+	for(QJsonArray::ConstIterator cit = jsonArray.constBegin(); cit != jsonArray.constEnd(); ++cit, ++index)
+	{
+		const QJsonValue &themeElementJson = (*cit);
+		const QJsonObject &jsonObject = themeElementJson.toObject();
+		const QString &id = jsonObject["id"].toString();
+		lmbd_rec_unpackAllSpecificPixmaps(jsonObject, id, 0);
+	}
+}
+
+void Texture::createAndAppendPixmap(const QJsonObject &objectJson, const QString &id, int index, bool isSpecific, int depth, int specificIndex)
+{
+	Pixmap pixmap(index, isSpecific, depth, specificIndex);
+	QSize size;
+	size.setWidth(objectJson["width"].toInt());
+	size.setHeight(objectJson["height"].toInt());
+	Pixmap::Position position = Pixmap::positionToEnum(objectJson["position"].toString());
+	Pixmap::Rotation rotation = Pixmap::rotationToEnum(objectJson["rotation"].toString());
+	QSize xy;
+	xy.setWidth(objectJson["x"].toInt());
+	xy.setHeight(objectJson["y"].toInt());
+	bool flipHorizontally;
+	flipHorizontally = objectJson["flipHorizontally"].toBool();
+	bool flipVertically;
+	flipVertically = objectJson["flipVertically"].toBool();
+	QImage pixmapImage = m_image.copy(xy.width(), xy.height(), size.width(), size.height());
+	pixmap.setImage(pixmapImage);
+	pixmap.set(id, size, position, rotation, xy, flipHorizontally, flipVertically);
+	m_pixmaps.emplace(std::make_pair(id, pixmap));
+	return;
 }
 
 const QString &Texture::id() const
 {
-	return m_id;
+	return m_pathId;
 }

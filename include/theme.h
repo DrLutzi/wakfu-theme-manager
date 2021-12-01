@@ -10,8 +10,15 @@ class Theme
 public:
 	Theme();
 
-	void save(QDir dir) const;
-	void load(QDir dir);
+	void save(const QDir &dir) const;
+	void load(const QDir &dir);
+
+	void pack();
+	void unpack();
+
+	void savePixmaps(const QDir &dir);
+	void loadPixmaps(const QDir &dir);
+
 
 private:
 	QString	m_name;

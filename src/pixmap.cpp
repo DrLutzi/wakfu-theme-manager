@@ -4,11 +4,14 @@ std::map<QString, Pixmap::Position> Pixmap::ms_positionMap;
 std::map<QString, Pixmap::Rotation> Pixmap::ms_rotationMap;
 bool Pixmap::ms_uninitialized = true;
 
-Pixmap::Pixmap(int index) :
-	m_index(index)
+Pixmap::Pixmap(int index, bool isSpecific, int depth, int specificIndex) :
+	m_index(index),
+	m_isSpecific(isSpecific),
+	m_depth(depth),
+	m_specificIndex(specificIndex)
 {
 	if(ms_uninitialized)
-	{
+	{ //I learned later that there is a better way to build a static map but f it
 		ms_uninitialized = false;
 		ms_positionMap.emplace(std::make_pair("center", Center));
 		ms_positionMap.emplace(std::make_pair("north", N));
@@ -40,39 +43,66 @@ Pixmap::Rotation Pixmap::rotationToEnum(QString key)
 	return cit != ms_rotationMap.end() ? (*cit).second : Normal;
 }
 
-bool Pixmap::load(const QFile &file)
+bool Pixmap::load(const QFile &file, const QFile &infoFile)
 {
 	QFileInfo fileInfo(file);
-	m_id = fileInfo.baseName();
-	QFile txtFile(fileInfo.absoluteDir().absolutePath() + fileInfo.baseName() + ".info");
-	if(txtFile.open(QIODevice::ReadOnly))
+	QFile effectiveInfoFile;
+	if(!infoFile.fileName().isEmpty() || !infoFile.fileName().isNull())
 	{
-		m_id = QString(txtFile.readAll()).toInt();
+		effectiveInfoFile.setFileName(infoFile.fileName());
 	}
 	else
 	{
-		m_id = -1;
+		QFileInfo IFile(file);
+		effectiveInfoFile.setFileName(IFile.absoluteDir().absolutePath() + IFile.baseName() + ".info");
+	}
+	m_id = fileInfo.baseName();
+	if(effectiveInfoFile.open(QIODevice::ReadOnly))
+	{
+		m_index = QString(effectiveInfoFile.readLine()).toInt();
+		m_isSpecific = bool(QString(effectiveInfoFile.readLine()).toInt());
+	}
+	else
+	{
+		m_index = -1;
+		m_isSpecific = false;
 	}
 	return m_image.load(file.fileName());
 }
 
-bool Pixmap::save(const QFile &file) const
+bool Pixmap::save(const QFile &file, const QFile &infoFile) const
 {
 	QFileInfo fileInfo(file);
-	QFile txtFile(fileInfo.absoluteDir().absolutePath() + "/" + m_id + ".info");
-	txtFile.open(QIODevice::WriteOnly | QIODevice::Text);
-	txtFile.write(QString::number(m_index).toStdString().c_str());
-	txtFile.close();
+	QFile effectiveInfoFile;
+	if(!infoFile.fileName().isEmpty() || !infoFile.fileName().isNull())
+	{
+		effectiveInfoFile.setFileName(infoFile.fileName());
+	}
+	else
+	{
+		effectiveInfoFile.setFileName(fileInfo.absoluteDir().absolutePath() + "/" + m_id + ".info");
+	}
+	effectiveInfoFile.open(QIODevice::WriteOnly | QIODevice::Text);
+	effectiveInfoFile.write((QString::number(m_index) + '\n').toStdString().c_str());
+	effectiveInfoFile.write(QString::number(m_isSpecific).toStdString().c_str());
+	effectiveInfoFile.close();
 	return m_image.save(file.fileName());
 }
 
 bool Pixmap::save(const QDir &directory) const
 {
-	QFile txtFile(directory.absolutePath() + "/" + m_id + ".info");
-	txtFile.open(QIODevice::WriteOnly | QIODevice::Text);
-	txtFile.write(QString::number(m_index).toStdString().c_str());
-	txtFile.close();
-	return m_image.save(directory.absolutePath() + "/" + m_id + ".png");
+	QFile file;
+	if(m_isSpecific)
+	{
+		QDir substituteDir(directory.absolutePath() + "/" + m_id + "/" + QString::number(m_depth));
+		substituteDir.mkpath(substituteDir.absolutePath());
+		file.setFileName(substituteDir.absolutePath() + "/" + QString::number(m_specificIndex) + ".png");
+	}
+	else
+	{
+		file.setFileName(directory.absolutePath() + "/" + QString(m_id) + ".png");
+	}
+	return save(file);
 }
 
 void Pixmap::set(const QString &id, const QSize &size, Position position, Rotation rotation, const QSize &xy, bool flipH, bool flipV)

@@ -18,10 +18,10 @@ public:
 	static Position positionToEnum(QString key);
 	static Rotation rotationToEnum(QString key);
 
-	Pixmap(int index = -1);
+	Pixmap(int index=-1, bool isSpecific=false, int depth=-1, int specificIndex=-1);
 
-	bool load(const QFile &file);
-	bool save(const QFile &file) const;
+	bool load(const QFile &file, const QFile &infoFile = QFile());
+	bool save(const QFile &file, const QFile &infoFile = QFile()) const;
 	bool save(const QDir &directory) const;
 
 	void set(const QString &id, const QSize &size, Position position, Rotation rotation, const QSize &xy, bool flipH, bool flipV);
@@ -48,6 +48,9 @@ private:
 	bool m_flipVertically;
 
 	int m_index; //< index in json. Used to lower search complexity by one times n.
+	bool m_isSpecific; //< identifies if the pixmap is specific, or if it is not.
+	int m_depth;
+	int m_specificIndex;
 
 	QImage	m_image;
 

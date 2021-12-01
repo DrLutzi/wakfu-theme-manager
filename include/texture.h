@@ -20,16 +20,24 @@ public:
 	bool savePixmaps(const QDir &dir) const;
 	bool loadPixmaps(const QDir &dir);
 
+	bool saveSpecificPixmaps(const QDir &dir) const;
+	bool loadSpecificPixmaps(const QDir &dir);
+
 	void pack();
 	void unpack();
 
-	void smartPack();
-	void smartUnpack();
-
 	const QString &id() const;
 
+	static void initPathToIdMapFromJson(const QJsonArray &textureJsonArray);
+
 private:
-	QString m_id;
+
+	void unpackSpecific();
+	void createAndAppendPixmap(const QJsonObject &objectJson, const QString &id, int index, bool isSpecific, int depth, int specificIndex);
+
+	static std::map<QString, QString, std::less<QString>> ms_pathToIdMap;
+
+	QString m_pathId;
 	QImage	m_image;
 	MapType m_pixmaps;
 };
