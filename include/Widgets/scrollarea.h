@@ -12,7 +12,7 @@ public:
 	explicit ScrollArea(QWidget *parent = nullptr);
 
 	void resizeEvent(QResizeEvent *event);
-
+    void dropEvent(QDropEvent *event);
 };
 
 #endif // SCROLLAREA_H

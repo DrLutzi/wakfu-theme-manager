@@ -116,8 +116,11 @@ void Texture::initPathToIdMapFromJson(const QJsonArray &textureJsonArray)
 {
 	for(QJsonArray::ConstIterator cit = textureJsonArray.constBegin(); cit !=textureJsonArray.constEnd(); ++cit)
 	{
-		QFileInfo fileInfo((*cit)["path"].toString());
-		ms_pathToIdMap.insert(std::make_pair(fileInfo.baseName(), (*cit)["id"].toString()));
+        const QJsonValue &value = (*cit);
+        const QString &fileString = value["path"].toString();
+        const QString &idString = value["id"].toString();
+        QFileInfo fileInfo(fileString);
+        ms_pathToIdMap.insert(std::make_pair(fileInfo.baseName(), idString));
 	}
 }
 

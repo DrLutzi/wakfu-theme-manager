@@ -32,6 +32,7 @@ public:
 
 	bool loadConfigurationFile();
 	void loadAllThemes();
+    void createScrollAreas();
 	void createAllThemeWidgets();
 
 private:

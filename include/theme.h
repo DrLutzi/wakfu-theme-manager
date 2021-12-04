@@ -22,6 +22,8 @@ public:
 	const QDir &path() const;
 	const QString &name() const;
 
+    bool isInitialized() const;
+
 private:
 	QString	m_name;
 	QDir m_path;

@@ -36,7 +36,8 @@ void Theme::load(const QDir &dir)
 		unsigned int index = 0;
 		for(QJsonArray::ConstIterator cit2 = textureArray.constBegin(); cit2 != textureArray.constEnd() && !foundInJson; ++cit2)
 		{
-			if( (*cit2)["path"].toString() == QString("theme/images/") + baseName + ".tga" )
+            const QJsonValue &value = (*cit2);
+            if( value["path"].toString() == QString("theme/images/") + baseName + ".tga" )
 				foundInJson = true;
 			else
 				++index;
@@ -96,4 +97,9 @@ const QDir &Theme::path() const
 const QString &Theme::name() const
 {
 	return m_name;
+}
+
+bool Theme::isInitialized() const
+{
+    return (!m_name.isEmpty() || m_textures.size()>0);
 }

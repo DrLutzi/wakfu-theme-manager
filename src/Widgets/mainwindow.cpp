@@ -19,50 +19,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	ui->setupUi(this);
 	loadConfigurationFile();
-	loadAllThemes();
-
-	QWidget *centralWidget = ui->centralwidget;
-	QLayout *l = centralWidget->layout();
-	clearLayout(l);
-
-	ui->scrollArea_stash = new ScrollArea(centralWidget);
-	ui->scrollArea_used = new ScrollArea(centralWidget);
-
-	ui->scrollArea_stash->setObjectName(QString::fromUtf8("scrollArea_stash"));
-	ui->scrollArea_stash->setMinimumSize(QSize(128, 0));
-	ui->scrollArea_stash->setAcceptDrops(true);
-	ui->scrollArea_stash->setWidgetResizable(true);
-	ui->scrollArea_stash->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	l->addWidget(ui->scrollArea_stash);
-
-	ui->scrollArea_used->setObjectName(QString::fromUtf8("scrollArea_used"));
-	ui->scrollArea_used->setMinimumSize(QSize(128, 0));
-	ui->scrollArea_used->setAcceptDrops(true);
-	ui->scrollArea_used->setWidgetResizable(true);
-	ui->scrollArea_used->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	l->addWidget(ui->scrollArea_used);
-
-	//custom scroll area content widget
-	ui->scrollAreaWidgetContents_stash = new ScrollAreaContent(ui->scrollArea_stash);
-	ui->scrollAreaWidgetContents_used = new ScrollAreaContent(ui->scrollArea_used);
-
-	//Layout in scroll areas
-	ui->scrollAreaWidgetContents_stash->setLayout(new QBoxLayout(QBoxLayout::TopToBottom, ui->scrollAreaWidgetContents_stash));
-	ui->scrollAreaWidgetContents_used->setLayout(new QBoxLayout(QBoxLayout::TopToBottom, ui->scrollAreaWidgetContents_used));
-	ui->scrollAreaWidgetContents_stash->layout()->setAlignment(Qt::AlignTop);
-	ui->scrollAreaWidgetContents_used->layout()->setAlignment(Qt::AlignTop);
-
-	//set scroll area custom widget
-	ui->scrollArea_stash->setWidget(ui->scrollAreaWidgetContents_stash);
-	ui->scrollArea_used->setWidget(ui->scrollAreaWidgetContents_used);
-
-	ui->scrollArea_stash->horizontalScrollBar()->setEnabled(false);
-	ui->scrollArea_used->horizontalScrollBar()->setEnabled(false);
-
-	ui->scrollAreaWidgetContents_stash->layout()->setContentsMargins(4, 4, 4, 4);
-
-	ui->scrollAreaWidgetContents_stash->setAcceptDrops(true);
-	ui->scrollAreaWidgetContents_used->setAcceptDrops(true);
+    loadAllThemes();
+    createScrollAreas();
 	createAllThemeWidgets();
 }
 
@@ -91,7 +49,7 @@ bool MainWindow::loadConfigurationFile()
 void MainWindow::loadAllThemes()
 {
 	QFileInfoList ls = m_themesPath.entryInfoList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
-	m_extraThemes.reserve(ls.size()-1);
+    m_extraThemes.reserve(std::max(0, int(ls.size())-1));
 	for(QFileInfoList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
 	{
 		QDir dir;
@@ -110,6 +68,52 @@ void MainWindow::loadAllThemes()
 			}
 		}
 	}
+    return;
+}
+
+void MainWindow::createScrollAreas()
+{
+    QWidget *centralWidget = ui->centralwidget;
+    QLayout *l = centralWidget->layout();
+    clearLayout(l);
+
+    ui->scrollArea_stash = new ScrollArea(centralWidget);
+    ui->scrollArea_used = new ScrollArea(centralWidget);
+
+    ui->scrollArea_stash->setObjectName(QString::fromUtf8("scrollArea_stash"));
+    ui->scrollArea_stash->setMinimumSize(QSize(128, 0));
+    ui->scrollArea_stash->setAcceptDrops(true);
+    ui->scrollArea_stash->setWidgetResizable(true);
+    ui->scrollArea_stash->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    l->addWidget(ui->scrollArea_stash);
+
+    ui->scrollArea_used->setObjectName(QString::fromUtf8("scrollArea_used"));
+    ui->scrollArea_used->setMinimumSize(QSize(128, 0));
+    ui->scrollArea_used->setAcceptDrops(true);
+    ui->scrollArea_used->setWidgetResizable(true);
+    ui->scrollArea_used->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    l->addWidget(ui->scrollArea_used);
+
+    //custom scroll area content widget
+    ui->scrollAreaWidgetContents_stash = new ScrollAreaContent(ui->scrollArea_stash);
+    ui->scrollAreaWidgetContents_used = new ScrollAreaContent(ui->scrollArea_used);
+
+    //Layout in scroll areas
+    ui->scrollAreaWidgetContents_stash->setLayout(new QBoxLayout(QBoxLayout::TopToBottom, ui->scrollAreaWidgetContents_stash));
+    ui->scrollAreaWidgetContents_used->setLayout(new QBoxLayout(QBoxLayout::TopToBottom, ui->scrollAreaWidgetContents_used));
+    ui->scrollAreaWidgetContents_stash->layout()->setAlignment(Qt::AlignTop);
+    ui->scrollAreaWidgetContents_used->layout()->setAlignment(Qt::AlignTop);
+
+    //set scroll area custom widget
+    ui->scrollArea_stash->setWidget(ui->scrollAreaWidgetContents_stash);
+    ui->scrollArea_used->setWidget(ui->scrollAreaWidgetContents_used);
+
+    ui->scrollArea_stash->horizontalScrollBar()->setEnabled(false);
+    ui->scrollArea_used->horizontalScrollBar()->setEnabled(false);
+
+    ui->scrollAreaWidgetContents_stash->layout()->setContentsMargins(4, 4, 4, 4);
+    ui->scrollAreaWidgetContents_used->layout()->setContentsMargins(4, 4, 4, 4);
+    return;
 }
 
 void MainWindow::createAllThemeWidgets()
@@ -117,13 +121,20 @@ void MainWindow::createAllThemeWidgets()
 	clearLayout(ui->scrollAreaWidgetContents_stash->layout());
 	clearLayout(ui->scrollAreaWidgetContents_used->layout());
 	delete m_defaultThemeWidget;
+    m_defaultThemeWidget = nullptr;
 	for(std::vector<ThemeWidget *>::iterator it = m_extraThemeWidgets.begin(); it != m_extraThemeWidgets.end(); ++it)
 	{
-		delete (*it);
-	}
-	m_defaultThemeWidget = new ThemeWidget(&m_defaultTheme, ui->scrollAreaWidgetContents_stash);
+        delete (*it);
+    }
+    if(m_defaultTheme.isInitialized())
+    {
+        m_defaultThemeWidget = new ThemeWidget(&m_defaultTheme, ui->scrollAreaWidgetContents_stash);
+    }
 	m_extraThemeWidgets.reserve(m_extraThemes.size());
-	ui->scrollAreaWidgetContents_stash->layout()->addWidget(m_defaultThemeWidget);
+    if(m_defaultThemeWidget != nullptr)
+    {
+        ui->scrollAreaWidgetContents_stash->layout()->addWidget(m_defaultThemeWidget);
+    }
 	for(std::vector<Theme>::const_iterator cit = m_extraThemes.begin(); cit != m_extraThemes.end(); ++cit)
 	{
 		ThemeWidget *extraTheme = new ThemeWidget(&(*cit), ui->scrollAreaWidgetContents_stash);
@@ -153,6 +164,7 @@ void MainWindow::clearLayout(QLayout *layout)
 		}
 		delete item;
 	}
+    return;
 }
 
 //SLOTS
@@ -233,6 +245,7 @@ void MainWindow::on_actionOpen_triggered()
 		m_defaultTheme.load(defaultTheme);
 		m_defaultTheme.unpack();
 	}
+    return;
 }
 
 
@@ -243,14 +256,16 @@ void MainWindow::on_actionExport_triggered()
 	{
 		m_defaultTheme.savePixmaps(m_defaultThemePath.absolutePath() + m_pixmapRelativePath);
 	}
+    return;
 }
 
 void MainWindow::on_actionSave_triggered()
 {
-	ThemeWidget *tw = new ThemeWidget(&m_defaultTheme, ui->scrollAreaWidgetContents_stash);
-	QScrollArea *scrollArea = ui->scrollArea_stash;
-	QWidget *scrollAreaContent = scrollArea->widget();
-	QLayout *layout = scrollAreaContent->layout();
-	layout->addWidget(tw);
+    ThemeWidget *tw = new ThemeWidget(&m_defaultTheme, ui->scrollAreaWidgetContents_stash);
+    QScrollArea *scrollArea = ui->scrollArea_stash;
+    QWidget *scrollAreaContent = scrollArea->widget();
+    QLayout *layout = scrollAreaContent->layout();
+    layout->addWidget(tw);
+    return;
 }
 

@@ -40,7 +40,7 @@ void ThemeWidget::mousePressEvent(QMouseEvent *event)
 		mimeData->setText(m_theme->name());
 		drag->setMimeData(mimeData);
 		drag->setPixmap(m_dragPixmap);
-		Qt::DropAction dropAction = drag->exec();
+        Qt::DropAction dropAction = drag->exec();
 	}
 }
 
