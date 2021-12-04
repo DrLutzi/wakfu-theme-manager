@@ -19,9 +19,12 @@ public:
 	void savePixmaps(const QDir &dir);
 	void loadPixmaps(const QDir &dir);
 
+	const QDir &path() const;
+	const QString &name() const;
 
 private:
 	QString	m_name;
+	QDir m_path;
 	std::map<QString, Texture, std::less<QString>> m_textures;
 };
 

@@ -1,0 +1,18 @@
+#include "scrollarea.h"
+
+ScrollArea::ScrollArea(QWidget *parent) :
+	QScrollArea(parent)
+{
+
+}
+
+void ScrollArea::resizeEvent(QResizeEvent *event)
+{
+	assert(event != nullptr);
+	QWidget *w = widget();
+	ScrollAreaContent *scrollAreaContent = dynamic_cast<ScrollAreaContent *>(w);
+	if(scrollAreaContent != nullptr)
+	{
+		scrollAreaContent->resize(event->size().width()-4, scrollAreaContent->size().height());
+	}
+}

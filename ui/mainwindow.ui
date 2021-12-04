@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>844</width>
     <height>600</height>
    </rect>
   </property>
@@ -16,16 +16,28 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QScrollArea" name="scrollArea">
+     <widget class="QScrollArea" name="scrollArea_stash">
+      <property name="minimumSize">
+       <size>
+        <width>128</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents">
+      <widget class="QWidget" name="scrollAreaWidgetContents_stash">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>382</width>
+         <width>404</width>
          <height>504</height>
         </rect>
        </property>
@@ -40,16 +52,25 @@
      </widget>
     </item>
     <item>
-     <widget class="QScrollArea" name="scrollArea_2">
+     <widget class="QScrollArea" name="scrollArea_used">
+      <property name="minimumSize">
+       <size>
+        <width>128</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents_2">
+      <widget class="QWidget" name="scrollAreaWidgetContents_used">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>381</width>
+         <width>403</width>
          <height>504</height>
         </rect>
        </property>
@@ -63,7 +84,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>844</width>
      <height>22</height>
     </rect>
    </property>

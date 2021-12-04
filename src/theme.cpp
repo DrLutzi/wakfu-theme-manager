@@ -2,7 +2,9 @@
 
 extern QJsonDocument _jsonThemes;
 
-Theme::Theme()
+Theme::Theme() :
+	m_name(),
+	m_path()
 {
 
 }
@@ -18,6 +20,8 @@ void Theme::save(const QDir &dir) const
 void Theme::load(const QDir &dir)
 {
 	m_textures.clear();
+	m_name = dir.dirName();
+	m_path = dir;
 	QStringList ls = dir.entryList(QStringList() << "*.png", QDir::Files);
 	const QJsonValue &textureValue = _jsonThemes["textures"];
 	const QJsonArray &textureArray = textureValue.toArray();
@@ -72,7 +76,9 @@ void Theme::savePixmaps(const QDir &dir)
 
 void Theme::loadPixmaps(const QDir &dir)
 {
-	QFileInfoList ls = dir.entryInfoList(QStringList(), QDir::Dirs);
+	QFileInfoList ls = dir.entryInfoList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
+	m_name = dir.dirName();
+	m_path = dir;
 	for(QFileInfoList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
 	{
 		QString pathString = (*cit).absolutePath();
@@ -80,4 +86,14 @@ void Theme::loadPixmaps(const QDir &dir)
 		Texture texture(id);
 		texture.loadPixmaps(pathString);
 	}
+}
+
+const QDir &Theme::path() const
+{
+	return m_path;
+}
+
+const QString &Theme::name() const
+{
+	return m_name;
 }
