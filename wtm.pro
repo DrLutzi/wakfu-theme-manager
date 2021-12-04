@@ -16,29 +16,35 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += include
 OBJECTS_DIR = ./.obj
 UI_DIR      = ./ui
 MOC_DIR		= ./.obj
 SRC_DIR		= ./src
+SRC_WIDGETS_DIR = $${SRC_DIR}/Widgets
 INCLUDE_DIR = ./include
+INCLUDE_WIDGETS_DIR = $${INCLUDE_DIR}/Widgets
+INCLUDEPATH += $${INCLUDE_DIR} $${INCLUDE_WIDGETS_DIR}
 
 SOURCES += \
 	$${SRC_DIR}/pixmap.cpp \
 	$${SRC_DIR}/filedownloader.cpp \
 	$${SRC_DIR}/main.cpp \
-	$${SRC_DIR}/mainwindow.cpp \
 	$${SRC_DIR}/texture.cpp \
 	$${SRC_DIR}/theme.cpp \
-	$${SRC_DIR}/themewidget.cpp
+	$${SRC_WIDGETS_DIR}/mainwindow.cpp \
+	$${SRC_WIDGETS_DIR}/themewidget.cpp \
+	$${SRC_WIDGETS_DIR}/scrollareacontent.cpp \
+	$${SRC_WIDGETS_DIR}/scrollarea.cpp
 
 HEADERS += \
 	$${INCLUDE_DIR}/filedownloader.h \
-	$${INCLUDE_DIR}/mainwindow.h \
 	$${INCLUDE_DIR}/pixmap.h \
 	$${INCLUDE_DIR}/texture.h \
 	$${INCLUDE_DIR}/theme.h \
-	$${INCLUDE_DIR}/themewidget.h
+	$${INCLUDE_WIDGETS_DIR}/mainwindow.h \
+	$${INCLUDE_WIDGETS_DIR}/themewidget.h \
+	$${INCLUDE_WIDGETS_DIR}/scrollareacontent.h \
+	$${INCLUDE_WIDGETS_DIR}/scrollarea.h
 
 FORMS += \
 	ui/themewidget.ui \
