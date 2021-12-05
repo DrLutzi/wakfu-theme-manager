@@ -47,7 +47,6 @@ void ScrollAreaContent::dropEvent(QDropEvent *event)
 				assert(layoutIndex != -1);
 				l->insertWidget(layoutIndex, tw);
 			}
-
 		}
 	}
 }

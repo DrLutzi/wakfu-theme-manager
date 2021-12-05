@@ -38,7 +38,7 @@
          <x>0</x>
          <y>0</y>
          <width>404</width>
-         <height>510</height>
+         <height>504</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -74,7 +74,7 @@
          <x>0</x>
          <y>0</y>
          <width>403</width>
-         <height>510</height>
+         <height>504</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -91,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>844</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -122,6 +122,7 @@
    <addaction name="actionImport"/>
    <addaction name="actionExport"/>
    <addaction name="actionDownload"/>
+   <addaction name="actionMake_theme"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -146,6 +147,11 @@
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
+   </property>
+  </action>
+  <action name="actionMake_theme">
+   <property name="text">
+    <string>Make theme</string>
    </property>
   </action>
  </widget>

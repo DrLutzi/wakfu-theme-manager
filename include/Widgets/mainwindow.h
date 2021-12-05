@@ -59,5 +59,6 @@ private slots:
 	void on_actionOpen_triggered();
 	void on_actionExport_triggered();
 	void on_actionSave_triggered();
+	void on_actionMake_theme_triggered();
 };
 #endif // MAINWINDOW_H

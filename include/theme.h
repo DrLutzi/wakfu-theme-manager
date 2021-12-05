@@ -24,6 +24,9 @@ public:
 
     bool isInitialized() const;
 
+	bool isOpened() const;
+	bool isUnpacked() const;
+
 private:
 	QString	m_name;
 	QDir m_path;

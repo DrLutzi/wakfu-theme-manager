@@ -103,3 +103,13 @@ bool Theme::isInitialized() const
 {
     return (!m_name.isEmpty() || m_textures.size()>0);
 }
+
+bool Theme::isOpened() const
+{
+	return m_textures.size()>0;
+}
+
+bool Theme::isUnpacked() const
+{
+	return isOpened() && m_textures.size()>0 && (*m_textures.begin()).second.isUnpacked();
+}

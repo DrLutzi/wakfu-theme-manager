@@ -192,3 +192,8 @@ const QString &Texture::id() const
 {
 	return m_pathId;
 }
+
+bool Texture::isUnpacked() const
+{
+	return m_pixmaps.size()>0;
+}

@@ -141,9 +141,9 @@ void MainWindow::createAllThemeWidgets()
     {
         ui->scrollAreaWidgetContents_stash->layout()->addWidget(m_defaultThemeWidget);
     }
-	for(std::vector<Theme>::const_iterator cit = m_extraThemes.begin(); cit != m_extraThemes.end(); ++cit)
+	for(std::vector<Theme>::iterator it = m_extraThemes.begin(); it != m_extraThemes.end(); ++it)
 	{
-		ThemeWidget *extraTheme = new ThemeWidget(&(*cit), ui->scrollAreaWidgetContents_stash);
+		ThemeWidget *extraTheme = new ThemeWidget(&(*it), ui->scrollAreaWidgetContents_stash);
 		m_extraThemeWidgets.push_back(extraTheme);
 		ui->scrollAreaWidgetContents_stash->layout()->addWidget(extraTheme);
 	}
@@ -177,7 +177,8 @@ void MainWindow::clearLayout(QLayout *layout)
 
 void MainWindow::loadJsonFromInternet(QUrl url)
 {
-	_jsonThemes = QJsonDocument::fromJson(m_fd->downloadedData());
+	QJsonParseError *jsonPE = new QJsonParseError;
+	_jsonThemes = QJsonDocument::fromJson(m_fd->downloadedData(), jsonPE);
     //create useful folders
 	QDir defaultThemeImagePath(m_defaultThemePath.absolutePath() + "/images");
 	m_defaultThemePath.mkpath(defaultThemeImagePath.absolutePath());
@@ -193,40 +194,51 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 	QFile textureFile;
 	//create directory if it does not exist
 	nbThreads = textures.size();
-	for(QJsonArray::ConstIterator cit = textures.constBegin(); cit!=textures.constEnd(); ++cit)
+	if(nbThreads == 0)
 	{
-        const QJsonValue &value = (*cit);
-		QString texturePath = value["path"].toString();
-		QFileInfo fileInfo(texturePath);
-		texturePath = fileInfo.baseName() + ".png";
-		FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + texturePath);
-		connect(fd, &FileDownloader::downloaded, this, [&, fd](QUrl url2)
-		{
-			QDir defaultThemeImagePath(m_defaultThemePath.absolutePath() + "/images");
-			QPixmap buttonImage;
-			buttonImage.loadFromData(fd->downloadedData());
-			QFile file(defaultThemeImagePath.absolutePath() + "/" + url2.fileName(), this);
-			if(!buttonImage.save(file.fileName(), "PNG"))
-			{
-				qDebug() << QString("Failed to save Image ") + file.fileName();
-			}
-			fd->deleteLater();
-			std::lock_guard<std::mutex> guard(nbThreads_mutex);
-			--nbThreads;
-			if(nbThreads == 0)
-			{
-				//Load default theme
-				QDir defaultTheme(defaultThemeImagePath.absolutePath());
-				if(defaultTheme.exists())
-				{
-					m_defaultTheme.load(defaultTheme);
-					//m_defaultTheme.unpack();
-				}
-			}
-		});
+		ui->statusbar->showMessage(QString("Error while attempting to download files!"));
 	}
-	const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
-	Texture::initPathToIdMapFromJson(textureArray);
+	else
+	{
+		ui->statusbar->showMessage(QString("Downloading files... ") + QString::number(nbThreads) + " left");
+		for(QJsonArray::ConstIterator cit = textures.constBegin(); cit!=textures.constEnd(); ++cit)
+		{
+			const QJsonValue &value = (*cit);
+			QString texturePath = value["path"].toString();
+			QFileInfo fileInfo(texturePath);
+			texturePath = fileInfo.baseName() + ".png";
+			FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + texturePath);
+			connect(fd, &FileDownloader::downloaded, this, [&, fd](QUrl url2)
+			{
+				QDir defaultThemeImagePath(m_defaultThemePath.absolutePath() + "/images");
+				QPixmap buttonImage;
+				buttonImage.loadFromData(fd->downloadedData());
+				QFile file(defaultThemeImagePath.absolutePath() + "/" + url2.fileName(), this);
+				if(!buttonImage.save(file.fileName(), "PNG"))
+				{
+					qDebug() << QString("Failed to save Image ") + file.fileName();
+				}
+				fd->deleteLater();
+				std::lock_guard<std::mutex> guard(nbThreads_mutex);
+				--nbThreads;
+				ui->statusbar->showMessage(QString("Downloading files... ") + QString::number(nbThreads) + " left");
+				if(nbThreads == 0)
+				{
+					//Load default theme
+					QDir defaultTheme(defaultThemeImagePath.absolutePath());
+					if(defaultTheme.exists())
+					{
+						m_defaultTheme.load(defaultTheme);
+						//m_defaultTheme.unpack();
+					}
+					const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
+					Texture::initPathToIdMapFromJson(textureArray);
+					ui->statusbar->showMessage(QString("All files were downloaded successfully."));
+				}
+			});
+		}
+	}
+
 	return;
 }
 
@@ -235,6 +247,7 @@ void MainWindow::on_actionDownload_triggered()
 	QUrl imageUrl("https://wakfu.cdn.ankama.com/gamedata/theme/theme.json");
 	m_fd = new FileDownloader(imageUrl, this);
 	connect(m_fd, SIGNAL (downloaded(QUrl)), this, SLOT (loadJsonFromInternet(QUrl)));
+	ui->actionDownload->setEnabled(false);
 }
 
 
@@ -273,5 +286,28 @@ void MainWindow::on_actionSave_triggered()
     QLayout *layout = scrollAreaContent->layout();
     layout->addWidget(tw);
     return;
+}
+
+
+void MainWindow::on_actionMake_theme_triggered()
+{
+	if(!m_defaultTheme.isUnpacked())
+	{
+		m_defaultTheme.unpack();
+	}
+	ui->statusbar->showMessage(QString("Making theme... "));
+	QList<ThemeWidget *> listThemeWidget = ui->scrollAreaWidgetContents_used->findChildren<ThemeWidget *>();
+	for(QList<ThemeWidget *>::iterator it = listThemeWidget.begin(); it != listThemeWidget.end(); ++it)
+	{
+		ThemeWidget *tw = *it;
+		if(tw != nullptr)
+		{
+			Theme *theme = tw->theme();
+			if(!theme->isUnpacked())
+			{
+				theme->unpack();
+			}
+		}
+	}
 }
 

@@ -18,7 +18,7 @@ class ThemeWidget : public QFrame
 	Q_OBJECT
 
 public:
-	explicit ThemeWidget(const Theme *theme, QWidget *parent = nullptr);
+	explicit ThemeWidget(Theme *theme, QWidget *parent = nullptr);
 	~ThemeWidget();
 
 	void mousePressEvent(QMouseEvent *event);
@@ -26,10 +26,12 @@ public:
 	bool setImage(const QDir &dir);
 
 	const QString &name() const;
+	const Theme *theme() const;
+	Theme *theme();
 
 private:
 	Ui::ThemeWidget *ui;
-	const Theme *m_theme;
+	Theme *m_theme;
 	QPixmap m_pixmap;
 	QPixmap m_dragPixmap;
 };

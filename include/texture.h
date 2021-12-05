@@ -29,6 +29,7 @@ public:
 	const QString &id() const;
 
 	static void initPathToIdMapFromJson(const QJsonArray &textureJsonArray);
+	bool isUnpacked() const;
 
 private:
 

@@ -1,7 +1,7 @@
 #include "themewidget.h"
 #include "ui_themewidget.h"
 
-ThemeWidget::ThemeWidget(const Theme *theme, QWidget *parent) :
+ThemeWidget::ThemeWidget(Theme *theme, QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::ThemeWidget),
 	m_theme(theme)
@@ -56,3 +56,12 @@ const QString &ThemeWidget::name() const
 	return m_theme->name();
 }
 
+const Theme *ThemeWidget::theme() const
+{
+	return m_theme;
+}
+
+Theme *ThemeWidget::theme()
+{
+	return m_theme;
+}
