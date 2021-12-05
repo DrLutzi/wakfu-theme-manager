@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLayout>
+#include <QDrag>
 #include "themewidget.h"
 
 class ScrollAreaContent : public QWidget
@@ -13,6 +14,7 @@ public:
 
 	void dropEvent(QDropEvent *event);
 	void resizeEvent(QResizeEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
 
 signals:
 

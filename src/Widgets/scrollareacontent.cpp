@@ -7,6 +7,12 @@ ScrollAreaContent::ScrollAreaContent(QWidget *parent) : QWidget(parent)
 
 void ScrollAreaContent::dropEvent(QDropEvent *event)
 {
+
+}
+
+void ScrollAreaContent::dragEnterEvent(QDragEnterEvent *event)
+{
+
 }
 
 void ScrollAreaContent::resizeEvent(QResizeEvent *event)
