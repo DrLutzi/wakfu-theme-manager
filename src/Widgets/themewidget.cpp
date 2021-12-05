@@ -14,6 +14,12 @@ ThemeWidget::ThemeWidget(const Theme *theme, QWidget *parent) :
 	}
 }
 
+
+ThemeWidget::~ThemeWidget()
+{
+	delete ui;
+}
+
 bool ThemeWidget::setImage(const QFile &file)
 {
 	bool b = m_pixmap.load(file.fileName());
@@ -40,11 +46,13 @@ void ThemeWidget::mousePressEvent(QMouseEvent *event)
 		mimeData->setText(m_theme->name());
 		drag->setMimeData(mimeData);
 		drag->setPixmap(m_dragPixmap);
-        Qt::DropAction dropAction = drag->exec();
+		Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
 	}
 }
 
-ThemeWidget::~ThemeWidget()
+const QString &ThemeWidget::name() const
 {
-	delete ui;
+	assert(m_theme != nullptr);
+	return m_theme->name();
 }
+

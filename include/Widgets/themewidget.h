@@ -6,6 +6,7 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QCursor>
+#include <QDropEvent>
 #include "theme.h"
 
 namespace Ui {
@@ -23,6 +24,8 @@ public:
 	void mousePressEvent(QMouseEvent *event);
 	bool setImage(const QFile &file);
 	bool setImage(const QDir &dir);
+
+	const QString &name() const;
 
 private:
 	Ui::ThemeWidget *ui;

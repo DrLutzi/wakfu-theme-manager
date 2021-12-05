@@ -95,8 +95,10 @@ void MainWindow::createScrollAreas()
     l->addWidget(ui->scrollArea_used);
 
     //custom scroll area content widget
-    ui->scrollAreaWidgetContents_stash = new ScrollAreaContent(ui->scrollArea_stash);
-    ui->scrollAreaWidgetContents_used = new ScrollAreaContent(ui->scrollArea_used);
+	ScrollAreaContent *stashContent = new ScrollAreaContent(ui->scrollArea_stash);
+	ui->scrollAreaWidgetContents_stash = stashContent;
+	ScrollAreaContent *usedContent = new ScrollAreaContent(ui->scrollArea_used);
+	ui->scrollAreaWidgetContents_used = usedContent;
 
     //Layout in scroll areas
     ui->scrollAreaWidgetContents_stash->setLayout(new QBoxLayout(QBoxLayout::TopToBottom, ui->scrollAreaWidgetContents_stash));
@@ -113,6 +115,10 @@ void MainWindow::createScrollAreas()
 
     ui->scrollAreaWidgetContents_stash->layout()->setContentsMargins(4, 4, 4, 4);
     ui->scrollAreaWidgetContents_used->layout()->setContentsMargins(4, 4, 4, 4);
+
+	stashContent->setTwin(usedContent);
+	usedContent->setTwin(stashContent);
+
     return;
 }
 

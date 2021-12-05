@@ -16,7 +16,15 @@ public:
 	void resizeEvent(QResizeEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
 
-signals:
+	void setTwin(ScrollAreaContent *twin);
+
+	ThemeWidget *find(const QString &name);
+	bool remove(ThemeWidget *tw);
+	void getNeighbors(const QPoint &pos, ThemeWidget *&twUnder, ThemeWidget *&twAbove) const;
+
+private:
+
+	ScrollAreaContent *m_twin;
 
 };
 
