@@ -37,6 +37,10 @@ public:
 	const QSize &xy() const;
 	bool flipHorizontally() const;
 	bool flipVertically() const;
+	int depth() const;
+	int specificIndex() const;
+
+	bool operator==(const Pixmap &other) const;
 
 private:
 	QString m_id;

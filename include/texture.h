@@ -10,7 +10,7 @@
 class Texture
 {
 public:
-	typedef std::map<QString, Pixmap, std::less<QString>> MapType;
+	typedef std::multimap<QString, Pixmap, std::less<QString>> MapType;
 
 	Texture(const QString &id = QString());
 
@@ -25,7 +25,7 @@ public:
 
 	void pack();
 	void pack(const Texture *other);
-	void unpack();
+	void unpack(const Texture *model = nullptr);
 
 	const QString &id() const;
 
@@ -35,8 +35,10 @@ public:
 
 private:
 
-	void unpackSpecific();
-	void createAndAppendPixmap(const QJsonObject &objectJson, const QString &id, int index, bool isSpecific, int depth, int specificIndex);
+	void unpackSpecific(const Texture *model);
+	void createAndAppendPixmap(const QJsonObject &objectJson, const QString &id,
+							   int index, bool isSpecific, int depth, int specificIndex,
+							   const Texture *model=nullptr);
 
 	void pack(const MapType &pixmaps);
 

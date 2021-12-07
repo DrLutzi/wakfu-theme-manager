@@ -47,7 +47,7 @@ void ThemeWidget::mousePressEvent(QMouseEvent *event)
 		drag->setMimeData(mimeData);
 		drag->setPixmap(m_dragPixmap);
 		setTransparentAspect(true);
-		Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
+		drag->exec(Qt::MoveAction);
 	}
 }
 

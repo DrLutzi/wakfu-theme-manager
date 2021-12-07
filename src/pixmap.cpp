@@ -165,3 +165,35 @@ bool Pixmap::flipVertically() const
 {
 	return m_flipVertically;
 }
+
+int Pixmap::depth() const
+{
+	return m_depth;
+}
+
+int Pixmap::specificIndex() const
+{
+	return m_specificIndex;
+}
+
+bool Pixmap::operator==(const Pixmap &other) const
+{
+	bool b;
+	b = m_index == other.index() && m_specificIndex == other.specificIndex() && m_depth == other.depth(); //quick check
+	if(b)
+	{
+		const QImage &image = other.image();
+		if(image.size() == m_image.size())
+		{
+			b = true;
+			for(int y=0; y<image.height() && b; ++y)
+			{
+				for(int x=0; x<image.width() && b; ++x)
+				{
+					b = image.pixel(x, y) == m_image.pixel(x, y);
+				}
+			}
+		}
+	}
+	return b;
+}

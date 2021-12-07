@@ -103,7 +103,7 @@ void Texture::pack(const MapType &pixmaps)
 	return;
 }
 
-void Texture::unpack()
+void Texture::unpack(const Texture *model)
 {
 	assert(!m_image.isNull());
 	m_pixmaps.clear();
@@ -120,10 +120,10 @@ void Texture::unpack()
 			const QJsonValue &pixmapJson(pixmapValues[index]);
 			const QJsonObject &objectJson = pixmapJson.toObject();
 			const QString &id = objectJson["id"].toString();
-			createAndAppendPixmap(objectJson, id, index, isSpecific, -1, -1);
+			createAndAppendPixmap(objectJson, id, index, isSpecific, -1, -1, model);
 		}
 	}
-	unpackSpecific();
+	unpackSpecific(model);
 }
 
 void Texture::initPathToIdMapFromJson(const QJsonArray &textureJsonArray)
@@ -138,7 +138,7 @@ void Texture::initPathToIdMapFromJson(const QJsonArray &textureJsonArray)
 	}
 }
 
-void Texture::unpackSpecific()
+void Texture::unpackSpecific(const Texture *model)
 {
 	assert(!m_image.isNull());
 
@@ -157,7 +157,7 @@ void Texture::unpackSpecific()
 			const QString &textureId = specificPixmapObject["texture"].toString();
 			if(textureId == ms_pathToIdMap[m_pathId])
 			{
-				createAndAppendPixmap(specificPixmapObject, id, index, isSpecific, depth, specificIndex);
+				createAndAppendPixmap(specificPixmapObject, id, index, isSpecific, depth, specificIndex, model);
 			}
 		}
 		const QJsonValue &subThemeElements = jsonObject["childrenThemeElements"];
@@ -180,25 +180,45 @@ void Texture::unpackSpecific()
 	}
 }
 
-void Texture::createAndAppendPixmap(const QJsonObject &objectJson, const QString &id, int index, bool isSpecific, int depth, int specificIndex)
+void Texture::createAndAppendPixmap(const QJsonObject &objectJson, const QString &id,
+									int index, bool isSpecific, int depth, int specificIndex,
+									const Texture *model)
 {
 	Pixmap pixmap(index, isSpecific, depth, specificIndex);
 	QSize size;
 	size.setWidth(objectJson["width"].toInt());
 	size.setHeight(objectJson["height"].toInt());
-	Pixmap::Position position = Pixmap::positionToEnum(objectJson["position"].toString());
-	Pixmap::Rotation rotation = Pixmap::rotationToEnum(objectJson["rotation"].toString());
 	QSize xy;
 	xy.setWidth(objectJson["x"].toInt());
 	xy.setHeight(objectJson["y"].toInt());
-	bool flipHorizontally;
-	flipHorizontally = objectJson["flipHorizontally"].toBool();
-	bool flipVertically;
-	flipVertically = objectJson["flipVertically"].toBool();
 	QImage pixmapImage = m_image.copy(xy.width(), xy.height(), size.width(), size.height());
 	pixmap.setImage(pixmapImage);
-	pixmap.set(id, size, position, rotation, xy, flipHorizontally, flipVertically);
-	m_pixmaps.emplace(std::make_pair(id, pixmap));
+	bool foundExactCopy = false;
+	if(model != nullptr && model->isUnpacked()) //if a model is set, do not create a pixmap if the same pixmap exists
+	{
+		//search for a pixmap having the same look
+
+		std::pair<MapType::const_iterator, MapType::const_iterator> range = (model->pixmaps().equal_range(id));
+		for(MapType::const_iterator cit = range.first; cit != range.second && !foundExactCopy; ++cit)
+		{
+			const std::pair<QString, Pixmap> &pair = (*cit);
+			if(pair.second == pixmap)
+			{
+				foundExactCopy = true;
+			}
+		}
+	}
+	if(!foundExactCopy) //no need to store the pixmap if one was found.
+	{
+		Pixmap::Position position = Pixmap::positionToEnum(objectJson["position"].toString());
+		Pixmap::Rotation rotation = Pixmap::rotationToEnum(objectJson["rotation"].toString());
+		bool flipHorizontally;
+		flipHorizontally = objectJson["flipHorizontally"].toBool();
+		bool flipVertically;
+		flipVertically = objectJson["flipVertically"].toBool();
+		pixmap.set(id, size, position, rotation, xy, flipHorizontally, flipVertically);
+		m_pixmaps.emplace(std::make_pair(id, pixmap));
+	}
 	return;
 }
 
