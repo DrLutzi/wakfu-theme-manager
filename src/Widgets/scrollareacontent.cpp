@@ -18,6 +18,7 @@ void ScrollAreaContent::dropEvent(QDropEvent *event)
 		QString text = mimeData->text(); //text should be a name
 		ThemeWidget* tw;
 		bool isInSelf = false;
+		int layoutIndex = 0, previousLayoutIndex = std::numeric_limits<int>::max();
 		if((tw = m_twin->find(text)))
 		{
 			m_twin->remove(tw);
@@ -28,10 +29,14 @@ void ScrollAreaContent::dropEvent(QDropEvent *event)
 		}
 		if(tw != nullptr)
 		{
+			tw->setTransparentAspect(false);
 			ThemeWidget *twUnder = nullptr, *twAbove = nullptr;
 			getNeighbors(pos, twUnder, twAbove);
 			if(isInSelf)
+			{
+				previousLayoutIndex = layout()->indexOf(tw);
 				remove(tw);
+			}
 			tw->setParent(this);
 			if(twAbove == nullptr)
 			{
@@ -43,7 +48,9 @@ void ScrollAreaContent::dropEvent(QDropEvent *event)
 			}
 			else
 			{
-				int layoutIndex = layout()->indexOf(twUnder);
+				layoutIndex += layout()->indexOf(twUnder)+1;
+				if(layoutIndex > previousLayoutIndex)
+					--layoutIndex;
 				assert(layoutIndex != -1);
 				l->insertWidget(layoutIndex, tw);
 			}

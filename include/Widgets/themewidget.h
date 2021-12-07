@@ -7,6 +7,7 @@
 #include <QMimeData>
 #include <QCursor>
 #include <QDropEvent>
+#include <QCommonStyle>
 #include "theme.h"
 
 namespace Ui {
@@ -28,6 +29,8 @@ public:
 	const QString &name() const;
 	const Theme *theme() const;
 	Theme *theme();
+
+	void setTransparentAspect(bool b);
 
 private:
 	Ui::ThemeWidget *ui;

@@ -18,7 +18,3 @@ void ScrollArea::resizeEvent(QResizeEvent *event)
 		scrollAreaContent->resize(event->size().width()-4, scrollAreaContent->size().height());
 	}
 }
-
-void ScrollArea::dropEvent(QDropEvent *event)
-{
-}

@@ -24,17 +24,21 @@ public:
 	bool loadSpecificPixmaps(const QDir &dir);
 
 	void pack();
+	void pack(const Texture *other);
 	void unpack();
 
 	const QString &id() const;
 
 	static void initPathToIdMapFromJson(const QJsonArray &textureJsonArray);
 	bool isUnpacked() const;
+	const MapType &pixmaps() const;
 
 private:
 
 	void unpackSpecific();
 	void createAndAppendPixmap(const QJsonObject &objectJson, const QString &id, int index, bool isSpecific, int depth, int specificIndex);
+
+	void pack(const MapType &pixmaps);
 
 	static std::map<QString, QString, std::less<QString>> ms_pathToIdMap;
 

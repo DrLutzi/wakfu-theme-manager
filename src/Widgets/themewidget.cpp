@@ -46,6 +46,7 @@ void ThemeWidget::mousePressEvent(QMouseEvent *event)
 		mimeData->setText(m_theme->name());
 		drag->setMimeData(mimeData);
 		drag->setPixmap(m_dragPixmap);
+		setTransparentAspect(true);
 		Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
 	}
 }
@@ -64,4 +65,11 @@ const Theme *ThemeWidget::theme() const
 Theme *ThemeWidget::theme()
 {
 	return m_theme;
+}
+
+void ThemeWidget::setTransparentAspect(bool b)
+{
+	static QString defaultStyleSheet("border: 2px solid black;\nborder-radius: 8px;\nbackground-color: white;");
+	static QString transparentStyleSheet("border: 2px solid rgba(0, 0, 0, 30%);\nborder-radius: 8px;\nbackground-color: rgba(255, 255, 255, 30%);");
+	setStyleSheet(b ? transparentStyleSheet : defaultStyleSheet);
 }

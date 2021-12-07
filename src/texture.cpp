@@ -72,7 +72,20 @@ bool Texture::loadPixmaps(const QDir &dir)
 void Texture::pack()
 {
 	assert(!m_image.isNull());
-	for(MapType::const_iterator cit = m_pixmaps.begin(); cit != m_pixmaps.end(); ++cit)
+	return pack(m_pixmaps);
+}
+
+void Texture::pack(const Texture *other)
+{
+	assert(other != nullptr);
+	assert(other->id() == m_pathId);
+	const MapType &otherPixmaps = other->pixmaps();
+	return pack(otherPixmaps);
+}
+
+void Texture::pack(const MapType &pixmaps)
+{
+	for(MapType::const_iterator cit = pixmaps.begin(); cit != pixmaps.end(); ++cit)
 	{
 		const Pixmap &pixmap = (*cit).second;
 		unsigned int xEnd = std::min(std::min(pixmap.image().width(), m_image.width()-pixmap.xy().width()), pixmap.size().width());
@@ -87,6 +100,7 @@ void Texture::pack()
 			}
 		}
 	}
+	return;
 }
 
 void Texture::unpack()
@@ -196,4 +210,9 @@ const QString &Texture::id() const
 bool Texture::isUnpacked() const
 {
 	return m_pixmaps.size()>0;
+}
+
+const Texture::MapType &Texture::pixmaps() const
+{
+	return m_pixmaps;
 }
