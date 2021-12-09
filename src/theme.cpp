@@ -11,9 +11,11 @@ Theme::Theme() :
 
 void Theme::save(const QDir &dir) const
 {
+	QDir imagesDir(dir.absolutePath() + "/images");
+	imagesDir.mkpath(imagesDir.absolutePath());
 	for(const std::pair<const QString, Texture> &pair : m_textures)
 	{
-		pair.second.save(dir.absolutePath() + "/" + pair.second.id() + ".png");
+		pair.second.save(imagesDir.absolutePath() + "/" + pair.second.pathId() + ".png");
 	}
 }
 
@@ -22,12 +24,13 @@ void Theme::load(const QDir &dir)
 	m_textures.clear();
 	m_name = dir.dirName();
 	m_path = dir;
-	QStringList ls = dir.entryList(QStringList() << "*.png", QDir::Files);
+	QDir imageDir = dir.absolutePath() + "/images";
+	QStringList ls = imageDir.entryList(QStringList() << "*.png", QDir::Files);
 	const QJsonValue &textureValue = _jsonThemes["textures"];
 	const QJsonArray &textureArray = textureValue.toArray();
 	for(QStringList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
 	{
-		QFile file(dir.absolutePath() + "/" + (*cit));
+		QFile file(imageDir.absolutePath() + "/" + (*cit));
 		QFileInfo fileInfo(file);
 		QString baseName = fileInfo.baseName();
 		Texture texture(baseName);
@@ -37,7 +40,7 @@ void Theme::load(const QDir &dir)
 		for(QJsonArray::ConstIterator cit2 = textureArray.constBegin(); cit2 != textureArray.constEnd() && !foundInJson; ++cit2)
 		{
             const QJsonValue &value = (*cit2);
-            if( value["path"].toString() == QString("theme/images/") + baseName + ".tga" )
+			if( value["path"].toString() == QString("theme/images/") + baseName + ".tga" )
 				foundInJson = true;
 			else
 				++index;
@@ -47,20 +50,42 @@ void Theme::load(const QDir &dir)
 	}
 }
 
-void Theme::pack()
+void Theme::pack(const Theme *model)
 {
 	for(std::pair<const QString, Texture> &pair : m_textures)
 	{
-		pair.second.pack();
+		if(model != nullptr)
+		{
+			MapType::const_iterator cit = model->textures().find(pair.first);
+			if(cit != model->textures().end())
+			{
+				MapType::const_reference texturePair = (*cit);
+				const Texture &modelTexture = texturePair.second;
+				pair.second.pack(&modelTexture);
+			}
+		}
+		else
+			pair.second.pack(nullptr);
 	}
 	return;
 }
 
-void Theme::unpack()
+void Theme::unpack(const Theme *model)
 {
-	for(std::pair<const QString, Texture> &pair : m_textures)
+	for(MapType::reference pair : m_textures)
 	{
-		pair.second.unpack();
+		if(model != nullptr)
+		{
+			MapType::const_iterator cit = model->textures().find(pair.first);
+			if(cit != model->textures().end())
+			{
+				MapType::const_reference texturePair = (*cit);
+				const Texture &modelTexture = texturePair.second;
+				pair.second.unpack(&modelTexture);
+			}
+		}
+		else
+			pair.second.unpack(nullptr);
 	}
 	return;
 }
@@ -112,4 +137,14 @@ bool Theme::isOpened() const
 bool Theme::isUnpacked() const
 {
 	return isOpened() && m_textures.size()>0 && (*m_textures.begin()).second.isUnpacked();
+}
+
+void Theme::copyTextures(const Theme &other)
+{
+	m_textures = other.textures();
+}
+
+const Theme::MapType &Theme::textures() const
+{
+	return m_textures;
 }

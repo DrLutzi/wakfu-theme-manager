@@ -150,8 +150,6 @@ void MainWindow::createAllThemeWidgets()
 	return;
 }
 
-//STATIC
-
 void MainWindow::clearLayout(QLayout *layout)
 {
 	if (layout == nullptr)
@@ -173,10 +171,20 @@ void MainWindow::clearLayout(QLayout *layout)
     return;
 }
 
+void MainWindow::initJson()
+{
+	QFile jsonThemeFile(m_themesPath.absolutePath() + "/theme.json");
+	jsonThemeFile.open(QIODevice::ReadOnly);
+	_jsonThemes = QJsonDocument::fromJson(jsonThemeFile.readAll());
+	const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
+	Texture::initPathToIdMapFromJson(textureArray);
+}
+
 //SLOTS
 
 void MainWindow::loadJsonFromInternet(QUrl url)
 {
+	(void) url;
 	QJsonParseError *jsonPE = new QJsonParseError;
 	_jsonThemes = QJsonDocument::fromJson(m_fd->downloadedData(), jsonPE);
     //create useful folders
@@ -253,11 +261,7 @@ void MainWindow::on_actionDownload_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-	QFile jsonThemeFile(m_themesPath.absolutePath() + "/theme.json");
-	jsonThemeFile.open(QIODevice::ReadOnly);
-	_jsonThemes = QJsonDocument::fromJson(jsonThemeFile.readAll());
-	const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
-	Texture::initPathToIdMapFromJson(textureArray);
+	initJson();
 	QDir defaultTheme(m_defaultThemePath.absolutePath() + "/images");
 	if(defaultTheme.exists())
 	{
@@ -291,23 +295,48 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_actionMake_theme_triggered()
 {
-	if(!m_defaultTheme.isUnpacked())
+	initJson();
+	if(_jsonThemes.isEmpty())
 	{
-		m_defaultTheme.unpack();
+		ui->statusbar->showMessage(QString("Error: theme json file could not be opened (did you download it first?)."));
 	}
-	ui->statusbar->showMessage(QString("Making theme... "));
-	QList<ThemeWidget *> listThemeWidget = ui->scrollAreaWidgetContents_used->findChildren<ThemeWidget *>();
-	for(QList<ThemeWidget *>::iterator it = listThemeWidget.begin(); it != listThemeWidget.end(); ++it)
+	else
 	{
-		ThemeWidget *tw = *it;
-		if(tw != nullptr)
+		if(!m_defaultTheme.isOpened())
 		{
-			Theme *theme = tw->theme();
-			if(!theme->isUnpacked())
+			m_defaultTheme.load(m_defaultThemePath);
+		}
+		if(!m_defaultTheme.isUnpacked())
+		{
+			m_defaultTheme.unpack();
+		}
+		m_outputTheme.copyTextures(m_defaultTheme);
+		ui->statusbar->showMessage(QString("Making theme... "));
+		//v most likely not in the right order, look for widgets in layout
+		int layoutCount = ui->scrollAreaWidgetContents_used->layout()->count();
+		for(int i=layoutCount-1; i>=0; --i)
+		{
+			QWidget *widget = ui->scrollAreaWidgetContents_used->layout()->itemAt(i)->widget();
+			ThemeWidget *tw = dynamic_cast<ThemeWidget *>(widget);
+			if(tw != nullptr)
 			{
-				theme->unpack();
+				Theme *theme = tw->theme();
+				assert(theme != nullptr);
+				ui->statusbar->showMessage(QString("Loading ") + tw->name() + "...");
+				if(!theme->isOpened())
+				{
+					theme->load(theme->path());
+				}
+				ui->statusbar->showMessage(QString("Extracting ") + tw->name() + "...");
+				if(!theme->isUnpacked())
+				{
+					theme->unpack(&m_defaultTheme);
+				}
+				ui->statusbar->showMessage(QString("Applying pixmaps of ") + tw->name() + "...");
+				m_outputTheme.pack(theme);
 			}
 		}
+		m_outputTheme.save(QDir("/home/nlutz/newTheme"));
 	}
 }
 

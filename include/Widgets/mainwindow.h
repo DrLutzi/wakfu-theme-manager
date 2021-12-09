@@ -46,12 +46,14 @@ private:
 	QFile			m_configFile;
 
 	Theme			m_defaultTheme;
+	Theme			m_outputTheme;
 	std::vector<Theme> m_extraThemes;
 
 	ThemeWidget *m_defaultThemeWidget;
 	std::vector<ThemeWidget *> m_extraThemeWidgets;
 
 	static void clearLayout(QLayout *layout);
+	void initJson();
 
 private slots:
 	void loadJsonFromInternet(QUrl url);

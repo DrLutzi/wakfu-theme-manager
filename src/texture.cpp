@@ -7,6 +7,12 @@ Texture::Texture(const QString &id) :
 	m_pathId(id)
 {}
 
+Texture::Texture(const Texture &other) :
+	m_pathId(other.pathId()),
+	m_image(other.image()),
+	m_pixmaps() //pixmaps are personnal. I could change my mind later.
+{}
+
 bool Texture::save(const QFile &file) const
 {
 	return m_image.save(file.fileName());
@@ -69,18 +75,20 @@ bool Texture::loadPixmaps(const QDir &dir)
 	return true;
 }
 
-void Texture::pack()
-{
-	assert(!m_image.isNull());
-	return pack(m_pixmaps);
-}
-
 void Texture::pack(const Texture *other)
 {
 	assert(other != nullptr);
-	assert(other->id() == m_pathId);
-	const MapType &otherPixmaps = other->pixmaps();
-	return pack(otherPixmaps);
+	assert(other->pathId() == m_pathId);
+	if(other == nullptr)
+	{
+		pack(m_pixmaps);
+	}
+	else
+	{
+		const MapType &otherPixmaps = other->pixmaps();
+		pack(otherPixmaps);
+	}
+	return;
 }
 
 void Texture::pack(const MapType &pixmaps)
@@ -88,14 +96,14 @@ void Texture::pack(const MapType &pixmaps)
 	for(MapType::const_iterator cit = pixmaps.begin(); cit != pixmaps.end(); ++cit)
 	{
 		const Pixmap &pixmap = (*cit).second;
-		unsigned int xEnd = std::min(std::min(pixmap.image().width(), m_image.width()-pixmap.xy().width()), pixmap.size().width());
-		unsigned int yEnd = std::min(std::min(pixmap.image().height(), m_image.height()-pixmap.xy().height()), pixmap.size().height());
-		for(unsigned int y=0; y<yEnd; ++y)
+		int xEnd = std::min(std::min(pixmap.image().width(), m_image.width()-pixmap.xy().width()), pixmap.size().width());
+		int yEnd = std::min(std::min(pixmap.image().height(), m_image.height()-pixmap.xy().height()), pixmap.size().height());
+		for(int y=0; y<yEnd; ++y)
 		{
-			unsigned int dy = y+pixmap.xy().height();
-			for(unsigned int x=0; x<xEnd; ++x)
+			int dy = y+pixmap.xy().height();
+			for(int x=0; x<xEnd; ++x)
 			{
-				unsigned int dx = x+pixmap.xy().width();
+				int dx = x+pixmap.xy().width();
 				m_image.setPixelColor(dx, dy, pixmap.image().pixelColor(x, y));
 			}
 		}
@@ -146,7 +154,7 @@ void Texture::unpackSpecific(const Texture *model)
 	const QJsonArray &jsonArray = themeElementValues.toArray();
 	unsigned int index=0;
 	bool isSpecific = true;
-	std::function<void (const QJsonObject &, const QString &, int)> lmbd_rec_unpackAllSpecificPixmaps = [&](const QJsonObject &jsonObject, const QString &id, int depth)
+	std::function<void (const QJsonObject &, const QString &, int)> lmbd_rec_unpackAllSpecificPixmaps = [&](const QJsonObject &jsonObject, const QString &pathId, int depth)
 	{
 		const QJsonValue &specificPixmapsValue = jsonObject["specificPixmaps"];
 		const QJsonArray &specificPixmapsArray = specificPixmapsValue.toArray();
@@ -157,7 +165,7 @@ void Texture::unpackSpecific(const Texture *model)
 			const QString &textureId = specificPixmapObject["texture"].toString();
 			if(textureId == ms_pathToIdMap[m_pathId])
 			{
-				createAndAppendPixmap(specificPixmapObject, id, index, isSpecific, depth, specificIndex, model);
+				createAndAppendPixmap(specificPixmapObject, pathId, index, isSpecific, depth, specificIndex, model);
 			}
 		}
 		const QJsonValue &subThemeElements = jsonObject["childrenThemeElements"];
@@ -166,7 +174,7 @@ void Texture::unpackSpecific(const Texture *model)
 			const QJsonArray &subThemeElementsArray = subThemeElements.toArray();
 			for(QJsonArray::ConstIterator cit = subThemeElementsArray.constBegin(); cit != subThemeElementsArray.constEnd(); ++cit)
 			{
-				lmbd_rec_unpackAllSpecificPixmaps((*cit).toObject(), id, depth+1);
+				lmbd_rec_unpackAllSpecificPixmaps((*cit).toObject(), pathId, depth+1);
 			}
 		}
 	};
@@ -194,6 +202,18 @@ void Texture::createAndAppendPixmap(const QJsonObject &objectJson, const QString
 	QImage pixmapImage = m_image.copy(xy.width(), xy.height(), size.width(), size.height());
 	pixmap.setImage(pixmapImage);
 	bool foundExactCopy = false;
+
+	//DEBUG ONLY
+	Pixmap::Position position = Pixmap::positionToEnum(objectJson["position"].toString());
+	Pixmap::Rotation rotation = Pixmap::rotationToEnum(objectJson["rotation"].toString());
+	bool flipHorizontally;
+	flipHorizontally = objectJson["flipHorizontally"].toBool();
+	bool flipVertically;
+	flipVertically = objectJson["flipVertically"].toBool();
+	pixmap.set(id, size, position, rotation, xy, flipHorizontally, flipVertically);
+	//
+
+
 	if(model != nullptr && model->isUnpacked()) //if a model is set, do not create a pixmap if the same pixmap exists
 	{
 		//search for a pixmap having the same look
@@ -222,9 +242,14 @@ void Texture::createAndAppendPixmap(const QJsonObject &objectJson, const QString
 	return;
 }
 
-const QString &Texture::id() const
+const QString &Texture::pathId() const
 {
 	return m_pathId;
+}
+
+const QImage &Texture::image() const
+{
+	return m_image;
 }
 
 bool Texture::isUnpacked() const
@@ -235,4 +260,10 @@ bool Texture::isUnpacked() const
 const Texture::MapType &Texture::pixmaps() const
 {
 	return m_pixmaps;
+}
+
+Texture &Texture::operator=(const Texture &other)
+{
+	m_pathId = other.pathId();
+	m_image = other.image();
 }

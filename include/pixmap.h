@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <map>
+#include <cmath>
 
 extern QJsonDocument _jsonFile;
 

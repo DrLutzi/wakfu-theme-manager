@@ -13,6 +13,7 @@ public:
 	typedef std::multimap<QString, Pixmap, std::less<QString>> MapType;
 
 	Texture(const QString &id = QString());
+	Texture(const Texture &other);
 
 	bool save(const QFile &file) const;
 	bool load(const QFile &file);
@@ -23,15 +24,17 @@ public:
 	bool saveSpecificPixmaps(const QDir &dir) const;
 	bool loadSpecificPixmaps(const QDir &dir);
 
-	void pack();
-	void pack(const Texture *other);
+	void pack(const Texture *other = nullptr);
 	void unpack(const Texture *model = nullptr);
 
-	const QString &id() const;
+	const QString &pathId() const;
+	const QImage &image() const;
 
 	static void initPathToIdMapFromJson(const QJsonArray &textureJsonArray);
 	bool isUnpacked() const;
 	const MapType &pixmaps() const;
+
+	Texture &operator=(const Texture &other);
 
 private:
 
