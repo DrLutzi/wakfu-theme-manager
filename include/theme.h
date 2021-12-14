@@ -4,12 +4,16 @@
 #include "texture.h"
 #include <QDir>
 #include <map>
+#include <set>
+#include "color.h"
+#include <QtXml>
 
 class Theme
 {
 public:
 
-	typedef std::map<QString, Texture, std::less<QString>> MapType;
+	typedef std::map<QString, Texture, std::less<QString>> TextureMapType;
+	typedef std::set<Color, CompareColor> ColorMapType;
 	Theme();
 
 	void save(const QDir &dir) const;
@@ -21,6 +25,10 @@ public:
 	void savePixmaps(const QDir &dir);
 	void loadPixmaps(const QDir &dir);
 
+	bool loadColors(const QDir &dir);
+	bool saveColors(const QDir &dir) const;
+	void fuseColors(const Theme *model);
+
 	const QDir &path() const;
 	const QString &name() const;
 
@@ -31,12 +39,14 @@ public:
 
 	void copyTextures(const Theme &other);
 
-	const MapType &textures() const;
+	const TextureMapType &textures() const;
+	const ColorMapType &colors() const;
 
 private:
 	QString	m_name;
 	QDir m_path;
-	MapType m_textures;
+	TextureMapType m_textures;
+	ColorMapType m_colors;
 };
 
 #endif // THEME_H

@@ -10,7 +10,7 @@ ThemeWidget::ThemeWidget(Theme *theme, QWidget *parent) :
 	if(m_theme)
 	{
 		ui->label->setText(theme->name());
-		setImage(QDir(m_theme->path().absolutePath()));
+		if(!setImage(QDir(m_theme->path().absolutePath())));
 	}
 }
 
@@ -24,8 +24,11 @@ bool ThemeWidget::setImage(const QFile &file)
 {
 	bool b = m_pixmap.load(file.fileName());
 	ui->label_pix->setScaledContents(true);
-	ui->label_pix->setPixmap(m_pixmap);
-	m_dragPixmap = m_pixmap.scaled(64, 64, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
+	if(b)
+	{
+		ui->label_pix->setPixmap(m_pixmap);
+		m_dragPixmap = m_pixmap.scaled(64, 64, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
+	}
 	return b;
 }
 
@@ -48,6 +51,7 @@ void ThemeWidget::mousePressEvent(QMouseEvent *event)
 		drag->setPixmap(m_dragPixmap);
 		setTransparentAspect(true);
 		drag->exec(Qt::MoveAction);
+		setTransparentAspect(false);
 	}
 }
 

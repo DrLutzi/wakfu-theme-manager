@@ -7,6 +7,7 @@
 #include <QJsonArray>
 #include <QDir>
 #include <QScrollBar>
+#include <QFileDialog>
 #include <mutex>
 #include "filedownloader.h"
 #include "themewidget.h"
@@ -30,10 +31,14 @@ public:
 	void downloadAllColours();
 	void downloadAll();
 
+	bool setActionIcons();
 	bool loadConfigurationFile();
+	void checkOutputExistence();
 	void loadAllThemes();
     void createScrollAreas();
 	void createAllThemeWidgets();
+
+	bool saveConfigurationFile();
 
 private:
 	Ui::MainWindow *ui;
@@ -42,6 +47,7 @@ private:
 	QUrl			m_jsonUrl;
 	QString			m_pixmapRelativePath;
 	QDir			m_themesPath;
+	QDir			m_outputPath;
 	QDir			m_defaultThemePath;
 	QFile			m_configFile;
 
@@ -53,7 +59,7 @@ private:
 	std::vector<ThemeWidget *> m_extraThemeWidgets;
 
 	static void clearLayout(QLayout *layout);
-	void initJson();
+	void initJson(bool forceReset = false);
 
 private slots:
 	void loadJsonFromInternet(QUrl url);
@@ -62,5 +68,6 @@ private slots:
 	void on_actionExport_triggered();
 	void on_actionSave_triggered();
 	void on_actionMake_theme_triggered();
+	void on_actionReset_triggered();
 };
 #endif // MAINWINDOW_H

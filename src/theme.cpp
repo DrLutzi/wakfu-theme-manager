@@ -4,7 +4,9 @@ extern QJsonDocument _jsonThemes;
 
 Theme::Theme() :
 	m_name(),
-	m_path()
+	m_path(),
+	m_textures(),
+	m_colors()
 {
 
 }
@@ -17,10 +19,16 @@ void Theme::save(const QDir &dir) const
 	{
 		pair.second.save(imagesDir.absolutePath() + "/" + pair.second.pathId() + ".png");
 	}
+
+	QDir colorsDir(dir.absolutePath() + "/colors");
+	saveColors(dir);
 }
 
 void Theme::load(const QDir &dir)
 {
+	m_colors.clear();
+	loadColors(dir);
+
 	m_textures.clear();
 	m_name = dir.dirName();
 	m_path = dir;
@@ -52,14 +60,15 @@ void Theme::load(const QDir &dir)
 
 void Theme::pack(const Theme *model)
 {
+	fuseColors(model);
 	for(std::pair<const QString, Texture> &pair : m_textures)
 	{
 		if(model != nullptr)
 		{
-			MapType::const_iterator cit = model->textures().find(pair.first);
+			TextureMapType::const_iterator cit = model->textures().find(pair.first);
 			if(cit != model->textures().end())
 			{
-				MapType::const_reference texturePair = (*cit);
+				TextureMapType::const_reference texturePair = (*cit);
 				const Texture &modelTexture = texturePair.second;
 				pair.second.pack(&modelTexture);
 			}
@@ -72,14 +81,14 @@ void Theme::pack(const Theme *model)
 
 void Theme::unpack(const Theme *model)
 {
-	for(MapType::reference pair : m_textures)
+	for(TextureMapType::reference pair : m_textures)
 	{
 		if(model != nullptr)
 		{
-			MapType::const_iterator cit = model->textures().find(pair.first);
+			TextureMapType::const_iterator cit = model->textures().find(pair.first);
 			if(cit != model->textures().end())
 			{
-				MapType::const_reference texturePair = (*cit);
+				TextureMapType::const_reference texturePair = (*cit);
 				const Texture &modelTexture = texturePair.second;
 				pair.second.unpack(&modelTexture);
 			}
@@ -94,7 +103,7 @@ void Theme::savePixmaps(const QDir &dir)
 {
 	for(std::pair<const QString, Texture> &pair : m_textures)
 	{
-		QDir path = dir.absolutePath() + "/" + pair.first;
+		QDir path(dir.absolutePath() + "/" + pair.first);
 		dir.mkpath(path.absolutePath());
 		pair.second.savePixmaps(path);
 	}
@@ -112,6 +121,94 @@ void Theme::loadPixmaps(const QDir &dir)
 		Texture texture(id);
 		texture.loadPixmaps(pathString);
 	}
+}
+
+bool Theme::loadColors(const QDir &dir)
+{
+	QDir colorsPath(dir.absolutePath() + "/colors");
+	QDomDocument xmlColorsDocument;
+	QFile colorsFile(colorsPath.absolutePath() + "/colors.xml");
+	bool b = colorsFile.open(QIODevice::ReadOnly);
+	if(b)
+	{
+		xmlColorsDocument.setContent(&colorsFile);
+		QDomElement root = xmlColorsDocument.documentElement();
+		QString type = root.tagName();
+		if(type != QString("colors"))
+		{
+			b = false;
+		}
+		if(b)
+		{
+			QDomNodeList list(root.childNodes());
+			for(int i=0; i<list.size(); ++i)
+			{
+				QDomNode node = list.item(i);
+				if(!node.isNull() && node.isElement())
+				{
+					 QDomElement element = node.toElement();
+					 if(element.tagName() == "color")
+					 {
+						 QDomNamedNodeMap attributes = element.attributes();
+						 QDomNode nodeId = attributes.namedItem("id");
+						 QString stringId = nodeId.nodeValue();
+						 QDomNode nodeColor = attributes.namedItem("color");
+						 QString stringColor = nodeColor.nodeValue();
+						 Color c(stringId, stringColor);
+						 m_colors.emplace(c);
+					 }
+				}
+			}
+		}
+		colorsFile.close();
+	}
+	return b;
+}
+
+bool Theme::saveColors(const QDir &dir) const
+{
+	QDir colorsPath(dir.absolutePath() + "/colors");
+	colorsPath.mkpath(colorsPath.absolutePath());
+	QDomDocument xmlColorsDocument;
+	QFile colorsFile(colorsPath.absolutePath() + "/colors.xml");
+	bool b = colorsFile.open(QIODevice::WriteOnly);
+	if(b)
+	{
+		QDomElement colorsElement(xmlColorsDocument.createElement(QString("colors")));
+		xmlColorsDocument.appendChild(colorsElement);
+		for(ColorMapType::const_iterator cit = m_colors.begin(); cit != m_colors.end(); ++cit)
+		{
+			const Color &color = (*cit);
+			QDomElement colorElement(xmlColorsDocument.createElement(QString("color")));
+			colorElement.setAttribute("id", color.id());
+			colorElement.setAttribute("color", color.color().name(QColor::NameFormat::HexRgb));
+			colorsElement.appendChild(colorElement);
+		}
+		QTextStream stream(&colorsFile);
+		stream << xmlColorsDocument.toString();
+
+		colorsFile.close();
+	}
+	return b;
+}
+
+void Theme::fuseColors(const Theme *model)
+{
+	if(model != nullptr)
+	{
+		const ColorMapType &colors = model->colors();
+		for(ColorMapType::const_iterator cit = colors.begin(); cit != colors.end(); ++cit)
+		{
+			const Color &color = (*cit);
+			ColorMapType::iterator oldColorIt = m_colors.find(color);
+			if(oldColorIt != m_colors.end())
+			{
+				m_colors.erase(oldColorIt);
+			}
+			m_colors.insert(color);
+		}
+	}
+	return;
 }
 
 const QDir &Theme::path() const
@@ -144,7 +241,12 @@ void Theme::copyTextures(const Theme &other)
 	m_textures = other.textures();
 }
 
-const Theme::MapType &Theme::textures() const
+const Theme::TextureMapType &Theme::textures() const
 {
 	return m_textures;
+}
+
+const Theme::ColorMapType &Theme::colors() const
+{
+	return m_colors;
 }

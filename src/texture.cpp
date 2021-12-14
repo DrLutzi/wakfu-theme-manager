@@ -203,15 +203,15 @@ void Texture::createAndAppendPixmap(const QJsonObject &objectJson, const QString
 	pixmap.setImage(pixmapImage);
 	bool foundExactCopy = false;
 
-	//DEBUG ONLY
-	Pixmap::Position position = Pixmap::positionToEnum(objectJson["position"].toString());
-	Pixmap::Rotation rotation = Pixmap::rotationToEnum(objectJson["rotation"].toString());
-	bool flipHorizontally;
-	flipHorizontally = objectJson["flipHorizontally"].toBool();
-	bool flipVertically;
-	flipVertically = objectJson["flipVertically"].toBool();
-	pixmap.set(id, size, position, rotation, xy, flipHorizontally, flipVertically);
-	//
+//	//DEBUG ONLY
+//	Pixmap::Position position = Pixmap::positionToEnum(objectJson["position"].toString());
+//	Pixmap::Rotation rotation = Pixmap::rotationToEnum(objectJson["rotation"].toString());
+//	bool flipHorizontally;
+//	flipHorizontally = objectJson["flipHorizontally"].toBool();
+//	bool flipVertically;
+//	flipVertically = objectJson["flipVertically"].toBool();
+//	pixmap.set(id, size, position, rotation, xy, flipHorizontally, flipVertically);
+//	//
 
 
 	if(model != nullptr && model->isUnpacked()) //if a model is set, do not create a pixmap if the same pixmap exists

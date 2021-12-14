@@ -16,35 +16,51 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QScrollArea" name="scrollArea_stash">
-      <property name="minimumSize">
-       <size>
-        <width>128</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents_stash">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>404</width>
-         <height>504</height>
-        </rect>
-       </property>
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-      </widget>
+     <widget class="QWidget" name="widget_scrollArea_stash" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Unused themes</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="scrollArea_stash">
+         <property name="minimumSize">
+          <size>
+           <width>128</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="acceptDrops">
+          <bool>true</bool>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_stash">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>386</width>
+            <height>463</height>
+           </rect>
+          </property>
+          <property name="acceptDrops">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
@@ -55,32 +71,48 @@
      </widget>
     </item>
     <item>
-     <widget class="QScrollArea" name="scrollArea_used">
-      <property name="minimumSize">
-       <size>
-        <width>128</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents_used">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>403</width>
-         <height>504</height>
-        </rect>
-       </property>
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-      </widget>
+     <widget class="QWidget" name="widget_scrollArea_used" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Used themes</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="scrollArea_used">
+         <property name="minimumSize">
+          <size>
+           <width>128</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="acceptDrops">
+          <bool>true</bool>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_used">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>385</width>
+            <height>463</height>
+           </rect>
+          </property>
+          <property name="acceptDrops">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -98,11 +130,9 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionImport"/>
-    <addaction name="actionExport"/>
     <addaction name="actionDownload"/>
+    <addaction name="actionMake_theme"/>
+    <addaction name="actionReset"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -117,12 +147,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionOpen"/>
-   <addaction name="actionSave"/>
-   <addaction name="actionImport"/>
-   <addaction name="actionExport"/>
    <addaction name="actionDownload"/>
    <addaction name="actionMake_theme"/>
+   <addaction name="actionReset"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -141,7 +168,10 @@
   </action>
   <action name="actionDownload">
    <property name="text">
-    <string>Download</string>
+    <string>Update Default Theme</string>
+   </property>
+   <property name="toolTip">
+    <string>Update: downloads and imports the latest default theme json file, textures, and colors.</string>
    </property>
   </action>
   <action name="actionSave">
@@ -152,6 +182,17 @@
   <action name="actionMake_theme">
    <property name="text">
     <string>Make theme</string>
+   </property>
+   <property name="toolTip">
+    <string>Make theme: compiles a new theme as the merge of all &quot;used&quot; themes, with priority from top to bottom,  and exports it to the specified directory.</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset theme</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset theme: exports the default theme to the specified directory.</string>
    </property>
   </action>
  </widget>

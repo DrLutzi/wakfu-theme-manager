@@ -1,4 +1,5 @@
 theme/
+bin/
 .obj/
 *~
 *.autosave

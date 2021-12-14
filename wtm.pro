@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui xml
 QT		+=	network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -31,6 +31,7 @@ SOURCES += \
 	$${SRC_DIR}/main.cpp \
 	$${SRC_DIR}/texture.cpp \
 	$${SRC_DIR}/theme.cpp \
+	$${SRC_DIR}/color.cpp \
 	$${SRC_WIDGETS_DIR}/mainwindow.cpp \
 	$${SRC_WIDGETS_DIR}/themewidget.cpp \
 	$${SRC_WIDGETS_DIR}/scrollareacontent.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
 	$${INCLUDE_DIR}/pixmap.h \
 	$${INCLUDE_DIR}/texture.h \
 	$${INCLUDE_DIR}/theme.h \
+	$${INCLUDE_DIR}/color.h \
 	$${INCLUDE_WIDGETS_DIR}/mainwindow.h \
 	$${INCLUDE_WIDGETS_DIR}/themewidget.h \
 	$${INCLUDE_WIDGETS_DIR}/scrollareacontent.h \

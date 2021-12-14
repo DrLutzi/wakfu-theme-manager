@@ -1,4 +1,5 @@
 {
 	"json_url": "https://wakfu.cdn.ankama.com/gamedata/theme/theme.json",
-	"themes_path": "./themes"
+	"themes_path": "./themes",
+	"output_path": "/home/nlutz/.config/zaap/wakfu/theme"
 }

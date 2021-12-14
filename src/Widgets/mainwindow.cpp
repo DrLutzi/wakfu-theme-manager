@@ -18,8 +18,10 @@ MainWindow::MainWindow(QWidget *parent)
 	m_extraThemeWidgets()
 {
 	ui->setupUi(this);
+	setActionIcons();
 	loadConfigurationFile();
-    loadAllThemes();
+	initJson();
+	loadAllThemes();
     createScrollAreas();
 	createAllThemeWidgets();
 }
@@ -28,6 +30,13 @@ MainWindow::~MainWindow()
 {
 	delete ui;
 	delete m_fd;
+}
+
+bool MainWindow::setActionIcons()
+{
+	ui->actionDownload->setIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload));
+	ui->actionReset->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogResetButton));
+	ui->actionMake_theme->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton));
 }
 
 bool MainWindow::loadConfigurationFile()
@@ -41,13 +50,46 @@ bool MainWindow::loadConfigurationFile()
 		QJsonDocument configFileJson = QJsonDocument::fromJson(configFileContent.toUtf8());
 		m_jsonUrl.setUrl(configFileJson["json_url"].toString());
 		m_themesPath.setPath(configFileJson["themes_path"].toString());
+		m_outputPath.setPath(configFileJson["output_path"].toString());
 		m_defaultThemePath.setPath(m_themesPath.absolutePath() + "/default");
+	}
+	return b;
+}
+
+void MainWindow::checkOutputExistence()
+{
+	if(!m_outputPath.exists())
+	{
+		QString str = QFileDialog::getExistingDirectory(this, tr("Choose output theme directory"), QDir::homePath());
+		m_outputPath.setPath(str);
+		saveConfigurationFile();
+	}
+}
+
+bool MainWindow::saveConfigurationFile()
+{
+	m_configFile.open(QIODevice::ReadWrite | QIODevice::Text);
+	bool b;
+	if((b = m_configFile.isOpen()))
+	{
+		QString configFileContent = m_configFile.readAll();
+		QJsonDocument configFileJson = QJsonDocument::fromJson(configFileContent.toUtf8());
+		QJsonObject objectJson = configFileJson.object();
+		objectJson["json_url"] = m_jsonUrl.url();
+		objectJson["themes_path"] = m_themesPath.absolutePath();
+		objectJson["output_path"] = m_outputPath.absolutePath();
+		configFileJson.setObject(objectJson);
+		m_configFile.write(configFileJson.toJson());
+		m_configFile.close();
 	}
 	return b;
 }
 
 void MainWindow::loadAllThemes()
 {
+	ui->actionDownload->setEnabled(false);
+	ui->actionMake_theme->setEnabled(false);
+	ui->actionReset->setEnabled(false);
 	QFileInfoList ls = m_themesPath.entryInfoList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
     m_extraThemes.reserve(std::max(0, int(ls.size())-1));
 	for(QFileInfoList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
@@ -68,31 +110,39 @@ void MainWindow::loadAllThemes()
 			}
 		}
 	}
+	ui->actionDownload->setEnabled(true);
+	ui->actionMake_theme->setEnabled(true);
+	ui->actionReset->setEnabled(true);
     return;
 }
 
 void MainWindow::createScrollAreas()
 {
     QWidget *centralWidget = ui->centralwidget;
-    QLayout *l = centralWidget->layout();
-    clearLayout(l);
+	QLayout *l1 = ui->widget_scrollArea_stash->layout();
+	QLayout *l2 = ui->widget_scrollArea_used->layout();
 
-    ui->scrollArea_stash = new ScrollArea(centralWidget);
-    ui->scrollArea_used = new ScrollArea(centralWidget);
+	l1->removeWidget(ui->scrollArea_stash);
+	delete(ui->scrollArea_stash);
+	l2->removeWidget(ui->scrollArea_used);
+	delete(ui->scrollArea_used);
+
+	ui->scrollArea_stash = new ScrollArea(centralWidget);
+	ui->scrollArea_used = new ScrollArea(centralWidget);
 
     ui->scrollArea_stash->setObjectName(QString::fromUtf8("scrollArea_stash"));
     ui->scrollArea_stash->setMinimumSize(QSize(128, 0));
     ui->scrollArea_stash->setAcceptDrops(true);
     ui->scrollArea_stash->setWidgetResizable(true);
     ui->scrollArea_stash->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    l->addWidget(ui->scrollArea_stash);
+	l1->addWidget(ui->scrollArea_stash);
 
     ui->scrollArea_used->setObjectName(QString::fromUtf8("scrollArea_used"));
     ui->scrollArea_used->setMinimumSize(QSize(128, 0));
     ui->scrollArea_used->setAcceptDrops(true);
     ui->scrollArea_used->setWidgetResizable(true);
     ui->scrollArea_used->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    l->addWidget(ui->scrollArea_used);
+	l2->addWidget(ui->scrollArea_used);
 
     //custom scroll area content widget
 	ScrollAreaContent *stashContent = new ScrollAreaContent(ui->scrollArea_stash);
@@ -171,13 +221,24 @@ void MainWindow::clearLayout(QLayout *layout)
     return;
 }
 
-void MainWindow::initJson()
+void MainWindow::initJson(bool forceReset)
 {
-	QFile jsonThemeFile(m_themesPath.absolutePath() + "/theme.json");
-	jsonThemeFile.open(QIODevice::ReadOnly);
-	_jsonThemes = QJsonDocument::fromJson(jsonThemeFile.readAll());
-	const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
-	Texture::initPathToIdMapFromJson(textureArray);
+	if(_jsonThemes.isEmpty() || forceReset)
+	{
+		QFile jsonThemeFile(m_themesPath.absolutePath() + "/theme.json");
+		bool b = jsonThemeFile.open(QIODevice::ReadOnly);
+		if(b)
+		{
+			_jsonThemes = QJsonDocument::fromJson(jsonThemeFile.readAll());
+			const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
+			Texture::initPathToIdMapFromJson(textureArray);
+			jsonThemeFile.close();
+		}
+		else
+		{
+			//erreur
+		}
+	}
 }
 
 //SLOTS
@@ -242,6 +303,8 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 					const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
 					Texture::initPathToIdMapFromJson(textureArray);
 					ui->statusbar->showMessage(QString("All files were downloaded successfully."));
+					ui->actionMake_theme->setEnabled(true);
+					ui->actionReset->setEnabled(true);
 				}
 			});
 		}
@@ -256,6 +319,8 @@ void MainWindow::on_actionDownload_triggered()
 	m_fd = new FileDownloader(imageUrl, this);
 	connect(m_fd, SIGNAL (downloaded(QUrl)), this, SLOT (loadJsonFromInternet(QUrl)));
 	ui->actionDownload->setEnabled(false);
+	ui->actionMake_theme->setEnabled(false);
+	ui->actionReset->setEnabled(false);
 }
 
 
@@ -336,7 +401,25 @@ void MainWindow::on_actionMake_theme_triggered()
 				m_outputTheme.pack(theme);
 			}
 		}
-		m_outputTheme.save(QDir("/home/nlutz/newTheme"));
+		m_outputTheme.save(m_outputPath);
+		ui->statusbar->showMessage(QString("Theme compiled."));
+	}
+}
+
+
+void MainWindow::on_actionReset_triggered()
+{
+	if(!m_defaultTheme.isOpened())
+	{
+		m_defaultTheme.load(m_defaultThemePath);
+	}
+	if(m_defaultTheme.isOpened())
+	{
+		m_defaultTheme.save(m_outputPath);
+	}
+	else
+	{
+		//message d'info
 	}
 }
 
