@@ -11,17 +11,23 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Desktop Wakfu Theme Manager</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="topMargin">
+     <number>9</number>
+    </property>
     <item>
      <widget class="QWidget" name="widget_scrollArea_stash" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_stash">
          <property name="text">
-          <string>Unused themes</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Unused themes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -51,7 +57,7 @@
             <x>0</x>
             <y>0</y>
             <width>386</width>
-            <height>463</height>
+            <height>470</height>
            </rect>
           </property>
           <property name="acceptDrops">
@@ -73,10 +79,13 @@
     <item>
      <widget class="QWidget" name="widget_scrollArea_used" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="label_used">
          <property name="text">
-          <string>Used themes</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Used themes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -103,7 +112,7 @@
             <x>0</x>
             <y>0</y>
             <width>385</width>
-            <height>463</height>
+            <height>470</height>
            </rect>
           </property>
           <property name="acceptDrops">
@@ -138,6 +147,12 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>

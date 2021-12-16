@@ -266,4 +266,5 @@ Texture &Texture::operator=(const Texture &other)
 {
 	m_pathId = other.pathId();
 	m_image = other.image();
+	return *this;
 }

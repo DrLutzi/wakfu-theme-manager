@@ -26,6 +26,8 @@ public:
 	bool setImage(const QFile &file);
 	bool setImage(const QDir &dir);
 
+	void createPixmap();
+
 	const QString &name() const;
 	const Theme *theme() const;
 	Theme *theme();

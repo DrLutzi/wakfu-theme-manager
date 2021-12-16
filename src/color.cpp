@@ -10,7 +10,7 @@ const QString &Color::id() const
 	return m_id;
 }
 
-const QColor &Color::color() const
+const QColor &Color::qcolor() const
 {
 	return m_color;
 }
@@ -19,7 +19,7 @@ const QColor &Color::color() const
 CompareColor::CompareColor()
 {}
 
-bool CompareColor::operator()(const Color &color, const Color &other)
+bool CompareColor::operator()(const Color &color, const Color &other) const
 {
 	std::less<QString> comparator;
 	return comparator(color.id(), other.id());

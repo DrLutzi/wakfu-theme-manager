@@ -7,11 +7,7 @@ ThemeWidget::ThemeWidget(Theme *theme, QWidget *parent) :
 	m_theme(theme)
 {
 	ui->setupUi(this);
-	if(m_theme)
-	{
-		ui->label->setText(theme->name());
-		if(!setImage(QDir(m_theme->path().absolutePath())));
-	}
+	createPixmap();
 }
 
 
@@ -36,6 +32,40 @@ bool ThemeWidget::setImage(const QDir &dir)
 {
 	QFile file(dir.absolutePath() + "/theme.png");
 	return setImage(file);
+}
+
+void ThemeWidget::createPixmap()
+{
+	if(m_theme)
+	{
+		ui->label->setText(m_theme->name());
+		if(!setImage(QDir(m_theme->path().absolutePath() + "/theme.png")) && !setImage(QFile(m_theme->path().absolutePath() + "/images/dungeon.png")))
+		{
+			if(m_theme->colors().size()>0)
+			{
+				const Theme *t = theme();
+				const Theme::ColorMapType &colors = t->colors();
+				Color c("defaultDarkGreyColor", "");
+				Theme::ColorMapType::const_iterator cit = colors.find(c);
+				QColor qcolor;
+				if(cit == colors.end())
+				{
+					const Color &color = *m_theme->colors().begin();
+					qcolor = color.qcolor();
+				}
+				else
+				{
+					const Color &color = *cit;
+					qcolor = color.qcolor();
+				}
+				QPixmap pixmapFillColor(1, 1);
+				pixmapFillColor.fill(qcolor);
+				m_pixmap = pixmapFillColor;
+				m_dragPixmap = m_pixmap.scaled(64, 64, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
+				ui->label_pix->setPixmap(m_pixmap);
+			}
+		}
+	}
 }
 
 void ThemeWidget::mousePressEvent(QMouseEvent *event)

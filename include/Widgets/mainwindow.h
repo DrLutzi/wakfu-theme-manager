@@ -8,7 +8,9 @@
 #include <QDir>
 #include <QScrollBar>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <mutex>
+#include <QtConcurrent/QtConcurrent>
 #include "filedownloader.h"
 #include "themewidget.h"
 #include "theme.h"
@@ -39,6 +41,7 @@ public:
 	void createAllThemeWidgets();
 
 	bool saveConfigurationFile();
+	void resetDefaultThemeWidget();
 
 private:
 	Ui::MainWindow *ui;
@@ -60,6 +63,7 @@ private:
 
 	static void clearLayout(QLayout *layout);
 	void initJson(bool forceReset = false);
+	void downloadDefault();
 
 private slots:
 	void loadJsonFromInternet(QUrl url);

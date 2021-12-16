@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 OBJECTS_DIR = ./.obj
 UI_DIR      = ./ui
 MOC_DIR		= ./.obj
+TS_DIR		= ./ts
 SRC_DIR		= ./src
 SRC_WIDGETS_DIR = $${SRC_DIR}/Widgets
 INCLUDE_DIR = ./include
@@ -53,7 +54,7 @@ FORMS += \
 	ui/mainwindow.ui
 
 TRANSLATIONS += \
-    wtm_fr_FR.ts
+	$${TS_DIR}/wtm_fr_FR.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
