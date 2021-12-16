@@ -41,7 +41,7 @@ void MainWindow::makeProgressBar()
 	m_progressBar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	m_progressBar->setMinimum(0);
 	m_progressBar->setMaximum(100);
-	m_progressBar->setTextVisible(true);
+	m_progressBar->setTextVisible(false);
 	ui->statusbar->addPermanentWidget(m_progressBar);
 }
 
@@ -343,24 +343,24 @@ void MainWindow::downloadDefault()
 				fd->deleteLater();
 				std::lock_guard<std::mutex> guard(nbThreads_mutex);
 				--nbThreads;
-				m_progressBar->setValue(float(maxProgress-nbThreads)/maxProgress * 100);
+				m_progressBar->setValue(float(maxProgress-nbThreads)/maxProgress * 80);
+				QCoreApplication::processEvents();
 				ui->statusbar->showMessage(QString(tr("Downloading files... ")) + QString::number(nbThreads) + " left");
 				if(nbThreads == 0)
 				{
-					m_progressBar->setValue(20);
 					//Load default theme
 					QDir defaultTheme(m_defaultThemePath.absolutePath());
 					if(defaultTheme.exists())
 					{
 						m_defaultTheme.load(defaultTheme);
 						//m_defaultTheme.unpack();
-						m_progressBar->setValue(80);
 					}
 					const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
 					Texture::initPathToIdMapFromJson(textureArray);
 					ui->statusbar->showMessage(QString(tr("All files were downloaded successfully.")));
 					resetDefaultThemeWidget();
 					m_progressBar->setValue(100);
+					QCoreApplication::processEvents();
 					setAllEnabled(true);
 				}
 			});
@@ -472,6 +472,7 @@ void MainWindow::makeTheme()
 	m_outputTheme.save(m_outputPath);
 	ui->statusbar->showMessage(QString(tr("Theme compiled.")));
 	m_progressBar->setValue(100);
+	QCoreApplication::processEvents();
 	setAllEnabled(true);
 }
 
