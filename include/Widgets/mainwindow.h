@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <mutex>
 #include <QThread>
+#include <QProgressBar>
 #include "filedownloader.h"
 #include "themewidget.h"
 #include "theme.h"
@@ -33,6 +34,7 @@ public:
 	void downloadAllColours();
 	void downloadAll();
 
+	void makeProgressBar();
 	bool setActionIcons();
 	bool loadConfigurationFile();
 	void checkOutputExistence();
@@ -60,6 +62,8 @@ private:
 
 	ThemeWidget *m_defaultThemeWidget;
 	std::vector<ThemeWidget *> m_extraThemeWidgets;
+
+	QProgressBar	*m_progressBar;
 
 	static void clearLayout(QLayout *layout);
 	void initJson(bool forceReset = false);

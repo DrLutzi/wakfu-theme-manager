@@ -15,9 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
 	m_configFile("./config.json"),
 	m_extraThemes(),
 	m_defaultThemeWidget(nullptr),
-	m_extraThemeWidgets()
+	m_extraThemeWidgets(),
+	m_progressBar(nullptr)
 {
 	ui->setupUi(this);
+	makeProgressBar();
 	setActionIcons();
 	loadConfigurationFile();
 	initJson();
@@ -30,6 +32,17 @@ MainWindow::~MainWindow()
 {
 	delete ui;
 	delete m_fd;
+}
+
+void MainWindow::makeProgressBar()
+{
+	m_progressBar = new QProgressBar(ui->statusbar);
+	m_progressBar->setBaseSize(32, 10);
+	m_progressBar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	m_progressBar->setMinimum(0);
+	m_progressBar->setMaximum(100);
+	m_progressBar->setTextVisible(true);
+	ui->statusbar->addPermanentWidget(m_progressBar);
 }
 
 bool MainWindow::setActionIcons()
@@ -69,7 +82,7 @@ void MainWindow::checkOutputExistence()
 		}
 		else if(str.dirName() != "theme")
 		{
-			ui->statusbar->showMessage(tr("Warning: the provided folder is not \"theme\" or \"zaap\" and the program may not work as intended."));
+			ui->statusbar->showMessage(tr("Warning: the provided folder is not \"theme\" or \"zaap\"."));
 		}
 		m_outputPath.setPath(str.absolutePath());
 		saveConfigurationFile();
@@ -284,6 +297,7 @@ void MainWindow::initJson(bool forceReset)
 
 void MainWindow::downloadDefault()
 {
+	m_progressBar->setValue(0);
 	QJsonParseError *jsonPE = new QJsonParseError;
 	_jsonThemes = QJsonDocument::fromJson(m_fd->downloadedData(), jsonPE);
 	//create useful folders
@@ -301,6 +315,7 @@ void MainWindow::downloadDefault()
 	QFile textureFile;
 	//create directory if it does not exist
 	nbThreads = textures.size();
+	unsigned int maxProgress = nbThreads;
 	if(nbThreads == 0)
 	{
 		ui->statusbar->showMessage(QString(tr("Error while attempting to download files!")));
@@ -328,20 +343,24 @@ void MainWindow::downloadDefault()
 				fd->deleteLater();
 				std::lock_guard<std::mutex> guard(nbThreads_mutex);
 				--nbThreads;
+				m_progressBar->setValue(float(maxProgress-nbThreads)/maxProgress * 100);
 				ui->statusbar->showMessage(QString(tr("Downloading files... ")) + QString::number(nbThreads) + " left");
 				if(nbThreads == 0)
 				{
+					m_progressBar->setValue(20);
 					//Load default theme
 					QDir defaultTheme(m_defaultThemePath.absolutePath());
 					if(defaultTheme.exists())
 					{
 						m_defaultTheme.load(defaultTheme);
 						//m_defaultTheme.unpack();
+						m_progressBar->setValue(80);
 					}
 					const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
 					Texture::initPathToIdMapFromJson(textureArray);
 					ui->statusbar->showMessage(QString(tr("All files were downloaded successfully.")));
 					resetDefaultThemeWidget();
+					m_progressBar->setValue(100);
 					setAllEnabled(true);
 				}
 			});
@@ -413,6 +432,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::makeTheme()
 {
+	m_progressBar->setValue(0);
 	if(!m_defaultTheme.isOpened())
 	{
 		m_defaultTheme.load(m_defaultThemePath);
@@ -447,9 +467,11 @@ void MainWindow::makeTheme()
 			ui->statusbar->showMessage(QString(tr("Applying pixmaps of ")) + tw->name() + "...");
 			m_outputTheme.pack(theme);
 		}
+		m_progressBar->setValue(int( float(layoutCount-i)/(layoutCount) * 90));
 	}
 	m_outputTheme.save(m_outputPath);
 	ui->statusbar->showMessage(QString(tr("Theme compiled.")));
+	m_progressBar->setValue(100);
 	setAllEnabled(true);
 }
 

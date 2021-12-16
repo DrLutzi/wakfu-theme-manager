@@ -136,6 +136,7 @@ void Texture::unpack(const Texture *model)
 
 void Texture::initPathToIdMapFromJson(const QJsonArray &textureJsonArray)
 {
+	ms_pathToIdMap.clear();
 	for(QJsonArray::ConstIterator cit = textureJsonArray.constBegin(); cit !=textureJsonArray.constEnd(); ++cit)
 	{
         const QJsonValue &value = (*cit);

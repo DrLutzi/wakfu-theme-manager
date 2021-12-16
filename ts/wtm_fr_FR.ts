@@ -83,75 +83,94 @@
         <translation type="vanished">Choisissez où exporter le thème final</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="63"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="77"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="63"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="77"/>
         <source>The program could not find the &quot;theme&quot; folder of Wakfu at its usual place. Please provide it to continue.</source>
         <translation>Le programme n&apos;a pas trouvé le dossier &quot;theme&quot; de Wakfu à sa place habituelle. Veuillez ouvrir ce dossier pour continuer.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="64"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="78"/>
         <source>Choose the &quot;theme&quot; or &quot;zaap&quot; folder of your game</source>
         <translation>Ouvrez le dossier &quot;theme&quot; ou &quot;zaap&quot; de votre jeu</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="71"/>
         <source>Warning: the provided folder is not &quot;theme&quot; or &quot;zaap&quot; and the program may not work as intended.</source>
-        <translation>Attention : le dossier fourni n&apos;est pas &quot;theme&quot; ou &quot;zaap&quot; et le programme peut ne pas fonctionner comme souhaité.</translation>
+        <translation type="vanished">Attention : le dossier fourni n&apos;est pas &quot;theme&quot; ou &quot;zaap&quot; et le programme peut ne pas fonctionner comme souhaité.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="277"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="321"/>
         <source>Error while attempting to download files!</source>
         <translation>Erreur en tentant de télécharger les fichiers !</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="281"/>
-        <location filename="../src/Widgets/mainwindow.cpp" line="302"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="325"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="347"/>
         <source>Downloading files... </source>
         <translation>Téléchargement des fichiers... </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="297"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="341"/>
         <source>Failed to save Image </source>
         <translation>Echec en tentant de sauvegarder l&apos;image </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="314"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="359"/>
         <source>All files were downloaded successfully.</source>
         <translation>Tous les fichiers ont été téléchargés avec succès.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="375"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="481"/>
         <source>Error: theme json file could not be opened (did you download it first?).</source>
         <translation>Erreur : le fichier d&apos;information .json n&apos;a pas pu être ouvert (est-il téléchargé ?).</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="388"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="442"/>
         <source>Making theme... </source>
         <translation>Construction du thème... </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="400"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="85"/>
+        <source>Warning: the provided folder is not &quot;theme&quot; or &quot;zaap&quot;.</source>
+        <translation>Attention : le dossier n&apos;est pas &quot;theme&quot; ou &quot;zaap&quot;.</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/mainwindow.cpp" line="325"/>
+        <source> left</source>
+        <translation> restants</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/mainwindow.cpp" line="454"/>
         <source>Loading </source>
         <translation>Chargement du thème </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="405"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="459"/>
         <source>Extracting </source>
         <translation>Extraction du thème </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="410"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="464"/>
         <source>Applying pixmaps of </source>
         <translation>Application des pixmaps de </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="415"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="470"/>
         <source>Theme compiled.</source>
         <translation>Thème compilé.</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/mainwindow.cpp" line="501"/>
+        <source>Finished restoring default theme.</source>
+        <translation>Restauration du thème par défaut terminée.</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/mainwindow.cpp" line="505"/>
+        <source>Unable to restore default theme (did you download it first?).</source>
+        <translation>Impossible de restaurer le thème par défaut (est-il téléchargé ?).</translation>
     </message>
 </context>
 <context>
