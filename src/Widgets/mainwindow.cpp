@@ -282,13 +282,11 @@ void MainWindow::initJson(bool forceReset)
 
 //SLOTS
 
-void MainWindow::loadJsonFromInternet(QUrl url)
+void MainWindow::downloadDefault()
 {
-	(void) url;
-
 	QJsonParseError *jsonPE = new QJsonParseError;
 	_jsonThemes = QJsonDocument::fromJson(m_fd->downloadedData(), jsonPE);
-    //create useful folders
+	//create useful folders
 	QDir defaultThemeImagePath(m_defaultThemePath.absolutePath() + "/images");
 	defaultThemeImagePath.mkpath(defaultThemeImagePath.absolutePath());
 
@@ -299,7 +297,7 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 	jsonFile.close();
 
 	const QJsonValue &texturesValue = _jsonThemes["textures"]; //todo erreurs
-    const QJsonArray &textures = texturesValue.toArray();
+	const QJsonArray &textures = texturesValue.toArray();
 	QFile textureFile;
 	//create directory if it does not exist
 	nbThreads = textures.size();
@@ -309,7 +307,7 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 	}
 	else
 	{
-		ui->statusbar->showMessage(QString(tr("Downloading files... ")) + QString::number(nbThreads) + " left");
+		ui->statusbar->showMessage(QString(tr("Downloading files... ")) + QString::number(nbThreads) + tr(" left"));
 		for(QJsonArray::ConstIterator cit = textures.constBegin(); cit!=textures.constEnd(); ++cit)
 		{
 			const QJsonValue &value = (*cit);
@@ -317,13 +315,13 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 			QFileInfo fileInfo(texturePath);
 			texturePath = fileInfo.baseName() + ".png";
 			FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + texturePath);
-			connect(fd, &FileDownloader::downloaded, this, [&, fd](QUrl url2)
+			this->connect(fd, &FileDownloader::downloaded, this, [&, fd](QUrl url2)
 			{
 				QDir defaultThemeImagePath(m_defaultThemePath.absolutePath() + "/images");
-				QPixmap buttonImage;
-				buttonImage.loadFromData(fd->downloadedData());
+				QPixmap textureImage;
+				textureImage.loadFromData(fd->downloadedData());
 				QFile file(defaultThemeImagePath.absolutePath() + "/" + url2.fileName(), this);
-				if(!buttonImage.save(file.fileName(), "PNG"))
+				if(!textureImage.save(file.fileName(), "PNG"))
 				{
 					qDebug() << QString(tr("Failed to save Image ")) + file.fileName();
 				}
@@ -343,26 +341,40 @@ void MainWindow::loadJsonFromInternet(QUrl url)
 					const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
 					Texture::initPathToIdMapFromJson(textureArray);
 					ui->statusbar->showMessage(QString(tr("All files were downloaded successfully.")));
-					ui->actionMake_theme->setEnabled(true);
-					ui->actionReset->setEnabled(true);
-
 					resetDefaultThemeWidget();
+					setAllEnabled(true);
 				}
 			});
+			fd->launchDownload();
 		}
 	}
+}
+
+void MainWindow::loadJsonFromInternet(QUrl url)
+{
+	(void) url;
+
+	ui->actionDownload->setEnabled(false);
+	ui->actionMake_theme->setEnabled(false);
+	ui->actionReset->setEnabled(false);
+	if(m_defaultThemeWidget != nullptr)
+	{
+		m_defaultThemeWidget->setEnabled(false);
+	}
+
+	downloadDefault();
 
 	return;
 }
 
 void MainWindow::on_actionDownload_triggered()
 {
+	setAllEnabled(false);
+
 	QUrl imageUrl("https://wakfu.cdn.ankama.com/gamedata/theme/theme.json");
-	ui->actionDownload->setEnabled(false);
-	ui->actionMake_theme->setEnabled(false);
-	ui->actionReset->setEnabled(false);
 	m_fd = new FileDownloader(imageUrl, this);
 	connect(m_fd, SIGNAL (downloaded(QUrl)), this, SLOT (loadJsonFromInternet(QUrl)));
+	m_fd->launchDownload();
 }
 
 
@@ -399,9 +411,51 @@ void MainWindow::on_actionSave_triggered()
     return;
 }
 
+void MainWindow::makeTheme()
+{
+	if(!m_defaultTheme.isOpened())
+	{
+		m_defaultTheme.load(m_defaultThemePath);
+	}
+	if(!m_defaultTheme.isUnpacked())
+	{
+		m_defaultTheme.unpack();
+	}
+	m_outputTheme.copyTextures(m_defaultTheme);
+	QString messageMakingTheme = tr("Making theme... ");
+	ui->statusbar->showMessage(messageMakingTheme);
+	//v most likely not in the right order, look for widgets in layout
+	int layoutCount = ui->scrollAreaWidgetContents_used->layout()->count();
+	for(int i=layoutCount-1; i>=0; --i)
+	{
+		QWidget *widget = ui->scrollAreaWidgetContents_used->layout()->itemAt(i)->widget();
+		ThemeWidget *tw = dynamic_cast<ThemeWidget *>(widget);
+		if(tw != nullptr)
+		{
+			Theme *theme = tw->theme();
+			assert(theme != nullptr);
+			ui->statusbar->showMessage(QString(tr("Loading ")) + tw->name() + "...");
+			if(!theme->isOpened())
+			{
+				theme->load(theme->path());
+			}
+			ui->statusbar->showMessage(QString(tr("Extracting ")) + tw->name() + "...");
+			if(!theme->isUnpacked())
+			{
+				theme->unpack(&m_defaultTheme);
+			}
+			ui->statusbar->showMessage(QString(tr("Applying pixmaps of ")) + tw->name() + "...");
+			m_outputTheme.pack(theme);
+		}
+	}
+	m_outputTheme.save(m_outputPath);
+	ui->statusbar->showMessage(QString(tr("Theme compiled.")));
+	setAllEnabled(true);
+}
 
 void MainWindow::on_actionMake_theme_triggered()
 {
+	setAllEnabled(false);
 	initJson();
 	if(_jsonThemes.isEmpty())
 	{
@@ -409,48 +463,14 @@ void MainWindow::on_actionMake_theme_triggered()
 	}
 	else
 	{
-		if(!m_defaultTheme.isOpened())
-		{
-			m_defaultTheme.load(m_defaultThemePath);
-		}
-		if(!m_defaultTheme.isUnpacked())
-		{
-			m_defaultTheme.unpack();
-		}
-		m_outputTheme.copyTextures(m_defaultTheme);
-		QString messageMakingTheme = tr("Making theme... ");
-		ui->statusbar->showMessage(messageMakingTheme);
-		//v most likely not in the right order, look for widgets in layout
-		int layoutCount = ui->scrollAreaWidgetContents_used->layout()->count();
-		for(int i=layoutCount-1; i>=0; --i)
-		{
-			QWidget *widget = ui->scrollAreaWidgetContents_used->layout()->itemAt(i)->widget();
-			ThemeWidget *tw = dynamic_cast<ThemeWidget *>(widget);
-			if(tw != nullptr)
-			{
-				Theme *theme = tw->theme();
-				assert(theme != nullptr);
-				ui->statusbar->showMessage(QString(tr("Loading ")) + tw->name() + "...");
-				if(!theme->isOpened())
-				{
-					theme->load(theme->path());
-				}
-				ui->statusbar->showMessage(QString(tr("Extracting ")) + tw->name() + "...");
-				if(!theme->isUnpacked())
-				{
-					theme->unpack(&m_defaultTheme);
-				}
-				ui->statusbar->showMessage(QString(tr("Applying pixmaps of ")) + tw->name() + "...");
-				m_outputTheme.pack(theme);
-			}
-		}
-		m_outputTheme.save(m_outputPath);
-		ui->statusbar->showMessage(QString(tr("Theme compiled.")));
+		QThread *thread = QThread::create([this]() {makeTheme();});
+		thread->setParent(this);
+		connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+		thread->start();
 	}
 }
 
-
-void MainWindow::on_actionReset_triggered()
+void MainWindow::resetTheme()
 {
 	if(!m_defaultTheme.isOpened())
 	{
@@ -459,10 +479,31 @@ void MainWindow::on_actionReset_triggered()
 	if(m_defaultTheme.isOpened())
 	{
 		m_defaultTheme.save(m_outputPath);
+		ui->statusbar->showMessage(QString(tr("Finished restoring default theme.")));
 	}
 	else
 	{
-		//message d'info
+		ui->statusbar->showMessage(QString(tr("Unable to restore default theme (did you download it first?).")));
 	}
+
+	setAllEnabled(true);
 }
 
+void MainWindow::on_actionReset_triggered()
+{
+	setAllEnabled(false);
+
+	QThread *thread = QThread::create([this]() {resetTheme();});
+	thread->setParent(this);
+	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+	thread->start();
+}
+
+void MainWindow::setAllEnabled(bool b)
+{
+	ui->actionDownload->setEnabled(b);
+	ui->actionMake_theme->setEnabled(b);
+	ui->actionReset->setEnabled(b);
+	ui->widget_scrollArea_stash->setEnabled(b);
+	ui->widget_scrollArea_used->setEnabled(b);
+}

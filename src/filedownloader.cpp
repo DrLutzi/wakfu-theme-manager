@@ -8,11 +8,15 @@ FileDownloader::FileDownloader(QUrl url, QObject *parent) :
 		&m_WebCtrl, SIGNAL (finished(QNetworkReply*)),
 		this, SLOT (fileDownloaded(QNetworkReply*))
 	);
-	QNetworkRequest request(url);
-	m_WebCtrl.get(request);
 }
 
 FileDownloader::~FileDownloader() { }
+
+void FileDownloader::launchDownload()
+{
+	QNetworkRequest request(m_url);
+	m_WebCtrl.get(request);
+}
 
 void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 {

@@ -10,7 +10,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <mutex>
-#include <QtConcurrent/QtConcurrent>
+#include <QThread>
 #include "filedownloader.h"
 #include "themewidget.h"
 #include "theme.h"
@@ -64,6 +64,10 @@ private:
 	static void clearLayout(QLayout *layout);
 	void initJson(bool forceReset = false);
 	void downloadDefault();
+	void makeTheme();
+	void resetTheme();
+
+	void setAllEnabled(bool b);
 
 private slots:
 	void loadJsonFromInternet(QUrl url);
