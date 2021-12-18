@@ -217,11 +217,15 @@ bool Pixmap::operator==(const Pixmap &other) const
 					QColor c1 = image.pixelColor(x, y);
 					QColor c2 = m_image.pixelColor(x, y);
 					float n = norm2(c1, c2);
-					b = n < 0.08f;
+					b = n < 0.032f;
 				}
 			}
 //			float n = norm2Images(m_image, image); //try comparing images if fail cases? (longer)
 //			b = n < 0.02f;
+		}
+		else
+		{
+			b = false;
 		}
 //		if(!b) //me trying to debug things out
 //		{

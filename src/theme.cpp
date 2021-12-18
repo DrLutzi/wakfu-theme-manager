@@ -181,7 +181,7 @@ bool Theme::saveColors(const QDir &dir) const
 			const Color &color = (*cit);
 			QDomElement colorElement(xmlColorsDocument.createElement(QString("color")));
 			colorElement.setAttribute("id", color.id());
-			colorElement.setAttribute("color", color.qcolor().name(QColor::NameFormat::HexRgb));
+			colorElement.setAttribute("color", color.colorName());
 			colorsElement.appendChild(colorElement);
 		}
 		QTextStream stream(&colorsFile);

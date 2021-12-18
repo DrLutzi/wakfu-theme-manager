@@ -344,7 +344,6 @@ void MainWindow::downloadDefault()
 				std::lock_guard<std::mutex> guard(nbThreads_mutex);
 				--nbThreads;
 				m_progressBar->setValue(float(maxProgress-nbThreads)/maxProgress * 80);
-				QCoreApplication::processEvents();
 				ui->statusbar->showMessage(QString(tr("Downloading files... ")) + QString::number(nbThreads) + " left");
 				if(nbThreads == 0)
 				{
@@ -360,7 +359,6 @@ void MainWindow::downloadDefault()
 					ui->statusbar->showMessage(QString(tr("All files were downloaded successfully.")));
 					resetDefaultThemeWidget();
 					m_progressBar->setValue(100);
-					QCoreApplication::processEvents();
 					setAllEnabled(true);
 				}
 			});
@@ -432,7 +430,6 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::makeTheme()
 {
-	m_progressBar->setValue(0);
 	if(!m_defaultTheme.isOpened())
 	{
 		m_defaultTheme.load(m_defaultThemePath);
@@ -470,14 +467,14 @@ void MainWindow::makeTheme()
 		m_progressBar->setValue(int( float(layoutCount-i)/(layoutCount) * 90));
 	}
 	m_outputTheme.save(m_outputPath);
-	ui->statusbar->showMessage(QString(tr("Theme compiled.")));
 	m_progressBar->setValue(100);
-	QCoreApplication::processEvents();
+	ui->statusbar->showMessage(QString(tr("Theme compiled.")));
 	setAllEnabled(true);
 }
 
 void MainWindow::on_actionMake_theme_triggered()
 {
+	m_progressBar->setValue(0);
 	setAllEnabled(false);
 	initJson();
 	if(_jsonThemes.isEmpty())

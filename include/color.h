@@ -10,8 +10,13 @@ public:
 
 	const QString &id() const;
 	const QColor &qcolor() const;
+	QString colorName() const;
+
+	static QString writeRGBA(const QColor &color);
+	static QColor readRGBA(const QString &colorStr);
 
 private:
+
 	QString m_id;
 	QColor m_color;
 };
