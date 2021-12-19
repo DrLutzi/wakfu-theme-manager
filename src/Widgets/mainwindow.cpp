@@ -443,6 +443,11 @@ void MainWindow::makeTheme()
 	ui->statusbar->showMessage(messageMakingTheme);
 	//v most likely not in the right order, look for widgets in layout
 	int layoutCount = ui->scrollAreaWidgetContents_used->layout()->count();
+
+	Theme taggerTheme;
+	taggerTheme.copyTextures(m_defaultTheme);
+	taggerTheme.resetTextures();
+
 	for(int i=layoutCount-1; i>=0; --i)
 	{
 		QWidget *widget = ui->scrollAreaWidgetContents_used->layout()->itemAt(i)->widget();
@@ -462,12 +467,24 @@ void MainWindow::makeTheme()
 				theme->unpack(&m_defaultTheme);
 			}
 			ui->statusbar->showMessage(QString(tr("Applying pixmaps of ")) + tw->name() + "...");
-			m_outputTheme.pack(theme);
+			m_outputTheme.pack(theme, &taggerTheme, true);
 		}
-		m_progressBar->setValue(int( float(layoutCount-i)/(layoutCount) * 90));
+		m_progressBar->setValue(int( float(layoutCount-i)/(layoutCount) * 50));
 	}
+	for(int i=0; i<layoutCount; ++i)
+	{
+		QWidget *widget = ui->scrollAreaWidgetContents_used->layout()->itemAt(i)->widget();
+		ThemeWidget *tw = dynamic_cast<ThemeWidget *>(widget);
+		if(tw != nullptr)
+		{
+			Theme *theme = tw->theme();
+			ui->statusbar->showMessage(QString(tr("Applying orphan pixmaps of ")) + tw->name() + "...");
+			m_outputTheme.pack(theme, &taggerTheme, false);
+		}
+		m_progressBar->setValue(50 + int( float(i)/(layoutCount-1) * 50));
+	}
+	taggerTheme.save(QDir("/home/nlutz/debug"));
 	m_outputTheme.save(m_outputPath);
-	m_progressBar->setValue(100);
 	ui->statusbar->showMessage(QString(tr("Theme compiled.")));
 	setAllEnabled(true);
 }

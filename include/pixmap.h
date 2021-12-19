@@ -43,6 +43,8 @@ public:
 
 	bool operator==(const Pixmap &other) const;
 
+	static bool norm2Diff(const QColor &color1, const QColor &color2);
+
 private:
 	QString m_id;
 	QSize m_size;

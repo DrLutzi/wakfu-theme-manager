@@ -75,23 +75,46 @@ bool Texture::loadPixmaps(const QDir &dir)
 	return true;
 }
 
-void Texture::pack(const Texture *other)
+void Texture::pack(const Texture *other, Texture *tagger, bool usePixmaps)
 {
 	assert(other != nullptr);
 	assert(other->pathId() == m_pathId);
-	if(other == nullptr)
+	//merge anything contained in the pixmaps.
+	if(usePixmaps)
 	{
-		pack(m_pixmaps);
+		if(other == nullptr)
+		{
+			pack(m_pixmaps, tagger); //for testing purposes only.
+		}
+		else
+		{
+			const MapType &otherPixmaps = other->pixmaps();
+			pack(otherPixmaps, tagger);
+		}
 	}
-	else
+	//merge anything not contained in the pixmaps (Ankama's json does not seem to contain all necessary infos).
+	if(!usePixmaps && other != nullptr && other->image().size() == m_image.size() && tagger != nullptr)
 	{
-		const MapType &otherPixmaps = other->pixmaps();
-		pack(otherPixmaps);
+		int yMax = m_image.size().height();
+		int xMax = m_image.size().width();
+		QColor color;
+		for(int y=0; y<yMax; ++y)
+		{
+			for(int x=0; x<xMax; ++x)
+			{
+				color = other->image().pixelColor(x, y);
+				if(tagger->image().pixel(x, y) < 1 && Pixmap::norm2Diff(m_image.pixelColor(x, y), color) > 0.016f)
+				{
+					tagger->image().setPixel(x, y, QRgb(0xFF00FF00));
+					m_image.setPixelColor(x, y, color);
+				}
+			}
+		}
 	}
 	return;
 }
 
-void Texture::pack(const MapType &pixmaps)
+void Texture::pack(const MapType &pixmaps, Texture * const tagger)
 {
 	for(MapType::const_iterator cit = pixmaps.begin(); cit != pixmaps.end(); ++cit)
 	{
@@ -104,7 +127,11 @@ void Texture::pack(const MapType &pixmaps)
 			for(int x=0; x<xEnd; ++x)
 			{
 				int dx = x+pixmap.xy().width();
-				m_image.setPixelColor(dx, dy, pixmap.image().pixelColor(x, y));
+				m_image.setPixel(dx, dy, pixmap.image().pixel(x, y));
+				if(tagger != nullptr)
+				{
+					tagger->image().setPixel(dx, dy, QRgb(0xFF0000FF));
+				}
 			}
 		}
 	}
@@ -205,7 +232,6 @@ void Texture::createAndAppendPixmap(const QJsonObject &objectJson, const QString
 	if(size.width() != 0 && size.height() != 0)
 	{
 		pixmapImage = m_image.copy(xy.width(), xy.height(), size.width(), size.height());
-		pixmapImage.save("/home/nlutz/debug.png");
 	}
 	else
 	{
@@ -258,6 +284,11 @@ const QString &Texture::pathId() const
 }
 
 const QImage &Texture::image() const
+{
+	return m_image;
+}
+
+QImage &Texture::image()
 {
 	return m_image;
 }

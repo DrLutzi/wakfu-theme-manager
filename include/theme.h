@@ -19,7 +19,7 @@ public:
 	void save(const QDir &dir) const;
 	void load(const QDir &dir);
 
-	void pack(const Theme *model = nullptr);
+	void pack(const Theme *model = nullptr, Theme *taggerTheme = nullptr, bool usePixmaps = false);
 	void unpack(const Theme *model=nullptr);
 
 	void savePixmaps(const QDir &dir);
@@ -38,8 +38,10 @@ public:
 	bool isUnpacked() const;
 
 	void copyTextures(const Theme &other);
+	void resetTextures(); ///< sets all textures at value 0.
 
 	const TextureMapType &textures() const;
+	TextureMapType &textures();
 	const ColorMapType &colors() const;
 
 private:

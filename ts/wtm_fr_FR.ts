@@ -123,7 +123,7 @@
         <translation>Tous les fichiers ont été téléchargés avec succès.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="481"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="499"/>
         <source>Error: theme json file could not be opened (did you download it first?).</source>
         <translation>Erreur : le fichier d&apos;information .json n&apos;a pas pu être ouvert (est-il téléchargé ?).</translation>
     </message>
@@ -143,32 +143,37 @@
         <translation> restants</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="454"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="459"/>
         <source>Loading </source>
         <translation>Chargement du thème </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="459"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="464"/>
         <source>Extracting </source>
         <translation>Extraction du thème </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="464"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="469"/>
         <source>Applying pixmaps of </source>
         <translation>Application des pixmaps de </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="470"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="481"/>
+        <source>Applying orphan pixmaps of </source>
+        <translation>Application des pixmaps orphelines de </translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/mainwindow.cpp" line="488"/>
         <source>Theme compiled.</source>
         <translation>Thème compilé.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="501"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="519"/>
         <source>Finished restoring default theme.</source>
         <translation>Restauration du thème par défaut terminée.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="505"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="523"/>
         <source>Unable to restore default theme (did you download it first?).</source>
         <translation>Impossible de restaurer le thème par défaut (est-il téléchargé ?).</translation>
     </message>

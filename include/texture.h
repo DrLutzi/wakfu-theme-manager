@@ -24,11 +24,12 @@ public:
 	bool saveSpecificPixmaps(const QDir &dir) const;
 	bool loadSpecificPixmaps(const QDir &dir);
 
-	void pack(const Texture *other = nullptr);
+	void pack(const Texture *other = nullptr, Texture *tagger=nullptr, bool usePixmaps=false);
 	void unpack(const Texture *model = nullptr);
 
 	const QString &pathId() const;
 	const QImage &image() const;
+	QImage &image();
 
 	static void initPathToIdMapFromJson(const QJsonArray &textureJsonArray);
 	bool isUnpacked() const;
@@ -43,7 +44,7 @@ private:
 							   int index, bool isSpecific, int depth, int specificIndex,
 							   const Texture *model=nullptr);
 
-	void pack(const MapType &pixmaps);
+	void pack(const MapType &pixmaps, Texture * const tagger=nullptr);
 
 	static std::map<QString, QString, std::less<QString>> ms_pathToIdMap;
 

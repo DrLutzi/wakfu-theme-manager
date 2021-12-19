@@ -58,9 +58,10 @@ void Theme::load(const QDir &dir)
 	}
 }
 
-void Theme::pack(const Theme *model)
+void Theme::pack(const Theme *model, Theme *taggerTheme, bool usePixmaps)
 {
-	fuseColors(model);
+	if(usePixmaps)
+		fuseColors(model);
 	for(std::pair<const QString, Texture> &pair : m_textures)
 	{
 		if(model != nullptr)
@@ -68,13 +69,23 @@ void Theme::pack(const Theme *model)
 			TextureMapType::const_iterator cit = model->textures().find(pair.first);
 			if(cit != model->textures().end())
 			{
+				Texture *tagger = nullptr;
+				if(taggerTheme != nullptr)
+				{
+					TextureMapType::iterator it_tagger = taggerTheme->textures().find(pair.first);
+					if(it_tagger != taggerTheme->textures().end())
+					{
+						TextureMapType::reference taggerPair = (*it_tagger);
+						tagger = &taggerPair.second;
+					}
+				}
 				TextureMapType::const_reference texturePair = (*cit);
 				const Texture &modelTexture = texturePair.second;
-				pair.second.pack(&modelTexture);
+				pair.second.pack(&modelTexture, tagger, usePixmaps);
 			}
 		}
 		else
-			pair.second.pack(nullptr);
+			pair.second.pack(nullptr); //for debugging purposes only
 	}
 	return;
 }
@@ -241,7 +252,22 @@ void Theme::copyTextures(const Theme &other)
 	m_textures = other.textures();
 }
 
+void Theme::resetTextures()
+{
+	for(std::pair<const QString, Texture> &pair : m_textures)
+	{
+		Texture &texture = pair.second;
+		texture.image().fill(0x00000000);
+	}
+	return;
+}
+
 const Theme::TextureMapType &Theme::textures() const
+{
+	return m_textures;
+}
+
+Theme::TextureMapType &Theme::textures()
 {
 	return m_textures;
 }
