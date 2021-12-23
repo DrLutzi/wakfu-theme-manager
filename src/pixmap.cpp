@@ -181,21 +181,22 @@ bool Pixmap::operator==(const Pixmap &other) const
 	bool b;
 	b = m_index == other.index() && m_specificIndex == other.specificIndex() && m_depth == other.depth(); //quick check
 
-	auto norm2Images = [&] (const QImage &image1, const QImage &image2) -> float
-	{
-		float norm = 0;
-		for(int y=0; y<image1.height(); ++y)
-		{
-			for(int x=0; x<image1.width(); ++x)
-			{
-				//b = image.pixelColor(x, y) == m_image.pixelColor(x, y);
-				const QColor &pix1 = image1.pixelColor(x, y);
-				const QColor &pix2 = image2.pixelColor(x, y);
-				norm += norm2Diff(pix1, pix2);
-			}
-		}
-		return norm/(image1.width()*image1.height());
-	};
+	//I put that aside in case it becomes relevant one day (compare image norm2 instead of pixel/pixel norm2)
+//	auto norm2Images = [&] (const QImage &image1, const QImage &image2) -> float
+//	{
+//		float norm = 0;
+//		for(int y=0; y<image1.height(); ++y)
+//		{
+//			for(int x=0; x<image1.width(); ++x)
+//			{
+//				//b = image.pixelColor(x, y) == m_image.pixelColor(x, y);
+//				const QColor &pix1 = image1.pixelColor(x, y);
+//				const QColor &pix2 = image2.pixelColor(x, y);
+//				norm += norm2Diff(pix1, pix2);
+//			}
+//		}
+//		return norm/(image1.width()*image1.height());
+//	};
 	if(b)
 	{
 		const QImage &image = other.image();
@@ -210,7 +211,7 @@ bool Pixmap::operator==(const Pixmap &other) const
 					QColor c1 = image.pixelColor(x, y);
 					QColor c2 = m_image.pixelColor(x, y);
 					float n = norm2Diff(c1, c2);
-					b = n < 0.016f;
+					b = n < 0.008f; //tolerates a difference of 2/255 (small accidental changes).
 				}
 			}
 //			float n = norm2Images(m_image, image); //try comparing images if fail cases? (longer)
@@ -220,11 +221,6 @@ bool Pixmap::operator==(const Pixmap &other) const
 		{
 			b = false;
 		}
-//		if(!b) //me trying to debug things out
-//		{
-//			m_image.save(QString("/home/nlutz/debug/") + id() + ".png");
-//			image.save(QString("/home/nlutz/debug/") + id() + "_default.png");
-//		}
 	}
 	return b;
 }

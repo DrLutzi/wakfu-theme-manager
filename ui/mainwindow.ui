@@ -165,6 +165,8 @@
    <addaction name="actionDownload"/>
    <addaction name="actionMake_theme"/>
    <addaction name="actionReset"/>
+   <addaction name="separator"/>
+   <addaction name="actionParameters"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -208,6 +210,14 @@
    </property>
    <property name="toolTip">
     <string>Reset theme: exports the default theme to the specified directory.</string>
+   </property>
+  </action>
+  <action name="actionParameters">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Open program settings.</string>
    </property>
   </action>
  </widget>

@@ -17,6 +17,8 @@
 #include "theme.h"
 #include "scrollareacontent.h"
 #include "scrollarea.h"
+#include "formparameters.h"
+#include "types.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,19 +42,21 @@ public:
 	void checkOutputExistence();
 	void loadAllThemes();
     void createScrollAreas();
-	void createAllThemeWidgets();
+	void createAllExtraThemeWidgets();
 
 	bool saveConfigurationFile();
 	void resetDefaultThemeWidget();
+
+	AppParameters *parameters();
+	void notifyThemesPathChanged();
+	void notifyParametersChanged();
 
 private:
 	Ui::MainWindow *ui;
 	FileDownloader *m_fd;
 	QJsonDocument	m_configJson;
-	QUrl			m_jsonUrl;
+	AppParameters	m_parameters;
 	QString			m_pixmapRelativePath;
-	QDir			m_themesPath;
-	QDir			m_outputPath;
 	QDir			m_defaultThemePath;
 	QFile			m_configFile;
 
@@ -71,7 +75,7 @@ private:
 	void makeTheme();
 	void resetTheme();
 
-	void setAllEnabled(bool b);
+	void setAllWidgetsEnabled(bool b);
 
 private slots:
 	void loadJsonFromInternet(QUrl url);
@@ -81,5 +85,6 @@ private slots:
 	void on_actionSave_triggered();
 	void on_actionMake_theme_triggered();
 	void on_actionReset_triggered();
+	void on_actionParameters_triggered();
 };
 #endif // MAINWINDOW_H

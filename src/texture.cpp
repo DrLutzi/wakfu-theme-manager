@@ -103,7 +103,7 @@ void Texture::pack(const Texture *other, Texture *tagger, bool usePixmaps)
 			for(int x=0; x<xMax; ++x)
 			{
 				color = other->image().pixelColor(x, y);
-				if(tagger->image().pixel(x, y) < 1 && Pixmap::norm2Diff(m_image.pixelColor(x, y), color) > 0.016f)
+				if(tagger->image().pixel(x, y) < 1 && Pixmap::norm2Diff(m_image.pixelColor(x, y), color) > 0.008f)
 				{
 					tagger->image().setPixel(x, y, QRgb(0xFF00FF00));
 					m_image.setPixelColor(x, y, color);

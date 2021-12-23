@@ -19,8 +19,6 @@ void Theme::save(const QDir &dir) const
 	{
 		pair.second.save(imagesDir.absolutePath() + "/" + pair.second.pathId() + ".png");
 	}
-
-	QDir colorsDir(dir.absolutePath() + "/colors");
 	saveColors(dir);
 }
 

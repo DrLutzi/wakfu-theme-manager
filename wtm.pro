@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+
 OBJECTS_DIR = ./.obj
 UI_DIR      = ./ui
 MOC_DIR		= ./.obj
@@ -25,33 +26,38 @@ SRC_WIDGETS_DIR = $${SRC_DIR}/Widgets
 INCLUDE_DIR = ./include
 INCLUDE_WIDGETS_DIR = $${INCLUDE_DIR}/Widgets
 INCLUDEPATH += $${INCLUDE_DIR} $${INCLUDE_WIDGETS_DIR}
+VPATH += $${SRC_DIR} $${SRC_WIDGETS_DIR} $${INCLUDE_DIR} $${INCLUDE_WIDGETS_DIR} $${UI_DIR}
 
 SOURCES += \
-	$${SRC_DIR}/pixmap.cpp \
-	$${SRC_DIR}/filedownloader.cpp \
-	$${SRC_DIR}/main.cpp \
-	$${SRC_DIR}/texture.cpp \
-	$${SRC_DIR}/theme.cpp \
-	$${SRC_DIR}/color.cpp \
-	$${SRC_WIDGETS_DIR}/mainwindow.cpp \
-	$${SRC_WIDGETS_DIR}/themewidget.cpp \
-	$${SRC_WIDGETS_DIR}/scrollareacontent.cpp \
-	$${SRC_WIDGETS_DIR}/scrollarea.cpp
+	pixmap.cpp \
+	filedownloader.cpp \
+	main.cpp \
+	texture.cpp \
+	theme.cpp \
+	color.cpp \
+	formparameters.cpp \
+	mainwindow.cpp \
+	themewidget.cpp \
+	scrollareacontent.cpp \
+	scrollarea.cpp
 
 HEADERS += \
-	$${INCLUDE_DIR}/filedownloader.h \
-	$${INCLUDE_DIR}/pixmap.h \
-	$${INCLUDE_DIR}/texture.h \
-	$${INCLUDE_DIR}/theme.h \
-	$${INCLUDE_DIR}/color.h \
-	$${INCLUDE_WIDGETS_DIR}/mainwindow.h \
-	$${INCLUDE_WIDGETS_DIR}/themewidget.h \
-	$${INCLUDE_WIDGETS_DIR}/scrollareacontent.h \
-	$${INCLUDE_WIDGETS_DIR}/scrollarea.h
+	filedownloader.h \
+	pixmap.h \
+	texture.h \
+	theme.h \
+	color.h \
+	mainwindow.h \
+	themewidget.h \
+	scrollareacontent.h \
+	scrollarea.h \
+	formparameters.h \
+	types.h
 
 FORMS += \
-	ui/themewidget.ui \
-	ui/mainwindow.ui
+	formparameters.ui \
+	themewidget.ui \
+	mainwindow.ui
 
 TRANSLATIONS += \
 	$${TS_DIR}/wtm_fr_FR.ts
