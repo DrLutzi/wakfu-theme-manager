@@ -220,6 +220,11 @@ void Theme::fuseColors(const Theme *model)
 	return;
 }
 
+void Theme::setPath(const QDir &path)
+{
+	m_path = path;
+}
+
 const QDir &Theme::path() const
 {
 	return m_path;

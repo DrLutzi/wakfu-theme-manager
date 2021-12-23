@@ -165,12 +165,16 @@
    <addaction name="actionDownload"/>
    <addaction name="actionMake_theme"/>
    <addaction name="actionReset"/>
+   <addaction name="actionOpen"/>
    <addaction name="separator"/>
    <addaction name="actionParameters"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Open a theme or themes folder.</string>
    </property>
   </action>
   <action name="actionImport">

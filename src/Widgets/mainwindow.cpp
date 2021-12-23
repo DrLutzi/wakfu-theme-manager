@@ -50,6 +50,7 @@ bool MainWindow::setActionIcons()
 	ui->actionDownload->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
 	ui->actionReset->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogResetButton));
 	ui->actionMake_theme->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton));
+	ui->actionOpen->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirIcon));
 	return true;
 }
 
@@ -159,9 +160,7 @@ void MainWindow::loadAllThemes()
 			}
 			else
 			{
-				Theme theme;
-				theme.load(dir.absolutePath());
-				m_extraThemes.push_back(theme);
+				createOneTheme(dir);
 			}
 		}
 	}
@@ -250,11 +249,25 @@ void MainWindow::createAllExtraThemeWidgets()
     }
 	for(std::vector<Theme>::iterator it = m_extraThemes.begin(); it != m_extraThemes.end(); ++it)
 	{
-		ThemeWidget *extraTheme = new ThemeWidget(&(*it), ui->scrollAreaWidgetContents_stash);
-		m_extraThemeWidgets.push_back(extraTheme);
-		ui->scrollAreaWidgetContents_stash->layout()->addWidget(extraTheme);
+		Theme &theme = *it;
+		createOneExtraThemeWidget(theme);
 	}
 	return;
+}
+
+Theme &MainWindow::createOneTheme(const QDir &dir)
+{
+	m_extraThemes.emplace_back();
+	Theme &back = m_extraThemes.back();
+	back.load(dir.absolutePath());
+	return back;
+}
+
+void MainWindow::createOneExtraThemeWidget(Theme &theme)
+{
+	ThemeWidget *extraTheme = new ThemeWidget(&theme, ui->scrollAreaWidgetContents_stash);
+	m_extraThemeWidgets.push_back(extraTheme);
+	ui->scrollAreaWidgetContents_stash->layout()->addWidget(extraTheme);
 }
 
 void MainWindow::clearLayout(QLayout *layout)
@@ -402,12 +415,69 @@ void MainWindow::on_actionDownload_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-	initJson();
-	QDir defaultTheme(m_defaultThemePath.absolutePath() + "/images");
-	if(defaultTheme.exists())
+	auto findAppropriateSaveName = [] (QDir &directory)
 	{
-		m_defaultTheme.load(defaultTheme);
-		m_defaultTheme.unpack();
+		QDir directory_copy(directory);
+		bool canSave = false;
+		int i = 0;
+		while(!canSave)
+		{
+			if((canSave = !directory_copy.exists()))
+			{
+				directory = directory_copy;
+			}
+			else
+			{
+				directory_copy.setPath(directory.absolutePath() + " (" + QString::number(++i) + ")");
+			}
+		}
+	};
+
+	QString str = QFileDialog::getExistingDirectory(this, tr("Open a theme folder/a folder containing theme folders"), QDir::homePath());
+	if(!str.isEmpty() && !str.isNull())
+	{
+		QDir dir(str);
+		if(dir.exists())
+		{
+			//First check if this is a theme folder
+			QDir dirColors(dir.absolutePath() + "/colors");
+			QDir dirImages(dir.absolutePath() + "/images");
+			if(dirColors.exists() || dirImages.exists())
+			{
+				//Case this is a theme folder
+				QString dirEntryName(dir.dirName());
+				Theme tmpTheme;
+				tmpTheme.load(dir);
+				QDir dirSaveTheme(m_parameters.themesPath.absolutePath() + "/" + dirEntryName);
+				findAppropriateSaveName(dirSaveTheme);
+				tmpTheme.save(dirSaveTheme);
+				Theme &theme = createOneTheme(dirSaveTheme);
+				createOneExtraThemeWidget(theme);
+			}
+			else
+			{
+				//Case this is a themes folder
+				const QStringList lsDir = dir.entryList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
+				for(const QString &strEntry : lsDir)
+				{
+					QDir dirEntry(dir.absolutePath() + "/" + strEntry);
+					QDir dirColors(dirEntry.absolutePath() + "/colors");
+					QDir dirImages(dirEntry.absolutePath() + "/images");
+					if(dirColors.exists() || dirImages.exists())
+					{
+						//Case this is a theme folder
+						QString dirEntryName(dirEntry.dirName());
+						Theme tmpTheme;
+						tmpTheme.load(QDir(dirEntry));
+						QDir dirSaveTheme(m_parameters.themesPath.absolutePath() + "/" + dirEntryName);
+						findAppropriateSaveName(dirSaveTheme);
+						tmpTheme.save(dirSaveTheme);
+						Theme &theme = createOneTheme(dirSaveTheme);
+						createOneExtraThemeWidget(theme);
+					}
+				}
+			}
+		}
 	}
     return;
 }

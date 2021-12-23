@@ -86,62 +86,67 @@
         <translation>Fichier</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="173"/>
+        <location filename="../ui/mainwindow.ui" line="174"/>
         <source>Open</source>
         <translation>Ouvrir</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="178"/>
+        <location filename="../ui/mainwindow.ui" line="177"/>
+        <source>Open a theme or themes folder.</source>
+        <translation>Ouvrir : ouvre un ou plusieurs thèmes.</translation>
+    </message>
+    <message>
+        <location filename="../ui/mainwindow.ui" line="182"/>
         <source>Import</source>
         <translation>Importer</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="183"/>
+        <location filename="../ui/mainwindow.ui" line="187"/>
         <source>Export</source>
         <translation>Exporter</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="188"/>
+        <location filename="../ui/mainwindow.ui" line="192"/>
         <source>Update Default Theme</source>
         <translation>MAJ Ankama</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="191"/>
+        <location filename="../ui/mainwindow.ui" line="195"/>
         <source>Update: downloads and imports the latest default theme json file, textures, and colors.</source>
         <translation>MAJ Ankama : télécharge et importe le dernier thème d&apos;Ankama.</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="196"/>
+        <location filename="../ui/mainwindow.ui" line="200"/>
         <source>Save</source>
         <translation>Sauvegarder</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="201"/>
+        <location filename="../ui/mainwindow.ui" line="205"/>
         <source>Make theme</source>
         <translation>Construire thème</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="204"/>
+        <location filename="../ui/mainwindow.ui" line="208"/>
         <source>Make theme: compiles a new theme as the merge of all &quot;used&quot; themes, with priority from top to bottom,  and exports it to the specified directory.</source>
         <translation>Compiler thème : construit un thème comme étant la fusion de tous les thèmes &quot;à utiliser&quot;, par ordre décroissant de priorité, et l&apos;exporte vers le dossier spécifié.</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="209"/>
+        <location filename="../ui/mainwindow.ui" line="213"/>
         <source>Reset theme</source>
         <translation>Réinitialiser thème</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="212"/>
+        <location filename="../ui/mainwindow.ui" line="216"/>
         <source>Reset theme: exports the default theme to the specified directory.</source>
         <translation>Réinitialiser thème : exporte le thème par défaut vers le dossier spécifié.</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="217"/>
+        <location filename="../ui/mainwindow.ui" line="221"/>
         <source>Settings</source>
         <translation>Options</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="220"/>
+        <location filename="../ui/mainwindow.ui" line="224"/>
         <source>Open program settings.</source>
         <translation>Ouvre le panneau d&apos;options du programme.</translation>
     </message>
@@ -163,17 +168,17 @@
         <translation type="vanished">Choisissez où exporter le thème final</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="77"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="78"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="77"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="78"/>
         <source>The program could not find the &quot;theme&quot; folder of Wakfu at its usual place. Please provide it to continue.</source>
         <translation>Le programme n&apos;a pas trouvé le dossier &quot;theme&quot; de Wakfu à sa place habituelle. Veuillez ouvrir ce dossier pour continuer.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="78"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="79"/>
         <source>Choose the &quot;theme&quot; or &quot;zaap&quot; folder of your game</source>
         <translation>Ouvrez le dossier &quot;theme&quot; ou &quot;zaap&quot; de votre jeu</translation>
     </message>
@@ -182,43 +187,43 @@
         <translation type="vanished">Attention : le dossier fourni n&apos;est pas &quot;theme&quot; ou &quot;zaap&quot; et le programme peut ne pas fonctionner comme souhaité.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="326"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="339"/>
         <source>Error while attempting to download files!</source>
         <translation>Erreur en tentant de télécharger les fichiers !</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="330"/>
-        <location filename="../src/Widgets/mainwindow.cpp" line="352"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="343"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="365"/>
         <source>Downloading files... </source>
         <translation>Téléchargement des fichiers... </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="346"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="359"/>
         <source>Failed to save Image </source>
         <translation>Echec en tentant de sauvegarder l&apos;image </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="364"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="377"/>
         <source>All files were downloaded successfully.</source>
         <translation>Tous les fichiers ont été téléchargés avec succès.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="506"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="576"/>
         <source>Error: theme json file could not be opened (did you download it first?).</source>
         <translation>Erreur : le fichier d&apos;information .json n&apos;a pas pu être ouvert (est-il téléchargé ?).</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="447"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="517"/>
         <source>Making theme... </source>
         <translation>Construction du thème... </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="85"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="86"/>
         <source>Warning: the provided folder is not &quot;theme&quot; or &quot;zaap&quot;.</source>
         <translation>Attention : le dossier n&apos;est pas &quot;theme&quot; ou &quot;zaap&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="107"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="108"/>
         <source>Configuration file saved successfully.</source>
         <translation>Fichier de configuration sauvé avec succès.</translation>
     </message>
@@ -227,52 +232,57 @@
         <translation type="vanished">Attention : impossible de sauvegarder les paramètres (erreur inconnue).</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="111"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="112"/>
         <source>Warning: unable to save settings (unknown error).</source>
         <translation>Attention : impossible de sauvegarder les options (erreur inconnue).</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="330"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="343"/>
         <source> left</source>
         <translation> restants</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="464"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="436"/>
+        <source>Open a theme folder/a folder containing theme folders</source>
+        <translation>Ouvrez un thème ou un dossier contenant des thèmes</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/mainwindow.cpp" line="534"/>
         <source>Loading </source>
         <translation>Chargement du thème </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="469"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="539"/>
         <source>Extracting </source>
         <translation>Extraction du thème </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="474"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="544"/>
         <source>Applying pixmaps of </source>
         <translation>Application des pixmaps de </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="486"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="556"/>
         <source>Applying orphan pixmaps of </source>
         <translation>Application des pixmaps orphelines de </translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="495"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="565"/>
         <source>Theme compiled.</source>
         <translation>Thème compilé.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="519"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="589"/>
         <source>Restoring default theme...</source>
         <translation>Restauration du thème par défaut...</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="527"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="597"/>
         <source>Finished restoring default theme.</source>
         <translation>Restauration du thème par défaut terminée.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/mainwindow.cpp" line="531"/>
+        <location filename="../src/Widgets/mainwindow.cpp" line="601"/>
         <source>Unable to restore default theme (did you download it first?).</source>
         <translation>Impossible de restaurer le thème par défaut (est-il téléchargé ?).</translation>
     </message>

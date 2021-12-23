@@ -29,6 +29,7 @@ public:
 	bool saveColors(const QDir &dir) const;
 	void fuseColors(const Theme *model);
 
+	void setPath(const QDir &path);
 	const QDir &path() const;
 	const QString &name() const;
 

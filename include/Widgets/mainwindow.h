@@ -43,6 +43,8 @@ public:
 	void loadAllThemes();
     void createScrollAreas();
 	void createAllExtraThemeWidgets();
+	Theme &createOneTheme(const QDir &dir);
+	void createOneExtraThemeWidget(Theme &theme);
 
 	bool saveConfigurationFile();
 	void resetDefaultThemeWidget();
