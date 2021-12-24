@@ -24,7 +24,6 @@ public:
 
 	void mousePressEvent(QMouseEvent *event);
 	bool setImage(const QFile &file);
-	bool setImage(const QDir &dir);
 
 	void createPixmap();
 

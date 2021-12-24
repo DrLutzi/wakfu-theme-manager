@@ -29,12 +29,6 @@ bool ThemeWidget::setImage(const QFile &file)
 	return b;
 }
 
-bool ThemeWidget::setImage(const QDir &dir)
-{
-	QFile file(dir.absolutePath() + "/theme.png");
-	return setImage(file);
-}
-
 void ThemeWidget::createPixmap()
 {
 	if(m_theme)
@@ -65,7 +59,7 @@ void ThemeWidget::createPixmap()
 			QString style = "border-radius : 1px; border-width: 1.3px; border-color: rgb(%1, %2, %3);";
 			ui->label_pix->setStyleSheet(style.arg(0).arg(0).arg(0));
 		}
-		if(!setImage(QDir(m_theme->path().absolutePath() + "/theme.png")))
+        if(!setImage(QFile(m_theme->path().absolutePath() + "/theme.png")))
 		{
 			if(!setImage(QFile(m_theme->path().absolutePath() + "/images/dungeon.png")))
 			{
@@ -89,12 +83,17 @@ void ThemeWidget::mousePressEvent(QMouseEvent *event)
 	{
 		QDrag *drag = new QDrag(this);
 
-		QMimeData *mimeData = new QMimeData;
+        QMimeData *mimeData = new QMimeData;
 		mimeData->setText(m_theme->name());
 		drag->setMimeData(mimeData);
 		drag->setPixmap(m_dragPixmap);
 		setTransparentAspect(true);
-		drag->exec(Qt::MoveAction);
+        Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
+        if(dropAction == Qt::IgnoreAction)
+        {
+            drag->deleteLater();
+            mimeData->deleteLater();
+        }
 		setTransparentAspect(false);
 	}
 }

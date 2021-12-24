@@ -9,9 +9,10 @@
 #include <QScrollBar>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <mutex>
 #include <QThread>
 #include <QProgressBar>
+#include <mutex>
+#include <list>
 #include "filedownloader.h"
 #include "themewidget.h"
 #include "theme.h"
@@ -32,10 +33,6 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
-	void downloadAllImages();
-	void downloadAllColours();
-	void downloadAll();
-
 	void makeProgressBar();
 	bool setActionIcons();
 	bool loadConfigurationFile();
@@ -43,11 +40,11 @@ public:
 	void loadAllThemes();
     void createScrollAreas();
 	void createAllExtraThemeWidgets();
-	Theme &createOneTheme(const QDir &dir);
-	void createOneExtraThemeWidget(Theme &theme);
+    Theme *createOneTheme(const QDir &dir);
 
 	bool saveConfigurationFile();
 	void resetDefaultThemeWidget();
+    void openTheme();
 
 	AppParameters *parameters();
 	void notifyThemesPathChanged();
@@ -64,7 +61,7 @@ private:
 
 	Theme			m_defaultTheme;
 	Theme			m_outputTheme;
-	std::vector<Theme> m_extraThemes;
+    std::vector<Theme *> m_extraThemes;
 
 	ThemeWidget *m_defaultThemeWidget;
 	std::vector<ThemeWidget *> m_extraThemeWidgets;
@@ -79,7 +76,15 @@ private:
 
 	void setAllWidgetsEnabled(bool b);
 
+signals:
+    void progressChanged(int newValue);
+    void messageChanged(const QString &message, int timeout = 0);
+    void addedTheme(Theme *theme);
+    void openedTheme(QDir dir);
+
 private slots:
+    void openOneThemeAndMakeExtraThemeWidget(QDir dir);
+    void createOneExtraThemeWidget(Theme *theme);
 	void loadJsonFromInternet(QUrl url);
 	void on_actionDownload_triggered();
 	void on_actionOpen_triggered();
