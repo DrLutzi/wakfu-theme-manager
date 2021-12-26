@@ -139,9 +139,13 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionDownload"/>
+    <addaction name="actionOpen"/>
     <addaction name="actionMake_theme"/>
     <addaction name="actionReset"/>
+    <addaction name="separator"/>
+    <addaction name="actionParameters"/>
+    <addaction name="separator"/>
+    <addaction name="actionDownload"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -162,12 +166,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionDownload"/>
+   <addaction name="actionOpen"/>
    <addaction name="actionMake_theme"/>
    <addaction name="actionReset"/>
-   <addaction name="actionOpen"/>
    <addaction name="separator"/>
    <addaction name="actionParameters"/>
+   <addaction name="separator"/>
+   <addaction name="actionDownload"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -213,7 +218,7 @@
     <string>Reset theme</string>
    </property>
    <property name="toolTip">
-    <string>Reset theme: exports the default theme to the specified directory.</string>
+    <string>Reset theme: remove theme files in the specified output path.</string>
    </property>
   </action>
   <action name="actionParameters">
@@ -221,7 +226,7 @@
     <string>Settings</string>
    </property>
    <property name="toolTip">
-    <string>Open program settings.</string>
+    <string>Settings: Open settings panel.</string>
    </property>
   </action>
  </widget>

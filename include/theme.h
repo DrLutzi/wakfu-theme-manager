@@ -39,7 +39,12 @@ public:
 	bool isUnpacked() const;
 
 	void copyTextures(const Theme &other);
-	void resetTextures(); ///< sets all textures at value 0.
+
+	///\brief resetTextures sets all textures at value 0.
+	void resetTextures();
+
+	///\brief useToRemoveImagesIn removes all files in dir for which the name can be found in the map.
+	void useToRemoveImagesIn(const QDir &dir);
 
 	const TextureMapType &textures() const;
 	TextureMapType &textures();

@@ -39,16 +39,14 @@ public:
 	void checkOutputExistence();
 	void loadAllThemes();
     void createScrollAreas();
-	void createAllExtraThemeWidgets();
+	void openAndImportAllThemesThreaded();
     Theme *createOneTheme(const QDir &dir);
 
 	bool saveConfigurationFile();
 	void resetDefaultThemeWidget();
-    void openTheme();
+	void openTheme(QString str);
 
 	AppParameters *parameters();
-	void notifyThemesPathChanged();
-	void notifyParametersChanged();
 
 private:
 	Ui::MainWindow *ui;
@@ -74,18 +72,22 @@ private:
 	void makeTheme();
 	void resetTheme();
 
-	void setAllWidgetsEnabled(bool b);
-
 signals:
     void progressChanged(int newValue);
     void messageChanged(const QString &message, int timeout = 0);
-    void addedTheme(Theme *theme);
+	void defaultThemeReady();
+	void extraThemeReady(Theme *theme);
     void openedTheme(QDir dir);
 
 private slots:
+	void enableAllWidgets();
+	void disableAllWidgets();
+	void setAllWidgetsEnabled(bool b);
     void openOneThemeAndMakeExtraThemeWidget(QDir dir);
+	void createDefaultThemeWidget();
     void createOneExtraThemeWidget(Theme *theme);
-	void loadJsonFromInternet(QUrl url);
+	void createAllExtraThemeWidgets();
+	void loadJsonFromInternet();
 	void on_actionDownload_triggered();
 	void on_actionOpen_triggered();
 	void on_actionExport_triggered();
@@ -93,5 +95,6 @@ private slots:
 	void on_actionMake_theme_triggered();
 	void on_actionReset_triggered();
 	void on_actionParameters_triggered();
+	void on_parametersChanged(AppParameters newParameters);
 };
 #endif // MAINWINDOW_H

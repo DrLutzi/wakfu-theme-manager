@@ -21,6 +21,9 @@ public:
 
 	void closeEvent(QCloseEvent *e);
 
+signals:
+	void notifyParametersChanged(AppParameters newParameters);
+
 private slots:
 
 	void on_pushButton_themes_path_released();
@@ -31,10 +34,9 @@ private slots:
 	void on_lineEdit_output_path_textChanged(const QString &arg1);
 
 	void on_pushButton_reset_released();
-
 	void on_pushButton_ok_released();
-
 	void on_FormParameters_destroyed();
+	void on_pushButton_default_released();
 
 private:
 
@@ -52,7 +54,7 @@ private:
 	AppParameters &m_parametersRef;
 	AppParameters m_parametersNotSaved;
 	AppParameters m_copyParameters;
-
+	static AppParameters m_defaultParameters;
 	static const QString styleSheetLineEditOkay;
 	static const QString styleSheetLineEditWarning;
 };

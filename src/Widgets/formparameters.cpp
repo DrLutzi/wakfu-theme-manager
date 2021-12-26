@@ -2,6 +2,12 @@
 #include "ui_formparameters.h"
 #include "mainwindow.h"
 
+#ifdef Q_OS_WIN32
+AppParameters FormParameters::m_defaultParameters {QDir(_defaultThemeDirectory), QDir("./themes"), QUrl(_defaultJsonThemeUrl)};
+#else
+AppParameters FormParameters::m_defaultParameters {QDir(_defaultThemeDirectory), QDir("./themes"), QUrl(_defaultJsonThemeUrl)};
+#endif
+
 const QString FormParameters::styleSheetLineEditOkay("background: rgba(230, 250, 230, 255);");
 const QString FormParameters::styleSheetLineEditWarning("background: rgba(250, 250, 210, 255);");
 
@@ -28,17 +34,7 @@ void FormParameters::closeEvent(QCloseEvent *e)
 	(void) e;
 	if(m_parametersNotSaved != m_parametersRef)
 	{
-		MainWindow *mw = dynamic_cast<MainWindow *>(parent());
-		if(mw != nullptr)
-		{
-			mw->notifyParametersChanged();
-			bool b = m_parametersRef.themesPath != m_parametersNotSaved.themesPath;
-			m_parametersRef = m_parametersNotSaved;
-			if(b)
-			{
-				mw->notifyThemesPathChanged();
-			}
-		}
+		emit notifyParametersChanged(m_parametersNotSaved);
 	}
 }
 
@@ -169,5 +165,11 @@ void FormParameters::on_pushButton_ok_released()
 void FormParameters::on_FormParameters_destroyed()
 {
 	return;
+}
+
+void FormParameters::on_pushButton_default_released()
+{
+	m_parametersNotSaved = m_defaultParameters;
+	updateAllLineEdits();
 }
 

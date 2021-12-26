@@ -12,7 +12,7 @@ void ScrollAreaContent::dropEvent(QDropEvent *event)
 	assert(l != nullptr);
 	event->acceptProposedAction();
 	const QMimeData *mimeData = event->mimeData();
-    const QPoint &pos = event->position().toPoint();
+	const QPoint &pos = event->pos();
 	if(mimeData->hasText())
 	{
 		QString text = mimeData->text(); //text should be a name

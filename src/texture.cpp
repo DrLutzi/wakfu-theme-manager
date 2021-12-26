@@ -10,7 +10,7 @@ Texture::Texture(const QString &id) :
 Texture::Texture(const Texture &other) :
 	m_pathId(other.pathId()),
 	m_image(other.image()),
-	m_pixmaps() //pixmaps are personnal. I could change my mind later.
+	m_pixmaps()
 {}
 
 bool Texture::save(const QFile &file) const

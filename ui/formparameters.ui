@@ -40,6 +40,9 @@
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_json_url">
+        <property name="toolTip">
+         <string>Json url: internet link to Ankama's json file for themes, required to update the default theme.</string>
+        </property>
         <property name="text">
          <string>Json url</string>
         </property>
@@ -47,6 +50,9 @@
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_themes_path">
+        <property name="toolTip">
+         <string>Themes Path: path to where themes are stored and should be imported.</string>
+        </property>
         <property name="text">
          <string>Themes Path</string>
         </property>
@@ -88,6 +94,9 @@
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_output_path">
+        <property name="toolTip">
+         <string>Output path: path where themes should be compiled and exported, usually the path to the &quot;theme&quot; folder of your game.</string>
+        </property>
         <property name="text">
          <string>Output path</string>
         </property>
@@ -132,6 +141,19 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QPushButton" name="pushButton_default">
+       <property name="toolTip">
+        <string>Restores default settings.</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color : rgb(233, 185, 110)</string>
+       </property>
+       <property name="text">
+        <string>Default</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="pushButton_reset">
        <property name="toolTip">

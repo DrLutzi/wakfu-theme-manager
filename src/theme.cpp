@@ -265,6 +265,32 @@ void Theme::resetTextures()
 	return;
 }
 
+void Theme::useToRemoveImagesIn(const QDir &dir)
+{
+	QDir dirImages(dir.absolutePath() + "/images");
+	QDir dirColors(dir.absolutePath() + "/colors");
+	if(dirImages.exists())
+	{
+		QFileInfoList ls = dirImages.entryInfoList(QStringList(), QDir::Files);
+		for(QFileInfoList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
+		{
+			const QFileInfo &fileInfo = (*cit);
+			QString baseName(fileInfo.baseName());
+			TextureMapType::const_iterator cit_texmap = m_textures.find(baseName);
+			if(cit_texmap != m_textures.end())
+			{
+				QFile file(fileInfo.absoluteFilePath());
+				file.remove();
+			}
+		}
+	}
+	if(dirColors.exists())
+	{
+		QFile colorsFile(dirColors.absoluteFilePath("colors.xml"));
+		colorsFile.remove();
+	}
+}
+
 const Theme::TextureMapType &Theme::textures() const
 {
 	return m_textures;
