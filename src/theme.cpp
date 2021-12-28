@@ -305,3 +305,13 @@ const Theme::ColorMapType &Theme::colors() const
 {
 	return m_colors;
 }
+
+void Theme::setRemote(const QUrl &url)
+{
+    m_remote = url;
+}
+
+bool Theme::lookupRemote()
+{
+
+}

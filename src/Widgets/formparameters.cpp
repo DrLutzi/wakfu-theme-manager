@@ -2,7 +2,7 @@
 #include "ui_formparameters.h"
 #include "mainwindow.h"
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 AppParameters FormParameters::m_defaultParameters {QDir(_defaultThemeDirectory), QDir("./themes"), QUrl(_defaultJsonThemeUrl)};
 #else
 AppParameters FormParameters::m_defaultParameters {QDir(_defaultThemeDirectory), QDir("./themes"), QUrl(_defaultJsonThemeUrl)};
@@ -85,14 +85,7 @@ void FormParameters::on_lineEdit_output_path_textChanged(const QString &arg1)
 
 bool FormParameters::checkValidityOfJsonUrl() const
 {
-	bool b = false;
-	if(m_parametersNotSaved.jsonUrl.isValid())
-	{
-		QFile file(m_parametersNotSaved.jsonUrl.fileName());
-		QFileInfo fileInfo(file);
-		b = fileInfo.completeSuffix() == "json";
-	}
-	return b;
+	return AppParameters::checkValidityOfJsonUrl(m_parametersNotSaved.jsonUrl.url());
 }
 
 bool FormParameters::checkValidityOfThemesPath() const

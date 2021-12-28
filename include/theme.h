@@ -7,6 +7,7 @@
 #include <set>
 #include "color.h"
 #include <QtXml>
+#include "filedownloader.h"
 
 class Theme
 {
@@ -50,8 +51,6 @@ public:
 	TextureMapType &textures();
 	const ColorMapType &colors() const;
 
-	bool saveRemote(const QDir &dir) const;
-	bool loadRemote(const QDir &dir) const;
 	void setRemote(const QUrl &url);
 	bool lookupRemote();
 

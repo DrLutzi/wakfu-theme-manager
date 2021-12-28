@@ -11,7 +11,7 @@
 #endif
 	static const QString _defaultJsonThemeUrl ("https://wakfu.cdn.ankama.com/gamedata/theme/theme.json");
 
-struct AppParameters
+class AppParameters
 {
 public:
 
@@ -23,6 +23,18 @@ public:
 	{
 		return !operator==(other);
 	}
+
+    static bool checkValidityOfJsonUrl(const QUrl &url)
+    {
+        bool b = false;
+        if(url.isValid())
+        {
+            QFile file(url.fileName());
+            QFileInfo fileInfo(file);
+            b = fileInfo.completeSuffix() == "json";
+        }
+        return b;
+    }
 
 	QDir outputPath;
 	QDir themesPath;

@@ -3,6 +3,7 @@ QT		+=	network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+RC_ICONS = resources/icon.ico
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -39,7 +40,8 @@ SOURCES += \
 	mainwindow.cpp \
 	themewidget.cpp \
 	scrollareacontent.cpp \
-	scrollarea.cpp
+	scrollarea.cpp \
+	unzipper.cpp
 
 HEADERS += \
 	filedownloader.h \
@@ -52,7 +54,8 @@ HEADERS += \
 	scrollareacontent.h \
 	scrollarea.h \
 	formparameters.h \
-	types.h
+	types.h \
+	unzipper.h
 
 FORMS += \
 	formparameters.ui \

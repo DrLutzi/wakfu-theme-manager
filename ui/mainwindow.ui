@@ -57,7 +57,7 @@
             <x>0</x>
             <y>0</y>
             <width>386</width>
-            <height>470</height>
+            <height>476</height>
            </rect>
           </property>
           <property name="acceptDrops">
@@ -112,7 +112,7 @@
             <x>0</x>
             <y>0</y>
             <width>385</width>
-            <height>470</height>
+            <height>476</height>
            </rect>
           </property>
           <property name="acceptDrops">
@@ -132,7 +132,7 @@
      <x>0</x>
      <y>0</y>
      <width>844</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -140,6 +140,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpen_Zip"/>
     <addaction name="actionMake_theme"/>
     <addaction name="actionReset"/>
     <addaction name="separator"/>
@@ -167,6 +168,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionOpen_Zip"/>
    <addaction name="actionMake_theme"/>
    <addaction name="actionReset"/>
    <addaction name="separator"/>
@@ -180,6 +182,9 @@
    </property>
    <property name="toolTip">
     <string>Open a theme or themes folder.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionImport">
@@ -212,6 +217,9 @@
    <property name="toolTip">
     <string>Make theme: compiles a new theme as the merge of all &quot;used&quot; themes, with priority from top to bottom,  and exports it to the specified directory.</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionReset">
    <property name="text">
@@ -227,6 +235,20 @@
    </property>
    <property name="toolTip">
     <string>Settings: Open settings panel.</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
+   </property>
+  </action>
+  <action name="actionOpen_Zip">
+   <property name="text">
+    <string>Open Zip</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Zip: opens and unzips a .zip file containing a theme.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

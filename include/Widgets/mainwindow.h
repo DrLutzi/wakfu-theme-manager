@@ -20,6 +20,7 @@
 #include "scrollarea.h"
 #include "formparameters.h"
 #include "types.h"
+#include "unzipper.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,7 +41,7 @@ public:
 	void loadAllThemes();
     void createScrollAreas();
 	void openAndImportAllThemesThreaded();
-    Theme *createOneTheme(const QDir &dir);
+	Theme *createOrUpdateOneTheme(const QDir &dir);
 
 	bool saveConfigurationFile();
 	void resetDefaultThemeWidget();
@@ -71,25 +72,29 @@ private:
 	void downloadDefault();
 	void makeTheme();
 	void resetTheme();
+	std::vector<Theme *>::iterator findTheme(const QString &name);
 
 signals:
-    void progressChanged(int newValue);
-    void messageChanged(const QString &message, int timeout = 0);
-	void defaultThemeReady();
-	void extraThemeReady(Theme *theme);
-    void openedTheme(QDir dir);
+	void progressUpdateRequired(int newValue);
+	void messageUpdateRequired(const QString &message, int timeout = 0);
+	void defaultThemeWidgetCreationRequired();
+	void extraThemeWidgetCreationRequired(Theme *theme);
+	void openThemeRequired(QDir dir);
+	void updateFromThemesDirRequired();
 
 private slots:
 	void enableAllWidgets();
 	void disableAllWidgets();
 	void setAllWidgetsEnabled(bool b);
-    void openOneThemeAndMakeExtraThemeWidget(QDir dir);
+	void updateFromThemesDir();
+	void openExThemeAndMakeExThemeWidget(QDir dir);
 	void createDefaultThemeWidget();
     void createOneExtraThemeWidget(Theme *theme);
 	void createAllExtraThemeWidgets();
 	void loadJsonFromInternet();
 	void on_actionDownload_triggered();
 	void on_actionOpen_triggered();
+	void on_actionOpen_Zip_triggered();
 	void on_actionExport_triggered();
 	void on_actionSave_triggered();
 	void on_actionMake_theme_triggered();

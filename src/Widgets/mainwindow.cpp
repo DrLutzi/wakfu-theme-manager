@@ -19,10 +19,11 @@ MainWindow::MainWindow(QWidget *parent)
 	m_progressBar(nullptr)
 {
 	ui->setupUi(this);
-    connect(this, &MainWindow::messageChanged, ui->statusbar, &QStatusBar::showMessage);
-	connect(this, &MainWindow::extraThemeReady, this, &MainWindow::createOneExtraThemeWidget);
-    connect(this, &MainWindow::openedTheme, this, &MainWindow::openOneThemeAndMakeExtraThemeWidget);
-	connect(this, &MainWindow::defaultThemeReady, this, &MainWindow::createDefaultThemeWidget);
+	connect(this, &MainWindow::messageUpdateRequired, ui->statusbar, &QStatusBar::showMessage);
+	connect(this, &MainWindow::extraThemeWidgetCreationRequired, this, &MainWindow::createOneExtraThemeWidget);
+	connect(this, &MainWindow::openThemeRequired, this, &MainWindow::openExThemeAndMakeExThemeWidget);
+	connect(this, &MainWindow::defaultThemeWidgetCreationRequired, this, &MainWindow::createDefaultThemeWidget);
+	connect(this, &MainWindow::updateFromThemesDirRequired, this, &MainWindow::updateFromThemesDir);
 	makeProgressBar();
 	setActionIcons();
     createScrollAreas();
@@ -50,7 +51,7 @@ void MainWindow::makeProgressBar()
 	m_progressBar->setMaximum(100);
 	m_progressBar->setTextVisible(false);
 	ui->statusbar->addPermanentWidget(m_progressBar);
-    connect(this, &MainWindow::progressChanged, m_progressBar, &QProgressBar::setValue);
+	connect(this, &MainWindow::progressUpdateRequired, m_progressBar, &QProgressBar::setValue);
 }
 
 bool MainWindow::setActionIcons()
@@ -60,6 +61,7 @@ bool MainWindow::setActionIcons()
 	ui->actionMake_theme->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 	ui->actionOpen->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileDialogNewFolder));
 	ui->actionParameters->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileDialogDetailedView));
+	ui->actionOpen_Zip->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileIcon));
 	return true;
 }
 
@@ -102,7 +104,7 @@ void MainWindow::checkOutputExistence()
 		}
 		else if(str.dirName() != "theme")
 		{
-            emit messageChanged(tr("Warning: the provided folder is not \"theme\" or \"zaap\"."));
+			emit messageUpdateRequired(tr("Warning: the provided folder is not \"theme\" or \"zaap\"."));
 		}
 		m_parameters.outputPath.setPath(str.absolutePath());
 		saveConfigurationFile();
@@ -124,14 +126,14 @@ void MainWindow::loadAllThemes()
 			if(dir == m_defaultThemePath)
 			{
 				m_defaultTheme.load(m_defaultThemePath);
-				emit progressChanged(float(i+1)/ls.size() * 100);
+				emit progressUpdateRequired(float(i+1)/ls.size() * 100);
 			}
 			else
 			{
 				dirColors.setPath(dir.absolutePath() + "/colors");
 				dirImages.setPath(dir.absolutePath() + "/images");
 				if(dirColors.exists() || dirImages.exists())
-					createOneTheme(dir);
+					createOrUpdateOneTheme(dir);
 			}
 		}
 	}
@@ -216,11 +218,21 @@ void MainWindow::openAndImportAllThemesThreaded()
 	threadThemes->start();
 }
 
-Theme *MainWindow::createOneTheme(const QDir &dir)
+Theme *MainWindow::createOrUpdateOneTheme(const QDir &dir)
 {
-    Theme *theme = new Theme;
-    m_extraThemes.push_back(theme);
-    theme->load(dir.absolutePath());
+	Theme *theme = nullptr;
+	std::vector<Theme *>::iterator it;
+	if((it = findTheme(dir.dirName())) == m_extraThemes.end())
+	{
+		theme = new Theme;
+		m_extraThemes.push_back(theme);
+		theme->load(dir.absolutePath());
+	}
+	else
+	{
+		Theme *theme = (*it);
+		theme->load(dir);
+	}
     return theme;
 }
 
@@ -239,11 +251,11 @@ bool MainWindow::saveConfigurationFile()
         QJsonDocument configFileJson(objectJson);
         m_configFile.write(configFileJson.toJson());
         m_configFile.close();
-        emit messageChanged(tr("Configuration file saved successfully."));
+		emit messageUpdateRequired(tr("Configuration file saved successfully."));
     }
     else
     {
-        emit messageChanged(tr("Warning: unable to save settings (unknown error)."));
+		emit messageUpdateRequired(tr("Warning: unable to save settings (unknown error)."));
     }
     return b;
 }
@@ -265,13 +277,7 @@ void MainWindow::resetDefaultThemeWidget()
     }
     if(m_defaultTheme.isInitialized())
     {
-        m_defaultThemeWidget = new ThemeWidget(&m_defaultTheme, ui->scrollAreaWidgetContents_stash);
-        m_defaultThemeWidget->setTransparentAspect(true);
-        m_defaultThemeWidget->setEnabled(false);
-    }
-    if(m_defaultThemeWidget != nullptr)
-    {
-        ui->scrollAreaWidgetContents_stash->layout()->addWidget(m_defaultThemeWidget);
+        createDefaultThemeWidget();
     }
 }
 
@@ -311,9 +317,9 @@ void MainWindow::openTheme(QString str)
 		return dirIsValid;
 	};
 
-	bool operationIsSuccessful=false;
+	bool opIsSuccess=false;
 
-	auto openExistingThemeDir = [&] (QDir &themeDir) -> bool
+	auto openAndImportExistingThemeDir = [&] (QDir &themeDir) -> bool
 	{
 		bool isThemeDir = false;
 		QDir dirColors(themeDir.absolutePath() + "/colors");
@@ -321,7 +327,7 @@ void MainWindow::openTheme(QString str)
 		if(dirColors.exists() || dirImages.exists())
 		{
 			isThemeDir = true;
-			operationIsSuccessful=true;
+			opIsSuccess=true;
 			//Case this is a theme folder
 			QString dirEntryName(themeDir.dirName());
 			Theme tmpTheme;
@@ -329,33 +335,99 @@ void MainWindow::openTheme(QString str)
 			QDir dirSaveTheme(m_parameters.themesPath.absolutePath() + "/" + dirEntryName);
 			findAppropriateSaveName(dirSaveTheme);
 			tmpTheme.save(dirSaveTheme);
-			Theme *theme = createOneTheme(dirSaveTheme);
-			emit extraThemeReady(theme);
+			Theme *theme = createOrUpdateOneTheme(dirSaveTheme);
+			if(theme != nullptr)
+			{
+				emit extraThemeWidgetCreationRequired(theme);
+			}
 		}
 		return isThemeDir;
 	};
 
     if(!str.isEmpty() && !str.isNull())
     {
-        QDir dir(str);
-        if(dir.exists())
-        {
-            //First check if this is a theme folder
-			if(correctIfDirIsImagesOrColors(dir) && !openExistingThemeDir(dir))
+		QFileInfo fileInfo(str);
+		if(fileInfo.isDir())
+		{
+			QDir dir(str);
+			if(dir.exists())
 			{
-				const QStringList lsDir = dir.entryList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
-				for(const QString &strEntry : lsDir)
+				//First check if this is a theme folder
+				if(correctIfDirIsImagesOrColors(dir) && !openAndImportExistingThemeDir(dir))
 				{
-					QDir dirEntry(dir.absolutePath() + "/" + strEntry);
-					openExistingThemeDir(dirEntry);
+					emit progressUpdateRequired(0);
+					const QStringList lsDir = dir.entryList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
+					int i = 0;
+					for(const QString &strEntry : lsDir)
+					{
+						QDir dirEntry(dir.absolutePath() + "/" + strEntry);
+						openAndImportExistingThemeDir(dirEntry);
+						emit progressUpdateRequired((float(++i)/lsDir.size())*100);
+					}
 				}
 			}
-        }
-		if(!operationIsSuccessful)
+			if(!opIsSuccess)
+			{
+				emit messageUpdateRequired(QString(tr("Error while attempting to open theme(s): no valid theme folder found.")));
+			}
+		}
+		else if(fileInfo.isFile() && fileInfo.suffix() == "zip")
 		{
-			emit messageChanged(QString(tr("Error while attempting to open theme(s): no valid theme folder found.")));
+			emit progressUpdateRequired(0);
+			QFile file(str);
+			opIsSuccess = file.open(QIODevice::ReadOnly);
+			if(opIsSuccess)
+			{
+				QString savedZipStr(m_parameters.themesPath.absolutePath() + "/_tmpTheme.zip");
+				QFile savedZipFile(savedZipStr);
+				if(savedZipFile.exists())
+				{
+					savedZipFile.remove();
+				}
+				opIsSuccess = file.copy(savedZipStr);
+				file.close();
+				emit progressUpdateRequired(20);
+				if(opIsSuccess)
+				{
+					Unzipper unzipper;
+					opIsSuccess = unzipper.unzip(savedZipFile, m_parameters.themesPath.absolutePath(), nullptr);
+					emit progressUpdateRequired(100);
+					if(opIsSuccess)
+					{
+						QDir colorsDir(m_parameters.themesPath.absolutePath() + "/colors");
+						QDir imagesDir(m_parameters.themesPath.absolutePath() + "/images");
+						if(colorsDir.exists() || imagesDir.exists())
+						{ //case where the zip file only contains colors and dir
+							QDir correctThemeDir(m_parameters.themesPath.absolutePath() + "/" + fileInfo.baseName());
+							opIsSuccess = correctThemeDir.mkpath(correctThemeDir.absolutePath());
+							QDir correctColorsDir(correctThemeDir.absolutePath() + "/colors");
+							QDir correctImagesDir(correctThemeDir.absolutePath() + "/images");
+							correctColorsDir.removeRecursively();
+							correctImagesDir.removeRecursively();
+							correctThemeDir.rename(colorsDir.absolutePath(), correctColorsDir.absolutePath());
+							correctThemeDir.rename(imagesDir.absolutePath(), correctImagesDir.absolutePath());
+						}
+						emit updateFromThemesDirRequired();
+						emit messageUpdateRequired(tr("Successfully unzipped and imported theme archive."));
+					}
+					else
+					{
+						emit messageUpdateRequired(QString(tr("Error while attempting to open theme: unable to find or use an unzip program.")));
+					}
+					savedZipFile.remove();
+				}
+			}
+			if(!opIsSuccess)
+			{
+				emit messageUpdateRequired(QString(tr("Error while attempting to open theme: unable to unzip file.")));
+			}
+		}
+		else
+		{
+			emit messageUpdateRequired(QString(tr("Error while attempting to open theme(s): no file or folder selected.")));
 		}
     }
+	emit progressUpdateRequired(100);
     return;
 }
 
@@ -407,7 +479,7 @@ void MainWindow::initJson(bool forceReset)
 
 void MainWindow::downloadDefault()
 {
-    emit progressChanged(0);
+	emit progressUpdateRequired(0);
     QJsonParseError *jsonPE = new QJsonParseError;
     _jsonThemes = QJsonDocument::fromJson(m_fd->downloadedData(), jsonPE);
     //create useful folders
@@ -428,11 +500,11 @@ void MainWindow::downloadDefault()
     unsigned int maxProgress = nbThreads;
     if(nbThreads == 0)
     {
-        emit messageChanged(QString(tr("Error while attempting to download files!")));
+		emit messageUpdateRequired(QString(tr("Error while attempting to download files!")));
     }
     else
     {
-        emit messageChanged(QString(tr("Downloading files... ")) + QString::number(nbThreads) + tr(" left"));
+		emit messageUpdateRequired(QString(tr("Downloading files... ")) + QString::number(nbThreads) + tr(" left"));
         for(QJsonArray::ConstIterator cit = textures.constBegin(); cit!=textures.constEnd(); ++cit)
         {
             const QJsonValue &value = (*cit);
@@ -453,8 +525,8 @@ void MainWindow::downloadDefault()
                 fd->deleteLater();
                 std::lock_guard<std::mutex> guard(nbThreads_mutex);
                 --nbThreads;
-                emit progressChanged(int(float(maxProgress-nbThreads)/maxProgress * 80));
-                emit messageChanged(QString(tr("Downloading files... ")) + QString::number(nbThreads) + " left");
+				emit progressUpdateRequired(int(float(maxProgress-nbThreads)/maxProgress * 80));
+				emit messageUpdateRequired(QString(tr("Downloading files... ")) + QString::number(nbThreads) + " left");
                 if(nbThreads == 0)
                 {
                     //Load default theme
@@ -465,9 +537,9 @@ void MainWindow::downloadDefault()
                     }
                     const QJsonArray &textureArray = _jsonThemes["textures"].toArray();
                     Texture::initPathToIdMapFromJson(textureArray);
-                    emit messageChanged(QString(tr("All files were downloaded successfully.")));
+					emit messageUpdateRequired(QString(tr("All files were downloaded successfully.")));
                     resetDefaultThemeWidget();
-                    emit progressChanged(100);
+					emit progressUpdateRequired(100);
                     setAllWidgetsEnabled(true);
                 }
             });
@@ -488,7 +560,7 @@ void MainWindow::makeTheme()
     }
 	resetTheme();
     m_outputTheme.copyTextures(m_defaultTheme);
-    emit messageChanged(tr("Making theme... "));
+	emit messageUpdateRequired(tr("Making theme... "));
     //v most likely not in the right order, look for widgets in layout
     int layoutCount = ui->scrollAreaWidgetContents_used->layout()->count();
 
@@ -504,20 +576,20 @@ void MainWindow::makeTheme()
         {
             Theme *theme = tw->theme();
             assert(theme != nullptr);
-            emit messageChanged(QString(tr("Loading ")) + tw->name() + "...");
+			emit messageUpdateRequired(QString(tr("Loading ")) + tw->name() + "...");
             if(!theme->isOpened())
             {
                 theme->load(theme->path());
             }
-            emit messageChanged(QString(tr("Extracting ")) + tw->name() + "...");
+			emit messageUpdateRequired(QString(tr("Extracting ")) + tw->name() + "...");
             if(!theme->isUnpacked())
             {
                 theme->unpack(&m_defaultTheme);
             }
-            emit messageChanged(QString(tr("Applying pixmaps of ")) + tw->name() + "...");
+			emit messageUpdateRequired(QString(tr("Applying pixmaps of ")) + tw->name() + "...");
             m_outputTheme.pack(theme, &taggerTheme, true);
         }
-        emit progressChanged(int( float(layoutCount-i)/(layoutCount) * 50));
+		emit progressUpdateRequired(int( float(layoutCount-i)/(layoutCount) * 50));
     }
     for(int i=0; i<layoutCount; ++i)
     {
@@ -526,21 +598,21 @@ void MainWindow::makeTheme()
         if(tw != nullptr)
         {
             Theme *theme = tw->theme();
-            emit messageChanged(QString(tr("Applying orphan pixmaps of ")) + tw->name() + "...");
+			emit messageUpdateRequired(QString(tr("Applying orphan pixmaps of ")) + tw->name() + "...");
             m_outputTheme.pack(theme, &taggerTheme, false);
         }
         if(layoutCount == 1)
-            emit progressChanged(100);
+			emit progressUpdateRequired(100);
         else
-            emit progressChanged(50 + int( float(i)/(layoutCount-1) * 50));
+			emit progressUpdateRequired(50 + int( float(i)/(layoutCount-1) * 50));
     }
     m_outputTheme.save(m_parameters.outputPath);
-    emit messageChanged(QString(tr("Theme compiled.")));
+	emit messageUpdateRequired(QString(tr("Theme compiled.")));
 }
 
 void MainWindow::resetTheme()
 {
-    emit messageChanged(QString(tr("Restoring default theme...")));
+	emit messageUpdateRequired(QString(tr("Restoring default theme...")));
     if(!m_defaultTheme.isOpened())
     {
         m_defaultTheme.load(m_defaultThemePath);
@@ -549,12 +621,25 @@ void MainWindow::resetTheme()
     {
 		//m_defaultTheme.save(m_parameters.outputPath);
 		m_defaultTheme.useToRemoveImagesIn(m_parameters.outputPath);
-        emit messageChanged(QString(tr("Finished restoring default theme.")));
+		emit messageUpdateRequired(QString(tr("Finished restoring default theme.")));
     }
     else
     {
-        emit messageChanged(QString(tr("Unable to restore default theme (did you download it first?).")));
+		emit messageUpdateRequired(QString(tr("Unable to restore default theme (did you download it first?).")));
     }
+}
+
+std::vector<Theme *>::iterator MainWindow::findTheme(const QString &name)
+{
+	std::vector<Theme *>::iterator it = m_extraThemes.end();
+	if(!name.isEmpty() && !name.isNull() && name != "default")
+	{
+		it = std::find_if(m_extraThemes.begin(), m_extraThemes.end(), [&] (Theme *theme) -> bool
+		{
+			return theme != nullptr && theme->name() == name;
+		});
+	}
+	return it;
 }
 
 ///SLOTS
@@ -580,10 +665,38 @@ void MainWindow::setAllWidgetsEnabled(bool b)
 	ui->widget_scrollArea_used->setEnabled(b);
 }
 
-void MainWindow::openOneThemeAndMakeExtraThemeWidget(QDir dir)
+void MainWindow::updateFromThemesDir()
 {
-    Theme *theme = createOneTheme(dir);
-    createOneExtraThemeWidget(theme);
+	QStringList ls = m_parameters.themesPath.entryList(QDir::Dirs|QDir::NoDotAndDotDot);
+	int i=0;
+	for(QStringList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit, ++i)
+	{
+		const QString &dirStr = (*cit);
+		if(!dirStr.isEmpty() && !dirStr.isNull())
+		{
+			QDir dir(dirStr);
+			QString dirName(dir.dirName());
+			if(dirName == "default")
+			{
+				m_defaultTheme.load(m_defaultThemePath);
+			}
+			else
+			{
+				openExThemeAndMakeExThemeWidget(m_parameters.themesPath.absolutePath() + "/" + dirName);
+			}
+		}
+		emit progressUpdateRequired(float(i+1)/ls.size() * 100);
+	}
+	emit messageUpdateRequired(tr("Successfully updated themes."));
+}
+
+void MainWindow::openExThemeAndMakeExThemeWidget(QDir dir)
+{
+	Theme *theme = createOrUpdateOneTheme(dir);
+	if(theme != nullptr)
+	{
+		createOneExtraThemeWidget(theme);
+	}
 }
 
 void MainWindow::createDefaultThemeWidget()
@@ -591,6 +704,7 @@ void MainWindow::createDefaultThemeWidget()
 	m_defaultThemeWidget = new ThemeWidget(&m_defaultTheme, ui->scrollAreaWidgetContents_stash);
 	m_defaultThemeWidget->setTransparentAspect(true);
 	m_defaultThemeWidget->setEnabled(false);
+    m_defaultThemeWidget->setToolTip(tr("Default theme downloaded and imported correctly."));
 	ui->scrollAreaWidgetContents_stash->layout()->addWidget(m_defaultThemeWidget);
 }
 
@@ -616,13 +730,13 @@ void MainWindow::createAllExtraThemeWidgets()
 	}
 	if(m_defaultTheme.isInitialized())
 	{
-		emit defaultThemeReady();
+		emit defaultThemeWidgetCreationRequired();
 	}
 	m_extraThemeWidgets.reserve(m_extraThemes.size());
 	for(std::vector<Theme *>::iterator it = m_extraThemes.begin(); it != m_extraThemes.end(); ++it) //TODO : should be const iterator
 	{
 		Theme *&theme = *it;
-		emit extraThemeReady(theme);
+		emit extraThemeWidgetCreationRequired(theme);
 	}
 	return;
 }
@@ -663,6 +777,16 @@ void MainWindow::on_actionOpen_triggered()
     thread->start();
 }
 
+void MainWindow::on_actionOpen_Zip_triggered()
+{
+	setAllWidgetsEnabled(false);
+	QString str = QFileDialog::getOpenFileName(this, tr("Open a .zip archive containing a theme"), QDir::homePath());
+	QThread *thread = QThread::create([this, str]() {openTheme(str);});
+	connect(thread, &QThread::finished, this, &MainWindow::enableAllWidgets);
+	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+	connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, thread, &QThread::quit);
+	thread->start();
+}
 
 void MainWindow::on_actionExport_triggered()
 {
@@ -693,12 +817,12 @@ void MainWindow::on_actionMake_theme_triggered()
 	}
 	else
 	{
-		emit progressChanged(0);
+		emit progressUpdateRequired(0);
 		setAllWidgetsEnabled(false);
 		initJson();
 		if(_jsonThemes.isEmpty())
 		{
-			emit messageChanged(QString(tr("Error: theme json file could not be opened (did you download it first?).")));
+			emit messageUpdateRequired(QString(tr("Error: theme json file could not be opened (did you download it first?).")));
 		}
 		else
 		{
