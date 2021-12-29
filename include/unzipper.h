@@ -14,12 +14,16 @@ public:
 	static bool initialize();
 
 	bool unzip(const QFile &zipFile, const QDir &outputDir, QObject *parent = nullptr);
+	QStringList createdEntries();
 
 private:
 
 	static bool ms_isInitialized;
 	static QString ms_programName;
 	static QStringList ms_arguments;
+
+	QStringList m_oldEntryList;
+	QStringList m_newEntryList;
 };
 
 #endif // UNZIPPER_H

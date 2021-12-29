@@ -9,6 +9,7 @@
 #include <QDropEvent>
 #include <QCommonStyle>
 #include "theme.h"
+#include "unzipper.h"
 
 namespace Ui {
 class ThemeWidget;
@@ -25,13 +26,21 @@ public:
 	void mousePressEvent(QMouseEvent *event);
 	bool setImage(const QFile &file);
 
-	void createPixmap();
+	void createOrUpdateStyle();
 
 	const QString &name() const;
 	const Theme *theme() const;
 	Theme *theme();
 
 	void setTransparentAspect(bool b);
+
+signals:
+
+	void downloadInProcess(bool);
+
+private slots:
+	void on_lineEdit_url_editingFinished();
+	void on_pushButton_pressed();
 
 private:
 	Ui::ThemeWidget *ui;

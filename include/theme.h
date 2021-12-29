@@ -8,6 +8,7 @@
 #include "color.h"
 #include <QtXml>
 #include "filedownloader.h"
+#include "unzipper.h"
 
 class Theme
 {
@@ -52,8 +53,11 @@ public:
 	TextureMapType &textures();
 	const ColorMapType &colors() const;
 
+	bool saveRemote() const;
+	bool loadRemote();
 	void setRemote(const QUrl &url);
-	bool lookupRemote();
+	const QUrl &remote() const;
+	bool unzip(const QFile &zipFile);
 
 private:
 	QString	m_name;

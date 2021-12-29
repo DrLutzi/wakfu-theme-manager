@@ -26,6 +26,7 @@ void Theme::import(const QDir &dir)
 {
 	m_name = dir.dirName();
 	m_path = dir;
+	loadRemote();
 }
 
 void Theme::load(const QDir &dir)
@@ -315,12 +316,100 @@ const Theme::ColorMapType &Theme::colors() const
 	return m_colors;
 }
 
-void Theme::setRemote(const QUrl &url)
+//Remote
+
+bool Theme::saveRemote() const
 {
-    m_remote = url;
+	QFile remoteFile(m_path.absolutePath() + "/remote.txt");
+	bool b = remoteFile.open(QIODevice::WriteOnly);
+	if(b)
+	{
+		remoteFile.write(m_remote.toString().toUtf8());
+		remoteFile.close();
+	}
+	return b;
 }
 
-bool Theme::lookupRemote()
+bool Theme::loadRemote()
 {
+	QFile remoteFile(m_path.absolutePath() + "/remote.txt");
+	bool success;
+	if((success = remoteFile.exists()))
+	{
+		success = remoteFile.open(QIODevice::ReadOnly);
+		if(success)
+		{
+			QByteArray textContent = remoteFile.read(512);
+			m_remote = QUrl(QString(textContent));
+			remoteFile.close();
+		}
+	}
+	return success;
+}
 
+void Theme::setRemote(const QUrl &url)
+{
+	m_remote = url;
+}
+
+const QUrl &Theme::remote() const
+{
+	return m_remote;
+}
+
+bool Theme::unzip(const QFile &zipFile)
+{
+	bool opIsSuccess;
+	Unzipper unzipper;
+	QDir root = m_path;
+	root.cdUp();
+	opIsSuccess = unzipper.unzip(zipFile, root, nullptr);
+	if(opIsSuccess)
+	{
+		QStringList createdEntries = unzipper.createdEntries();
+		m_path.mkpath(m_path.absolutePath());
+		QDir correctColorsDir(m_path.absolutePath() + "/colors");
+		QDir correctImagesDir(m_path.absolutePath() + "/images");
+		for(const QString &entry : createdEntries)
+		{
+			//first treat the directories
+			QString fileOrDirStr(root.absolutePath() + "/" + entry);
+			QFileInfo entryInfo(fileOrDirStr);
+			if(entryInfo.isDir())
+			{
+				QDir colorsDir;
+				QDir imagesDir;
+				if(entryInfo.baseName() == "colors" || entryInfo.baseName() == "images")
+				{
+					//case where the zip file contains colors or images
+					colorsDir.setPath(root.absolutePath() + "/colors");
+					imagesDir.setPath(root.absolutePath() + "/images");
+					correctColorsDir.removeRecursively();
+					correctImagesDir.removeRecursively();
+					colorsDir.rename(colorsDir.absolutePath(), correctColorsDir.absolutePath());
+					imagesDir.rename(imagesDir.absolutePath(), correctImagesDir.absolutePath());
+				}
+				else
+				{ //case where the zip file contains a sub folder containing the theme (a priori)
+					QDir dirUnzippedTheme(fileOrDirStr);
+					m_path.removeRecursively();
+					dirUnzippedTheme.rename(dirUnzippedTheme.absolutePath(), m_path.absolutePath());
+				}
+			}
+		}
+		for(const QString &entry : createdEntries)
+		{
+			//then treat the files
+			QString fileOrDirStr(root.absolutePath() + "/" + entry);
+			QFileInfo entryInfo(fileOrDirStr);
+			if(entryInfo.isFile())
+			{
+				QFile file(fileOrDirStr);
+				file.rename(m_path.absolutePath() + "/" + entryInfo.fileName());
+			}
+		}
+		if(isLoaded())
+			load(m_path);
+	}
+	return opIsSuccess;
 }

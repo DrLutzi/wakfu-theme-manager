@@ -77,7 +77,7 @@ signals:
 	void progressUpdateRequired(int newValue);
 	void messageUpdateRequired(const QString &message, int timeout = 0);
 	void defaultThemeWidgetCreationRequired();
-	void extraThemeWidgetCreationRequired(Theme *theme);
+	void extraThemeWidgetCreationOrUpdateRequired(Theme *theme);
 	void openThemeRequired(QDir dir);
 	void updateFromThemesDirRequired();
 
@@ -88,7 +88,7 @@ private slots:
 	void updateFromThemesDir();
 	void openExThemeAndMakeExThemeWidget(QDir dir);
 	void createDefaultThemeWidget();
-    void createOneExtraThemeWidget(Theme *theme);
+	void createOrUpdateOneExThemeWidget(Theme *theme);
 	void createAllExtraThemeWidgets();
 	void loadJsonFromInternet();
 	void on_actionDownload_triggered();

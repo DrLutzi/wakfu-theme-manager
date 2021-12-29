@@ -27,11 +27,26 @@ bool Unzipper::initialize()
 
 bool Unzipper::unzip(const QFile &zipFile, const QDir &outputDir, QObject *parent)
 {
+	m_oldEntryList = outputDir.entryList(QStringList(), QDir::NoDotAndDotDot|QDir::Files|QDir::Dirs);
 	QProcess unzipProcess(parent);
 	QStringList arguments = ms_arguments;
+	qDebug() << zipFile.fileName();
+	qDebug() << outputDir;
 #if defined(Q_OS_WIN)
 	arguments << zipFile.fileName() << outputDir.absolutePath();
 #endif
+	unzipProcess.setStandardErrorFile(outputDir.absolutePath() + "/unzip.log");
 	unzipProcess.start(ms_programName, arguments);
-	return unzipProcess.waitForFinished();
+	bool b = unzipProcess.waitForFinished();
+	m_newEntryList = outputDir.entryList(QStringList(), QDir::NoDotAndDotDot|QDir::Files|QDir::Dirs);
+	return b;
+}
+
+QStringList Unzipper::createdEntries()
+{
+	QSet<QString> oldSet = QSet<QString>(m_oldEntryList.constBegin(), m_oldEntryList.constEnd());
+	QSet<QString> newSet = QSet<QString>(m_newEntryList.constBegin(), m_newEntryList.constEnd());
+	QSet<QString> diffSet = newSet.subtract(oldSet);
+	QStringList list = QStringList(diffSet.constBegin(), diffSet.constEnd());
+	return list;
 }

@@ -8,7 +8,12 @@ ThemeWidget::ThemeWidget(Theme *theme, QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->label_pix->setScaledContents(true);
-	createPixmap();
+	if(theme != nullptr)
+	{
+		ui->lineEdit_url->setText(m_theme->remote().toString());
+	}
+	connect(this, &ThemeWidget::downloadInProcess, this, &QWidget::setDisabled);
+	createOrUpdateStyle();
 }
 
 
@@ -29,7 +34,7 @@ bool ThemeWidget::setImage(const QFile &file)
 	return b;
 }
 
-void ThemeWidget::createPixmap()
+void ThemeWidget::createOrUpdateStyle()
 {
 	if(m_theme)
 	{
@@ -120,3 +125,55 @@ void ThemeWidget::setTransparentAspect(bool b)
 	static QString transparentStyleSheet("border: 2px solid rgba(0, 0, 0, 30%);\nborder-radius: 8px;\nbackground-color: rgba(255, 255, 255, 30%);");
 	setStyleSheet(b ? transparentStyleSheet : defaultStyleSheet);
 }
+
+void ThemeWidget::on_lineEdit_url_editingFinished()
+{
+	if(m_theme != nullptr)
+	{
+		m_theme->setRemote(QUrl(ui->lineEdit_url->text()));
+	}
+}
+
+
+void ThemeWidget::on_pushButton_pressed()
+{
+	emit downloadInProcess(true);
+	if(m_theme != nullptr)
+	{
+		QUrl remote = m_theme->remote();
+		if(remote.isValid())
+		{
+			FileDownloader *fd = new FileDownloader(remote, this);
+			fd->connect(fd, &FileDownloader::downloaded, this, [this, fd] ()
+			{
+				bool opIsSuccess;
+				QByteArray downloadedData = fd->downloadedData();
+				if((opIsSuccess = !downloadedData.isEmpty() && !downloadedData.isNull()))
+				{
+					QDir root = m_theme->path();
+					root.cdUp();
+					QFile tmpZipFile(root.absolutePath() + "/_tmpTheme.zip");
+					tmpZipFile.open(QIODevice::WriteOnly);
+					if(opIsSuccess)
+					{
+						tmpZipFile.write(downloadedData);
+						tmpZipFile.close();
+						m_theme->unzip(tmpZipFile);
+					}
+					fd->deleteLater();
+				}
+				emit downloadInProcess(false);
+			});
+			fd->launchDownload();
+		}
+		else
+		{
+			emit downloadInProcess(false);
+		}
+	}
+	else
+	{
+		emit downloadInProcess(false);
+	}
+}
+

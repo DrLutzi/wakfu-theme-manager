@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>175</width>
+    <width>272</width>
     <height>86</height>
    </rect>
   </property>
@@ -74,12 +74,75 @@ border-width: 1px;</string>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QWidget" name="widget" native="true">
      <property name="styleSheet">
       <string notr="true">border: 0px; background-color: rgba(0, 0, 0, 0)</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="styleSheet">
+         <string notr="true">border: 0px; background-color: rgba(0, 0, 0, 0)</string>
+        </property>
+        <property name="text">
+         <string>Label</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit_url">
+        <property name="styleSheet">
+         <string notr="true">border: 1px solid black;
+border-radius: 0.5 px; 
+padding: 0 1px;
+background: rgba(1, 1, 1, 0);</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>32</width>
+       <height>64</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+	border-color: rgba(255, 255, 255, 0);
+}
+QPushButton:hover
+{
+	background-color: rgba(167, 240, 255, 128);
+}
+QPushButton:pressed
+{
+	background-color: rgba(167, 240, 255, 192);
+}</string>
+     </property>
      <property name="text">
-      <string>Label</string>
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/resources/colored/colored/download.svg</normalon>
+      </iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
      </property>
     </widget>
    </item>
