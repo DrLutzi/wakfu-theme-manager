@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this, &MainWindow::defaultThemeWidgetCreationRequired, this, &MainWindow::createDefaultThemeWidget);
 	connect(this, &MainWindow::updateFromThemesDirRequired, this, &MainWindow::updateFromThemesDir);
 	makeProgressBar();
-	setActionIcons();
     createScrollAreas();
 	loadConfigurationFile();
 	initJson();
@@ -52,17 +51,6 @@ void MainWindow::makeProgressBar()
 	m_progressBar->setTextVisible(false);
 	ui->statusbar->addPermanentWidget(m_progressBar);
 	connect(this, &MainWindow::progressUpdateRequired, m_progressBar, &QProgressBar::setValue);
-}
-
-bool MainWindow::setActionIcons()
-{
-	ui->actionDownload->setIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload));
-	ui->actionReset->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogResetButton));
-	ui->actionMake_theme->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-	ui->actionOpen->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileDialogNewFolder));
-	ui->actionParameters->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileDialogDetailedView));
-	ui->actionOpen_Zip->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileIcon));
-	return true;
 }
 
 bool MainWindow::loadConfigurationFile()
@@ -661,6 +649,7 @@ void MainWindow::setAllWidgetsEnabled(bool b)
 	ui->actionReset->setEnabled(b);
 	ui->actionParameters->setEnabled(b);
 	ui->actionOpen->setEnabled(b);
+	ui->actionOpen_Zip->setEnabled(b);
 	ui->widget_scrollArea_stash->setEnabled(b);
 	ui->widget_scrollArea_used->setEnabled(b);
 }

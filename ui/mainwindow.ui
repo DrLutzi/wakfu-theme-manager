@@ -57,7 +57,7 @@
             <x>0</x>
             <y>0</y>
             <width>386</width>
-            <height>476</height>
+            <height>465</height>
            </rect>
           </property>
           <property name="acceptDrops">
@@ -112,7 +112,7 @@
             <x>0</x>
             <y>0</y>
             <width>385</width>
-            <height>476</height>
+            <height>465</height>
            </rect>
           </property>
           <property name="acceptDrops">
@@ -177,6 +177,10 @@
    <addaction name="actionDownload"/>
   </widget>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/resources/colored/colored/folder-plus.svg</normaloff>:/resources/colored/colored/folder-plus.svg</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
@@ -198,6 +202,10 @@
    </property>
   </action>
   <action name="actionDownload">
+   <property name="icon">
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/resources/colored/colored/download.svg</normaloff>:/resources/colored/colored/download.svg</iconset>
+   </property>
    <property name="text">
     <string>Update Default Theme</string>
    </property>
@@ -211,6 +219,10 @@
    </property>
   </action>
   <action name="actionMake_theme">
+   <property name="icon">
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/resources/colored/colored/play-circle.svg</normaloff>:/resources/colored/colored/play-circle.svg</iconset>
+   </property>
    <property name="text">
     <string>Make theme</string>
    </property>
@@ -222,6 +234,10 @@
    </property>
   </action>
   <action name="actionReset">
+   <property name="icon">
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/resources/colored/colored/trash-2.svg</normaloff>:/resources/colored/colored/trash-2.svg</iconset>
+   </property>
    <property name="text">
     <string>Reset theme</string>
    </property>
@@ -230,6 +246,10 @@
    </property>
   </action>
   <action name="actionParameters">
+   <property name="icon">
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/resources/colored/colored/settings.svg</normaloff>:/resources/colored/colored/settings.svg</iconset>
+   </property>
    <property name="text">
     <string>Settings</string>
    </property>
@@ -241,6 +261,10 @@
    </property>
   </action>
   <action name="actionOpen_Zip">
+   <property name="icon">
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/resources/colored/colored/file-plus.svg</normaloff>:/resources/colored/colored/file-plus.svg</iconset>
+   </property>
    <property name="text">
     <string>Open Zip</string>
    </property>
@@ -252,6 +276,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

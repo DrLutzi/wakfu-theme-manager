@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/resources/colored">
+        <file>colored/download.svg</file>
+        <file>colored/file-plus.svg</file>
+        <file>colored/link.svg</file>
+        <file>colored/play-circle.svg</file>
+        <file>colored/settings.svg</file>
+        <file>colored/trash-2.svg</file>
+        <file>colored/folder-plus.svg</file>
+    </qresource>
+    <qresource prefix="/resources/plain">
+        <file>plain/download.svg</file>
+        <file>plain/file-plus.svg</file>
+        <file>plain/folder-plus.svg</file>
+        <file>plain/link.svg</file>
+        <file>plain/play-circle.svg</file>
+        <file>plain/settings.svg</file>
+        <file>plain/x-circle.svg</file>
+    </qresource>
+</RCC>

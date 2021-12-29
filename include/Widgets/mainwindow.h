@@ -35,7 +35,6 @@ public:
 	~MainWindow();
 
 	void makeProgressBar();
-	bool setActionIcons();
 	bool loadConfigurationFile();
 	void checkOutputExistence();
 	void loadAllThemes();
