@@ -37,10 +37,10 @@ public:
 	void makeProgressBar();
 	bool loadConfigurationFile();
 	void checkOutputExistence();
-	void loadAllThemes();
+	void importAllThemes();
     void createScrollAreas();
-	void openAndImportAllThemesThreaded();
-	Theme *createOrUpdateOneTheme(const QDir &dir);
+	void importAllThemesThreaded();
+	Theme *importOneTheme(const QDir &dir);
 
 	bool saveConfigurationFile();
 	void resetDefaultThemeWidget();

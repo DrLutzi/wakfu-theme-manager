@@ -22,14 +22,17 @@ void Theme::save(const QDir &dir) const
 	saveColors(dir);
 }
 
-void Theme::load(const QDir &dir)
+void Theme::import(const QDir &dir)
 {
-	m_colors.clear();
-	loadColors(dir);
-
-	m_textures.clear();
 	m_name = dir.dirName();
 	m_path = dir;
+}
+
+void Theme::load(const QDir &dir)
+{
+	unload();
+	import(dir);
+	loadColors(dir);
 	QDir imageDir = dir.absolutePath() + "/images";
 	QStringList ls = imageDir.entryList(QStringList() << "*.png", QDir::Files);
 	const QJsonValue &textureValue = _jsonThemes["textures"];
@@ -54,6 +57,12 @@ void Theme::load(const QDir &dir)
 		if(foundInJson)
 			m_textures.emplace(std::make_pair(baseName, texture));
 	}
+}
+
+void Theme::unload()
+{
+	m_textures.clear();
+	m_colors.clear();
 }
 
 void Theme::pack(const Theme *model, Theme *taggerTheme, bool usePixmaps)
@@ -235,19 +244,19 @@ const QString &Theme::name() const
 	return m_name;
 }
 
-bool Theme::isInitialized() const
+bool Theme::isImported() const
 {
     return (!m_name.isEmpty() || m_textures.size()>0);
 }
 
-bool Theme::isOpened() const
+bool Theme::isLoaded() const
 {
 	return m_textures.size()>0;
 }
 
 bool Theme::isUnpacked() const
 {
-	return isOpened() && m_textures.size()>0 && (*m_textures.begin()).second.isUnpacked();
+	return isLoaded() && m_textures.size()>0 && (*m_textures.begin()).second.isUnpacked();
 }
 
 void Theme::copyTextures(const Theme &other)

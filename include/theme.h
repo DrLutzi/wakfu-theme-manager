@@ -18,7 +18,9 @@ public:
 	Theme();
 
 	void save(const QDir &dir) const;
+	void import(const QDir &dir); //soft load
 	void load(const QDir &dir);
+	void unload();
 
 	void pack(const Theme *model = nullptr, Theme *taggerTheme = nullptr, bool usePixmaps = false);
 	void unpack(const Theme *model=nullptr);
@@ -34,9 +36,8 @@ public:
 	const QDir &path() const;
 	const QString &name() const;
 
-    bool isInitialized() const;
-
-	bool isOpened() const;
+	bool isImported() const;
+	bool isLoaded() const;
 	bool isUnpacked() const;
 
 	void copyTextures(const Theme &other);

@@ -15,7 +15,6 @@ Unzipper::Unzipper()
 bool Unzipper::initialize()
 {
 #if defined(Q_OS_WIN)
-	//is tar installed on every build of windows?
 	ms_programName = "Powershell.exe";
 	ms_arguments << "Expand-Archive" << "-Force";
 #else

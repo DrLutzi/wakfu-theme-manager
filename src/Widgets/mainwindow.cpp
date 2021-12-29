@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     createScrollAreas();
 	loadConfigurationFile();
 	initJson();
-	openAndImportAllThemesThreaded();
+	importAllThemesThreaded();
 }
 
 MainWindow::~MainWindow()
@@ -99,7 +99,7 @@ void MainWindow::checkOutputExistence()
 	}
 }
 
-void MainWindow::loadAllThemes()
+void MainWindow::importAllThemes()
 {
 	setAllWidgetsEnabled(false);
 	QFileInfoList ls = m_parameters.themesPath.entryInfoList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
@@ -121,7 +121,7 @@ void MainWindow::loadAllThemes()
 				dirColors.setPath(dir.absolutePath() + "/colors");
 				dirImages.setPath(dir.absolutePath() + "/images");
 				if(dirColors.exists() || dirImages.exists())
-					createOrUpdateOneTheme(dir);
+					importOneTheme(dir);
 			}
 		}
 	}
@@ -185,7 +185,7 @@ void MainWindow::createScrollAreas()
     return;
 }
 
-void MainWindow::openAndImportAllThemesThreaded()
+void MainWindow::importAllThemesThreaded()
 {
 	QThread *threadWidgets = QThread::create([this]() {createAllExtraThemeWidgets();});
 	connect(threadWidgets, &QThread::started, m_progressBar, [this]{m_progressBar->setValue(0);});
@@ -194,7 +194,7 @@ void MainWindow::openAndImportAllThemesThreaded()
 	connect(threadWidgets, &QThread::finished, threadWidgets, &QObject::deleteLater);
 	connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, threadWidgets, &QThread::quit);
 
-	QThread *threadThemes = QThread::create([this]() {loadAllThemes();});
+	QThread *threadThemes = QThread::create([this]() {importAllThemes();});
 	connect(threadThemes, &QThread::started, this, &MainWindow::disableAllWidgets);
 	connect(threadThemes, &QThread::started, m_progressBar, [this]{m_progressBar->setValue(0);});
 	connect(threadThemes, &QThread::finished, m_progressBar, [this]{m_progressBar->setValue(100);});
@@ -206,7 +206,7 @@ void MainWindow::openAndImportAllThemesThreaded()
 	threadThemes->start();
 }
 
-Theme *MainWindow::createOrUpdateOneTheme(const QDir &dir)
+Theme *MainWindow::importOneTheme(const QDir &dir)
 {
 	Theme *theme = nullptr;
 	std::vector<Theme *>::iterator it;
@@ -214,12 +214,12 @@ Theme *MainWindow::createOrUpdateOneTheme(const QDir &dir)
 	{
 		theme = new Theme;
 		m_extraThemes.push_back(theme);
-		theme->load(dir.absolutePath());
+		theme->import(dir.absolutePath());
 	}
 	else
 	{
 		Theme *theme = (*it);
-		theme->load(dir);
+		theme->import(dir);
 	}
     return theme;
 }
@@ -263,7 +263,7 @@ void MainWindow::resetDefaultThemeWidget()
         delete m_defaultThemeWidget;
         m_defaultThemeWidget = nullptr;
     }
-    if(m_defaultTheme.isInitialized())
+	if(m_defaultTheme.isImported())
     {
         createDefaultThemeWidget();
     }
@@ -323,7 +323,7 @@ void MainWindow::openTheme(QString str)
 			QDir dirSaveTheme(m_parameters.themesPath.absolutePath() + "/" + dirEntryName);
 			findAppropriateSaveName(dirSaveTheme);
 			tmpTheme.save(dirSaveTheme);
-			Theme *theme = createOrUpdateOneTheme(dirSaveTheme);
+			Theme *theme = importOneTheme(dirSaveTheme);
 			if(theme != nullptr)
 			{
 				emit extraThemeWidgetCreationRequired(theme);
@@ -538,7 +538,7 @@ void MainWindow::downloadDefault()
 
 void MainWindow::makeTheme()
 {
-    if(!m_defaultTheme.isOpened())
+	if(!m_defaultTheme.isLoaded())
     {
         m_defaultTheme.load(m_defaultThemePath);
     }
@@ -565,7 +565,7 @@ void MainWindow::makeTheme()
             Theme *theme = tw->theme();
             assert(theme != nullptr);
 			emit messageUpdateRequired(QString(tr("Loading ")) + tw->name() + "...");
-            if(!theme->isOpened())
+			if(!theme->isLoaded())
             {
                 theme->load(theme->path());
             }
@@ -576,6 +576,7 @@ void MainWindow::makeTheme()
             }
 			emit messageUpdateRequired(QString(tr("Applying pixmaps of ")) + tw->name() + "...");
             m_outputTheme.pack(theme, &taggerTheme, true);
+			theme->unload();
         }
 		emit progressUpdateRequired(int( float(layoutCount-i)/(layoutCount) * 50));
     }
@@ -586,8 +587,10 @@ void MainWindow::makeTheme()
         if(tw != nullptr)
         {
             Theme *theme = tw->theme();
+			theme->load(theme->path());
 			emit messageUpdateRequired(QString(tr("Applying orphan pixmaps of ")) + tw->name() + "...");
             m_outputTheme.pack(theme, &taggerTheme, false);
+			theme->unload();
         }
         if(layoutCount == 1)
 			emit progressUpdateRequired(100);
@@ -595,17 +598,18 @@ void MainWindow::makeTheme()
 			emit progressUpdateRequired(50 + int( float(i)/(layoutCount-1) * 50));
     }
     m_outputTheme.save(m_parameters.outputPath);
+	m_outputTheme.unload();
 	emit messageUpdateRequired(QString(tr("Theme compiled.")));
 }
 
 void MainWindow::resetTheme()
 {
 	emit messageUpdateRequired(QString(tr("Restoring default theme...")));
-    if(!m_defaultTheme.isOpened())
+	if(!m_defaultTheme.isLoaded())
     {
         m_defaultTheme.load(m_defaultThemePath);
     }
-    if(m_defaultTheme.isOpened())
+	if(m_defaultTheme.isLoaded())
     {
 		//m_defaultTheme.save(m_parameters.outputPath);
 		m_defaultTheme.useToRemoveImagesIn(m_parameters.outputPath);
@@ -681,7 +685,7 @@ void MainWindow::updateFromThemesDir()
 
 void MainWindow::openExThemeAndMakeExThemeWidget(QDir dir)
 {
-	Theme *theme = createOrUpdateOneTheme(dir);
+	Theme *theme = importOneTheme(dir);
 	if(theme != nullptr)
 	{
 		createOneExtraThemeWidget(theme);
@@ -717,7 +721,7 @@ void MainWindow::createAllExtraThemeWidgets()
 	{
 		delete (*it);
 	}
-	if(m_defaultTheme.isInitialized())
+	if(m_defaultTheme.isImported())
 	{
 		emit defaultThemeWidgetCreationRequired();
 	}
@@ -862,14 +866,14 @@ void MainWindow::on_parametersChanged(AppParameters newParameters)
 			delete t;
 		}
 		m_extraThemes.clear();
-		if(!m_defaultTheme.isInitialized())
+		if(!m_defaultTheme.isImported())
 		{
 			m_defaultThemePath.setPath(m_parameters.themesPath.absolutePath() + "/default");
 			on_actionDownload_triggered();
 		}
 		else
 		{
-			openAndImportAllThemesThreaded();
+			importAllThemesThreaded();
 		}
 	}
 	setAllWidgetsEnabled(true);
