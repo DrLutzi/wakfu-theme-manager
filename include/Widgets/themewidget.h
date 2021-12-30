@@ -33,6 +33,7 @@ public:
 	Theme *theme();
 
 	void setTransparentAspect(bool b);
+	void downloadTheme();
 
 signals:
 

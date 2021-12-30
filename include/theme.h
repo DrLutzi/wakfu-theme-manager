@@ -36,6 +36,7 @@ public:
 	void setPath(const QDir &path);
 	const QDir &path() const;
 	const QString &name() const;
+	bool pathHasContent() const;
 
 	bool isImported() const;
 	bool isLoaded() const;
@@ -56,8 +57,14 @@ public:
 	bool saveRemote() const;
 	bool loadRemote();
 	void setRemote(const QUrl &url);
+	bool remoteIsValid() const;
 	const QUrl &remote() const;
 	bool unzip(const QFile &zipFile);
+
+	static inline QDir colorsDir(const QDir &dir) {return QDir(dir.absolutePath() + "/colors");}
+	static inline QDir imagesDir(const QDir &dir) {return QDir(dir.absolutePath() + "/images");}
+	static inline QFile remoteFile(const QDir &dir) {return QFile(dir.absolutePath() + "/remote.txt");}
+	static inline QFile themeFile(const QDir &dir) {return QFile(dir.absolutePath() + "/theme.png");}
 
 private:
 	QString	m_name;

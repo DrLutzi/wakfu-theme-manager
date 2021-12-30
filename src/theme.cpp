@@ -13,7 +13,7 @@ Theme::Theme() :
 
 void Theme::save(const QDir &dir) const
 {
-	QDir imagesDir(dir.absolutePath() + "/images");
+	QDir imagesDir(Theme::imagesDir(dir.absolutePath()));
 	imagesDir.mkpath(imagesDir.absolutePath());
 	for(const std::pair<const QString, Texture> &pair : m_textures)
 	{
@@ -34,7 +34,7 @@ void Theme::load(const QDir &dir)
 	unload();
 	import(dir);
 	loadColors(dir);
-	QDir imageDir = dir.absolutePath() + "/images";
+	QDir imageDir(Theme::imagesDir(dir.absolutePath()));
 	QStringList ls = imageDir.entryList(QStringList() << "*.png", QDir::Files);
 	const QJsonValue &textureValue = _jsonThemes["textures"];
 	const QJsonArray &textureArray = textureValue.toArray();
@@ -245,6 +245,13 @@ const QString &Theme::name() const
 	return m_name;
 }
 
+bool Theme::pathHasContent() const
+{
+	QDir colorsDir(Theme::colorsDir(m_path)),
+			imagesDir(Theme::imagesDir(m_path));
+	return (colorsDir.exists() && !colorsDir.isEmpty()) || (imagesDir.exists() && !imagesDir.isEmpty());
+}
+
 bool Theme::isImported() const
 {
     return (!m_name.isEmpty() || m_textures.size()>0);
@@ -277,8 +284,8 @@ void Theme::resetTextures()
 
 void Theme::useToRemoveImagesIn(const QDir &dir)
 {
-	QDir dirImages(dir.absolutePath() + "/images");
-	QDir dirColors(dir.absolutePath() + "/colors");
+	QDir dirImages(Theme::imagesDir(dir));
+	QDir dirColors(Theme::colorsDir(dir));
 	if(dirImages.exists())
 	{
 		QFileInfoList ls = dirImages.entryInfoList(QStringList(), QDir::Files);
@@ -320,7 +327,7 @@ const Theme::ColorMapType &Theme::colors() const
 
 bool Theme::saveRemote() const
 {
-	QFile remoteFile(m_path.absolutePath() + "/remote.txt");
+	QFile remoteFile(Theme::remoteFile(m_path));
 	bool b = remoteFile.open(QIODevice::WriteOnly);
 	if(b)
 	{
@@ -332,7 +339,7 @@ bool Theme::saveRemote() const
 
 bool Theme::loadRemote()
 {
-	QFile remoteFile(m_path.absolutePath() + "/remote.txt");
+	QFile remoteFile(Theme::remoteFile(m_path));
 	bool success;
 	if((success = remoteFile.exists()))
 	{
@@ -352,6 +359,11 @@ void Theme::setRemote(const QUrl &url)
 	m_remote = url;
 }
 
+bool Theme::remoteIsValid() const
+{
+	return !m_remote.isEmpty() && m_remote.isValid();
+}
+
 const QUrl &Theme::remote() const
 {
 	return m_remote;
@@ -368,8 +380,8 @@ bool Theme::unzip(const QFile &zipFile)
 	{
 		QStringList createdEntries = unzipper.createdEntries();
 		m_path.mkpath(m_path.absolutePath());
-		QDir correctColorsDir(m_path.absolutePath() + "/colors");
-		QDir correctImagesDir(m_path.absolutePath() + "/images");
+		QDir correctColorsDir(Theme::colorsDir(m_path));
+		QDir correctImagesDir(Theme::imagesDir(m_path));
 		for(const QString &entry : createdEntries)
 		{
 			//first treat the directories
@@ -382,8 +394,8 @@ bool Theme::unzip(const QFile &zipFile)
 				if(entryInfo.baseName() == "colors" || entryInfo.baseName() == "images")
 				{
 					//case where the zip file contains colors or images
-					colorsDir.setPath(root.absolutePath() + "/colors");
-					imagesDir.setPath(root.absolutePath() + "/images");
+					colorsDir.setPath(Theme::colorsDir(root).absolutePath());
+					imagesDir.setPath(Theme::imagesDir(root).absolutePath());
 					correctColorsDir.removeRecursively();
 					correctImagesDir.removeRecursively();
 					colorsDir.rename(colorsDir.absolutePath(), correctColorsDir.absolutePath());
@@ -405,6 +417,8 @@ bool Theme::unzip(const QFile &zipFile)
 			if(entryInfo.isFile())
 			{
 				QFile file(fileOrDirStr);
+				QFile fileToSave(m_path.absolutePath() + "/" + entryInfo.fileName());
+				fileToSave.remove();
 				file.rename(m_path.absolutePath() + "/" + entryInfo.fileName());
 			}
 		}

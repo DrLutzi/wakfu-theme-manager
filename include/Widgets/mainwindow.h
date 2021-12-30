@@ -72,6 +72,7 @@ private:
 	void makeTheme();
 	void resetTheme();
 	std::vector<Theme *>::iterator findTheme(const QString &name);
+	bool themeFolderIsValid(const QDir &dir);
 
 signals:
 	void progressUpdateRequired(int newValue);
@@ -88,7 +89,7 @@ private slots:
 	void updateFromThemesDir();
 	void openExThemeAndMakeExThemeWidget(QDir dir);
 	void createDefaultThemeWidget();
-	void createOrUpdateOneExThemeWidget(Theme *theme);
+	ThemeWidget *createOrUpdateOneExThemeWidget(Theme *theme);
 	void createAllExtraThemeWidgets();
 	void loadJsonFromInternet();
 	void on_actionDownload_triggered();

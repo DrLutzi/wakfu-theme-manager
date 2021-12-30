@@ -141,14 +141,22 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_Zip"/>
+    <addaction name="actionImport_From_Url"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
     <addaction name="actionMake_theme"/>
     <addaction name="actionReset"/>
     <addaction name="separator"/>
+    <addaction name="actionDownload"/>
+    <addaction name="separator"/>
     <addaction name="actionParameters"/>
     <addaction name="separator"/>
-    <addaction name="actionDownload"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -175,12 +183,14 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionOpen_Zip"/>
+   <addaction name="actionImport_From_Url"/>
+   <addaction name="separator"/>
    <addaction name="actionMake_theme"/>
    <addaction name="actionReset"/>
    <addaction name="separator"/>
-   <addaction name="actionParameters"/>
-   <addaction name="separator"/>
    <addaction name="actionDownload"/>
+   <addaction name="separator"/>
+   <addaction name="actionParameters"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">
@@ -188,18 +198,13 @@
      <normaloff>:/resources/colored/colored/folder-plus.svg</normaloff>:/resources/colored/colored/folder-plus.svg</iconset>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>Import Folder</string>
    </property>
    <property name="toolTip">
-    <string>Open a theme or themes folder.</string>
+    <string>Import folder: Imports a theme folder, or a folder containing several theme folders.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionImport">
-   <property name="text">
-    <string>Import</string>
    </property>
   </action>
   <action name="actionExport">
@@ -272,13 +277,22 @@
      <normaloff>:/resources/colored/colored/file-plus.svg</normaloff>:/resources/colored/colored/file-plus.svg</iconset>
    </property>
    <property name="text">
-    <string>Open Zip</string>
+    <string>Import Zip</string>
    </property>
    <property name="toolTip">
-    <string>Open Zip: opens and unzips a .zip file containing a theme.</string>
+    <string>Import Zip: unzips and imports a .zip file containing a theme.</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+I</string>
+  </action>
+  <action name="actionImport_From_Url">
+   <property name="icon">
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/resources/colored/colored/link.svg</normaloff>:/resources/colored/colored/link.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Import From Url</string>
+   </property>
+   <property name="toolTip">
+    <string>Import From Url: downloads, extracts and imports a .zip file containing a theme.</string>
    </property>
   </action>
  </widget>

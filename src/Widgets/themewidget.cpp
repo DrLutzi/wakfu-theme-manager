@@ -126,16 +126,7 @@ void ThemeWidget::setTransparentAspect(bool b)
 	setStyleSheet(b ? transparentStyleSheet : defaultStyleSheet);
 }
 
-void ThemeWidget::on_lineEdit_url_editingFinished()
-{
-	if(m_theme != nullptr)
-	{
-		m_theme->setRemote(QUrl(ui->lineEdit_url->text()));
-	}
-}
-
-
-void ThemeWidget::on_pushButton_pressed()
+void ThemeWidget::downloadTheme()
 {
 	emit downloadInProcess(true);
 	if(m_theme != nullptr)
@@ -152,13 +143,19 @@ void ThemeWidget::on_pushButton_pressed()
 				{
 					QDir root = m_theme->path();
 					root.cdUp();
-					QFile tmpZipFile(root.absolutePath() + "/_tmpTheme.zip");
+					QFile tmpZipFile(root.absolutePath() + "/_tmpTheme_" + m_theme->name() + ".zip");
 					tmpZipFile.open(QIODevice::WriteOnly);
 					if(opIsSuccess)
 					{
 						tmpZipFile.write(downloadedData);
 						tmpZipFile.close();
-						m_theme->unzip(tmpZipFile);
+						opIsSuccess = m_theme->unzip(tmpZipFile);
+						tmpZipFile.remove();
+						if(opIsSuccess)
+						{
+							m_theme->saveRemote();
+							createOrUpdateStyle();
+						}
 					}
 					fd->deleteLater();
 				}
@@ -175,5 +172,18 @@ void ThemeWidget::on_pushButton_pressed()
 	{
 		emit downloadInProcess(false);
 	}
+}
+
+void ThemeWidget::on_lineEdit_url_editingFinished()
+{
+	if(m_theme != nullptr)
+	{
+		m_theme->setRemote(QUrl(ui->lineEdit_url->text()));
+	}
+}
+
+void ThemeWidget::on_pushButton_pressed()
+{
+	downloadTheme();
 }
 
