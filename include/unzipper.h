@@ -4,6 +4,7 @@
 #include <QDir>
 #include <memory>
 #include <QProcess>
+#include <QSet>
 
 class Unzipper
 {

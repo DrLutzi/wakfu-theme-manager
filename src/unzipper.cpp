@@ -1,4 +1,5 @@
 #include "unzipper.h"
+#include <QtGlobal>
 
 bool Unzipper::ms_isInitialized(false);
 QString Unzipper::ms_programName("");
@@ -19,7 +20,7 @@ bool Unzipper::initialize()
 	ms_arguments << "Expand-Archive" << "-Force";
 #else
 	ms_programName = "unzip";
-	ms_arguments << "";
+	ms_arguments << "-o";
 #endif
 	ms_isInitialized = true;
 	return true;
@@ -32,6 +33,8 @@ bool Unzipper::unzip(const QFile &zipFile, const QDir &outputDir, QObject *paren
 	QStringList arguments = ms_arguments;
 #if defined(Q_OS_WIN)
 	arguments << zipFile.fileName() << outputDir.absolutePath();
+#else
+	arguments << zipFile.fileName() << "-d" << outputDir.absolutePath();
 #endif
 	unzipProcess.setStandardErrorFile(outputDir.absolutePath() + "/unzip.log");
 	unzipProcess.start(ms_programName, arguments);

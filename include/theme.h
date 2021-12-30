@@ -63,8 +63,8 @@ public:
 
 	static inline QDir colorsDir(const QDir &dir) {return QDir(dir.absolutePath() + "/colors");}
 	static inline QDir imagesDir(const QDir &dir) {return QDir(dir.absolutePath() + "/images");}
-	static inline QFile remoteFile(const QDir &dir) {return QFile(dir.absolutePath() + "/remote.txt");}
-	static inline QFile themeFile(const QDir &dir) {return QFile(dir.absolutePath() + "/theme.png");}
+	static inline QString remoteFile(const QDir &dir) {return dir.absolutePath() + "/remote.txt";}
+	static inline QString themeFile(const QDir &dir) {return dir.absolutePath() + "/theme.png";}
 
 private:
 	QString	m_name;

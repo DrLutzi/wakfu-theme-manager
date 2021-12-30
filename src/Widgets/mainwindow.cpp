@@ -794,7 +794,7 @@ void MainWindow::on_actionOpen_triggered()
 void MainWindow::on_actionOpen_Zip_triggered()
 {
 	setAllWidgetsEnabled(false);
-	QString str = QFileDialog::getOpenFileName(this, tr("Open a .zip archive containing a theme"), QDir::homePath());
+	QString str = QFileDialog::getOpenFileName(this, tr("Open a .zip archive containing a theme"), QDir::homePath(), "*.zip");
 	QThread *thread = QThread::create([this, str]() {openTheme(str);});
 	connect(thread, &QThread::finished, this, &MainWindow::enableAllWidgets);
 	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
@@ -931,7 +931,6 @@ void MainWindow::on_urlProvided(QString name, QString urlStr)
 		{
 			emit messageUpdateRequired("Error: cannot import url: theme with identical name exists.");
 		}
-
 	}
 	else
 	{

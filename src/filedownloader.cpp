@@ -22,9 +22,17 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 {
 	if(pReply)
 	{
+		int errorCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 		if(pReply->error() != QNetworkReply::NoError)
 		{
 			emit errorMsg(pReply->errorString());
+		}
+		else if(errorCode == 302)
+		{
+			QUrl newUrl = pReply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+			qDebug() << "redirected to " + newUrl.toString();
+			QNetworkRequest newRequest(newUrl);
+			m_WebCtrl.get(newRequest);
 		}
 		else
 		{
