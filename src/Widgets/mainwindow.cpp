@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->setupUi(this);
 	connect(this, &MainWindow::messageUpdateRequired, ui->statusbar, &QStatusBar::showMessage);
 	connect(this, &MainWindow::extraThemeWidgetCreationOrUpdateRequired, this, &MainWindow::createOrUpdateOneExThemeWidget);
-	connect(this, &MainWindow::openThemeRequired, this, &MainWindow::openExThemeAndMakeExThemeWidget);
+	connect(this, &MainWindow::openThemeRequired, this, &MainWindow::on_openThemeRequired);
 	connect(this, &MainWindow::defaultThemeWidgetCreationRequired, this, &MainWindow::createDefaultThemeWidget);
 	connect(this, &MainWindow::updateFromThemesDirRequired, this, &MainWindow::updateFromThemesDir);
 	makeProgressBar();
@@ -212,7 +212,7 @@ Theme *MainWindow::importOneTheme(const QDir &dir)
 	{
 		theme = new Theme;
 		m_extraThemes.push_back(theme);
-		theme->import(dir.absolutePath());
+		theme->import(dir);
 	}
 	else
 	{
@@ -490,7 +490,8 @@ void MainWindow::downloadDefault()
             QFileInfo fileInfo(texturePath);
             texturePath = fileInfo.baseName() + ".png";
             FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + texturePath);
-            this->connect(fd, &FileDownloader::downloaded, this, [&, fd, maxProgress](QUrl url2)
+			connect(fd, &FileDownloader::errorMsg, ui->statusbar, &QStatusBar::showMessage);
+			connect(fd, &FileDownloader::downloaded, this, [&, fd, maxProgress](QUrl url2)
             {
 				QDir defaultThemeImagePath(Theme::imagesDir(m_defaultThemePath));
                 QPixmap textureImage;
@@ -673,7 +674,7 @@ void MainWindow::updateFromThemesDir()
 			}
 			else
 			{
-				openExThemeAndMakeExThemeWidget(m_parameters.themesPath.absolutePath() + "/" + dirName);
+				on_openThemeRequired(m_parameters.themesPath.absolutePath() + "/" + dirName);
 			}
 		}
 		emit progressUpdateRequired(float(i+1)/ls.size() * 100);
@@ -681,7 +682,7 @@ void MainWindow::updateFromThemesDir()
 	emit messageUpdateRequired(tr("Successfully updated themes."));
 }
 
-void MainWindow::openExThemeAndMakeExThemeWidget(QDir dir)
+void MainWindow::on_openThemeRequired(QDir dir)
 {
 	if(themeFolderIsValid(dir))
 	{
@@ -774,6 +775,7 @@ void MainWindow::on_actionDownload_triggered()
 	QUrl jsonUrl(m_parameters.jsonUrl);
 	m_fd = new FileDownloader(jsonUrl, this);
 	connect(m_fd, &FileDownloader::downloaded, this, &MainWindow::loadJsonFromInternet); //TODO : connect to deleteLater or make a setUrl function
+	connect(m_fd, &FileDownloader::errorMsg, ui->statusbar, &QStatusBar::showMessage);
     m_fd->launchDownload();
 }
 
@@ -900,6 +902,39 @@ void MainWindow::on_parametersChanged(AppParameters newParameters)
 
 void MainWindow::on_actionImport_From_Url_triggered()
 {
-
+	DialogImportUrl *diu = new DialogImportUrl(this);
+	connect(diu, &DialogImportUrl::urlProvided, this, &MainWindow::on_urlProvided);
+	diu->show();
 }
 
+void MainWindow::on_urlProvided(QString name, QString urlStr)
+{
+	bool opIsSuccess = false;
+	QUrl url(urlStr);
+	QDir dir(m_parameters.themesPath.absolutePath() + "/" + name);
+	if(url.isValid() && !(name.isEmpty() || name.isNull() || name == ".." || name == "."))
+	{
+		std::vector<Theme *>::iterator it = findTheme(name);
+		if(it == m_extraThemes.end())
+		{
+			dir.mkpath(dir.absolutePath());
+			QFile remoteFile(Theme::remoteFile(dir));
+			opIsSuccess = remoteFile.open(QIODevice::WriteOnly);
+			if(opIsSuccess)
+			{
+				remoteFile.write(urlStr.toUtf8());
+				remoteFile.close();
+				emit openThemeRequired(dir);
+			}
+		}
+		else
+		{
+			emit messageUpdateRequired("Error: cannot import url: theme with identical name exists.");
+		}
+
+	}
+	else
+	{
+		emit messageUpdateRequired("Error: cannot import url: url or name not valid.");
+	}
+}

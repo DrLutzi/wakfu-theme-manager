@@ -20,10 +20,20 @@ void FileDownloader::launchDownload()
 
 void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 {
-	m_DownloadedData = pReply->readAll();
-	//emit a signal
-	pReply->deleteLater();
-	emit downloaded(m_url);
+	if(pReply)
+	{
+		if(pReply->error() != QNetworkReply::NoError)
+		{
+			emit errorMsg(pReply->errorString());
+		}
+		else
+		{
+			m_DownloadedData = pReply->readAll();
+			//emit a signal
+			emit downloaded(m_url);
+		}
+		pReply->deleteLater();
+	}
     return;
 }
 

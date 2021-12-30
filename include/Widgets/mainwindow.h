@@ -21,6 +21,7 @@
 #include "formparameters.h"
 #include "types.h"
 #include "unzipper.h"
+#include "dialogimporturl.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -87,7 +88,7 @@ private slots:
 	void disableAllWidgets();
 	void setAllWidgetsEnabled(bool b);
 	void updateFromThemesDir();
-	void openExThemeAndMakeExThemeWidget(QDir dir);
+	void on_openThemeRequired(QDir dir);
 	void createDefaultThemeWidget();
 	ThemeWidget *createOrUpdateOneExThemeWidget(Theme *theme);
 	void createAllExtraThemeWidgets();
@@ -101,5 +102,7 @@ private slots:
 	void on_actionReset_triggered();
 	void on_actionParameters_triggered();
 	void on_parametersChanged(AppParameters newParameters);
+	void on_actionImport_From_Url_triggered();
+	void on_urlProvided(QString name, QString urlStr);
 };
 #endif // MAINWINDOW_H

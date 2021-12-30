@@ -20,6 +20,7 @@ public:
 
 signals:
 	void downloaded(QUrl url);
+	void errorMsg(QString errorMsg, int timeout = 0);
 
 private slots:
 	void fileDownloaded(QNetworkReply* pReply);

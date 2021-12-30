@@ -135,6 +135,12 @@ void ThemeWidget::downloadTheme()
 		if(remote.isValid())
 		{
 			FileDownloader *fd = new FileDownloader(remote, this);
+			fd->connect(fd, &FileDownloader::errorMsg, this, [this] (QString errorMsg, int timeout)
+			{
+				(void) timeout;
+				qDebug() << errorMsg;
+				emit downloadInProcess(false);
+			});
 			fd->connect(fd, &FileDownloader::downloaded, this, [this, fd] ()
 			{
 				bool opIsSuccess;
