@@ -27,7 +27,7 @@ There are three ways to import a theme, corresponding to the three first action 
 
 **Import folder**: imports a folder containing a theme, or a folder containing several theme folders (in which case there will be as many themes imported as there are valid theme folders).
 
-**Import zip**: imports a .zip archive containing a theme. If this does not work, make sure you meet the requirements (and please notify me).
+**Import zip**: imports a .zip archive containing a theme. If this does not work, make sure you meet the requirements (and please notify me on discord: Lutzi#3767).
 
 **Import link**: imports a link where your theme is stored, as a .zip archive. Again, if this does not work for some links, please notify me.
 
