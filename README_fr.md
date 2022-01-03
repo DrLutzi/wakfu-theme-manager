@@ -52,7 +52,7 @@ Les actions suivantes sont associées à cette catégorie :
 
 **Nettoyer thème** : supprime tous les fichiers de thème du dossier spécifié dans les paramètres (par défaut, le dossier est détecté et est le dossier de thème de votre jeu Wakfu).
 
-### Other actions
+### Autres actions
 
 Les actions suivantes sont associées à cette catégorie :
 
