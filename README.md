@@ -31,9 +31,15 @@ There are three ways to import a theme, corresponding to the three first action 
 
 **Import folder**: imports a folder containing a theme, or a folder containing several theme folders (in which case there will be as many themes imported as there are valid theme folders).
 
+![importDirectory](https://user-images.githubusercontent.com/15910330/149378815-b48b6736-5ab6-4a08-822d-c9425f2ef56d.gif)
+
 **Import zip**: imports a .zip archive containing a theme. If this does not work, make sure you meet the requirements (and please notify me on discord: Lutzi#3767).
 
+![importZip](https://user-images.githubusercontent.com/15910330/149379104-259bc53a-7e5c-4bdd-9be8-59294d25736f.gif)
+
 **Import link**: imports a link where your theme is stored, as a .zip archive. Again, if this does not work for some links, please notify me.
+
+![importUrl](https://user-images.githubusercontent.com/15910330/149379061-8731d136-7836-4e59-b3b2-84db62e82b97.gif)
 
 Once you imported a theme, it should appear in the leftmost list.
 
@@ -54,7 +60,11 @@ The following actions are associated with this category:
 
 **Make theme**: compiles the theme with all themes on the rightmost list and exports it to the output specified in the parameters (defaults to your own game's theme folder).
 
+![makeTheme](https://user-images.githubusercontent.com/15910330/149379227-95d5b4bd-1962-425c-ba8d-babfc793f153.gif)
+
 **Clear theme**: deletes theme files in the output specified in the parameters (defaults to your own game's theme folder).
+
+![clearTheme](https://user-images.githubusercontent.com/15910330/149379263-4ecefbae-408f-47de-9230-2742b8f97695.gif)
 
 ### Other actions
 
