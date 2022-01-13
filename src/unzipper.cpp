@@ -41,6 +41,7 @@ bool Unzipper::unzip(const QFile &zipFile, const QDir &outputDir, QObject *paren
 	unzipProcess.start(ms_programName, arguments);
 	bool b = unzipProcess.waitForFinished();
 	m_newEntryList = outputDir.entryList(QStringList(), QDir::NoDotAndDotDot|QDir::Files|QDir::Dirs);
+	qDebug() << QString("Launching unzip process ") + ms_programName + " with argument list: " << arguments;
 	return b;
 }
 

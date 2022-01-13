@@ -371,6 +371,30 @@ const QUrl &Theme::remote() const
 
 bool Theme::unzip(const QFile &zipFile)
 {
+	std::function<bool (QDir &)> findThemeRecursively = [&](QDir &dir) -> bool
+	{
+		qDebug() << "Trying to find themeDir recursively with directory " << dir;
+		bool found = false;
+		QDir colorsDir(Theme::colorsDir(dir).absolutePath());
+		QDir imagesDir(Theme::imagesDir(dir).absolutePath());
+		if(!colorsDir.exists() && !imagesDir.exists())
+		{
+			QStringList entries = dir.entryList(QStringList(), QDir::NoDotAndDotDot|QDir::Dirs);
+			for(QStringList::const_iterator cit = entries.constBegin(); cit != entries.constEnd(); ++cit && !found)
+			{
+				const QString &entry = (*cit);
+				QDir entryDir(dir.absolutePath() + "/" + entry);
+				if((found = findThemeRecursively(entryDir)))
+				{
+					dir = entryDir;
+				}
+			}
+		}
+		else
+			found = true;
+		return found;
+	};
+
 	bool opIsSuccess;
 	Unzipper unzipper;
 	QDir root = m_path;
@@ -402,10 +426,20 @@ bool Theme::unzip(const QFile &zipFile)
 					imagesDir.rename(imagesDir.absolutePath(), correctImagesDir.absolutePath());
 				}
 				else
-				{ //case where the zip file contains a sub folder containing the theme (a priori)
-					QDir dirUnzippedTheme(fileOrDirStr);
+				{ //case where the zip file contains one or several sub folder(s) containing the theme
+					QDir unzippedThemeDir(fileOrDirStr);
+					QDir actualThemeDir(unzippedThemeDir);
 					m_path.removeRecursively();
-					dirUnzippedTheme.rename(dirUnzippedTheme.absolutePath(), m_path.absolutePath());
+					bool foundThemeDir = findThemeRecursively(actualThemeDir);
+					if(foundThemeDir)
+						qDebug() << "Found theme directory: " << actualThemeDir;
+					else
+						qDebug() << "Unable to find theme directory. Defaulting to " << actualThemeDir;
+					actualThemeDir.rename(actualThemeDir.absolutePath(), m_path.absolutePath());
+					if(unzippedThemeDir.exists())
+					{
+						unzippedThemeDir.removeRecursively();
+					}
 				}
 			}
 		}
