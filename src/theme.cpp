@@ -380,7 +380,7 @@ bool Theme::unzip(const QFile &zipFile)
 		if(!colorsDir.exists() && !imagesDir.exists())
 		{
 			QStringList entries = dir.entryList(QStringList(), QDir::NoDotAndDotDot|QDir::Dirs);
-			for(QStringList::const_iterator cit = entries.constBegin(); cit != entries.constEnd(); ++cit && !found)
+			for(QStringList::const_iterator cit = entries.constBegin(); cit != entries.constEnd() && !found; ++cit)
 			{
 				const QString &entry = (*cit);
 				QDir entryDir(dir.absolutePath() + "/" + entry);
