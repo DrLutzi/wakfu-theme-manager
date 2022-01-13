@@ -8,6 +8,8 @@ README in other languages: [Français](README_fr.md)
 
 Download the appropriate binaries for your machine bellow, unzip the archive, and open wtm.exe.
 
+[**Windows 7, 8, 10, 11 - 64-bit**](https://seafile.unistra.fr/f/10e7937e94444f6a90fa/?dl=1)
+
 ## Requirements
 
 The application requires up to about 600 MB of RAM when compiling themes and takes as much disk space as you have downloaded themes, plus the size of Ankama's default theme. Additionally, for zip/unzip/download features, on Windows, *powershell 3.0 or more* must be installed, and on other OS, *unzip* must be installed.
