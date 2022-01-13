@@ -11,6 +11,7 @@ Téléchargez les fichiers pour votre jeu sur le README principal (en anglais).
 L'application a besoin de jusqu'à 600 Mo de RAM en construisant les thèmes, et prend autant de mémoire sur le disque que vous avez téléchargé de thèmes, plus la taille du thème par défaut d'Ankama.
 Additionnellement, pour les téléchargements et l'ouverture d'archives, sur Windows, *powershell 3.0 ou plus* doit être installé, et sur les machines Unix, *unzip* doit être installé.
 
+
 ## Utilisation
 
 ### Premiers pas
@@ -27,15 +28,15 @@ Il y a trois façons d'importer un thème, correspondant aux trois premiers bout
 
 **Importer dossier** : importe un dossier contenant un thème, ou un dossier contenant plusieurs dossiers de thème (auquel cas autant de thèmes sont importés que de dossiers de thèmes valides). 
 
-https://thumbs.gfycat.com/AncientNiceGardensnake-mobile.mp4
+![importDirectory](https://user-images.githubusercontent.com/15910330/149378815-b48b6736-5ab6-4a08-822d-c9425f2ef56d.gif)
 
 **Importer archive** : importe une archive .zip contenant un thème. Si cette action ne fonctionne pas, assurez-vous que votre machine a les prérequis (et/ou notifiez l'auteur sur discord : Lutzi#3767).
 
-https://thumbs.gfycat.com/WhiteLimpGartersnake-mobile.mp4
+![importZip](https://user-images.githubusercontent.com/15910330/149379104-259bc53a-7e5c-4bdd-9be8-59294d25736f.gif)
 
 **Importer lien** : importe un lien vers un thème stocké sur un serveur *en tant qu'archive .zip*. Si ça ne fonctionne pas pour certains liens, prévenez l'auteur également.
 
-https://thumbs.gfycat.com/EvergreenGracefulHyrax-mobile.mp4
+![importUrl](https://user-images.githubusercontent.com/15910330/149379061-8731d136-7836-4e59-b3b2-84db62e82b97.gif)
 
 Une fois un thème importé, il devrait apparaître dans la liste de gauche.
 
@@ -56,11 +57,11 @@ Les actions suivantes sont associées à cette catégorie :
 
 **Construire thème** : construit le thème final avec tous les thèmes de la liste de droite, et l'exporte vers le dossier spécifié dans les paramètres (par défaut, le dossier est détecté et est le dossier de thème de votre jeu Wakfu).
 
-https://thumbs.gfycat.com/AptLoneCockatoo-mobile.mp4
+![makeTheme](https://user-images.githubusercontent.com/15910330/149379227-95d5b4bd-1962-425c-ba8d-babfc793f153.gif)
 
 **Nettoyer thème** : supprime tous les fichiers de thème du dossier spécifié dans les paramètres (par défaut, le dossier est détecté et est le dossier de thème de votre jeu Wakfu).
 
-https://thumbs.gfycat.com/AgileSourBlackbuck-mobile.mp4
+![clearTheme](https://user-images.githubusercontent.com/15910330/149379263-4ecefbae-408f-47de-9230-2742b8f97695.gif)
 
 ### Autres actions
 
