@@ -33,7 +33,7 @@ Il y a trois façons d'importer un thème, correspondant aux trois premiers bout
 
 Une fois un thème importé, il devrait apparaître dans la liste de gauche.
 
-### Manipulating themes
+### Manipuler les thèmes
 
 Pour manipuler les thèmes, vous devez les *glisser-déposer*. Il y a deux listes pour les thèmes : celle de gauche est une vue des thèmes téléchargés et importés; celle de droite représente les thèmes que vous voulez utiliser pour construire le thème final pour votre jeu.
 
