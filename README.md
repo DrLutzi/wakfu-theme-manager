@@ -75,6 +75,15 @@ The following actions are associated with this category:
 **Settings**: opens a panel with the settings. **Most of the time, you do not need to modify settings**. If the program detects that a setting seems wrong, it will be highlighted in yellow.
 
 ## Contributing
+
+**Themes**
+
+All themes are compatible with the application. Here are, however, some recommendations for an optimal usage:
+* Make sure to provide a downloadable link to your theme as a .zip archive (no .rar, no folders to navigate like in dropbox). *Note*: github repositories are valid (as they provide a download link in .zip).
+* You can add a squared image named *theme.png* at the root of the theme. This image will represent the icon of your theme. *Note*: if no image is provided, the texture *dungeon.png* will be used instead; if it is not present, a square by default will be used (like in the demos).
+
+**Code**
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. If you have any suggestion but are not familiar with coding C++, please open an issue.
 
 ### Compilation
