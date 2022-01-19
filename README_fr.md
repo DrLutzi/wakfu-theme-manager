@@ -72,6 +72,14 @@ Les actions suivantes sont associées à cette catégorie :
 **Options**: ouvre un panneau avec les options. **Dans la majorité des cas, vous n'avez pas besoin de modifier ces options**. Si le programme détecte qu'une option semble être fausse (par exemple un dossier qui n'existe pas), l'option aura une apparence jaune à la place de vert.
 
 ## Contribuer
+**Thèmes**
+
+Tous les thèmes sont compatibles avec l'application. Voici cependant quelques recommendations pour une utilisation optimale :
+* Faites en sorte de fournir un lien vers le thème téléchargable sous le format .zip (pas de .rar, pas de dossiers à parcourir comme sur dropbox). *Remarque* : les dépôts github sont valides (puisqu'il est possible de télécharger le thème en .zip).
+* Facultatif : rajoutez une image carrée nommée theme.png à la racine du thème. Cette image représentera l'icône du thème. *Remarque* : si aucune image n'est fournie, la texture *dungeon.png* sera utilisé à la place si elle est présente, sinon, un carré par défaut (comme dans les démonstrations).
+
+**Code**
+
 Les *pull requests* sont bienvenues. Pour des changements majeurs, ouvrez svp une *issue* en premier lieu pour discuter ce que vous voudriez changer. Si vous avez une suggestion mais n'êtes pas familié avec le C++, ouvrez une *issue* svp.
 
 ### Compilation
