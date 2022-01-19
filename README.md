@@ -55,11 +55,7 @@ Each theme is represented by its icon, its name (the name of the folder), and a 
 
 ### Compiling themes
 
-Themes placed on the rightmost list will be used when compiling a final theme. **In most case, you want only one theme to be present on the rightmost list**. If several themes are placed in this list, they will have an importance sorted from top to bottom, top being the most important. For instance, if you have two themes A and B and A is on top of B:
-* If A has a custom color or pixmap that B does not have, A will override it;
-* If B has a custom color or pixmap that A does not have, B will override it;
-* If A and B have a custom color or pixmap, A will override it.
-
+Themes placed on the rightmost list will be used when compiling a final theme. **In most case, you want only one theme to be present on the rightmost list**.
 The following actions are associated with this category:
 
 **Make theme**: compiles the theme with all themes on the rightmost list and exports it to the output specified in the parameters (defaults to your own game's theme folder).
@@ -69,6 +65,15 @@ The following actions are associated with this category:
 **Clear theme**: deletes theme files in the output specified in the parameters (defaults to your own game's theme folder).
 
 ![clearTheme](https://user-images.githubusercontent.com/15910330/149379263-4ecefbae-408f-47de-9230-2742b8f97695.gif)
+
+### Fuse themes
+
+If several themes are placed in the rightmost list when compiling themes, they will have an importance sorted from top to bottom, top being the most important. For instance, if you have two themes A and B and A is on top of B:
+* If A has a custom color or pixmap that B does not have, A will override it;
+* If B has a custom color or pixmap that A does not have, B will override it;
+* If A and B have a custom color or pixmap, A will override it.
+
+![fuseThemes](https://user-images.githubusercontent.com/15910330/150188934-ac94a1a0-bde2-459c-99fc-cbf660a415a6.gif)
 
 ### Other actions
 
