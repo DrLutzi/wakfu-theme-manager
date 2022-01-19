@@ -382,7 +382,7 @@ bool Theme::unzip(const QFile &zipFile)
 		m_path.mkpath(m_path.absolutePath());
 		QDir correctColorsDir(Theme::colorsDir(m_path));
 		QDir correctImagesDir(Theme::imagesDir(m_path));
-		for(const QString &entry : createdEntries)
+		for(const QString &entry : qAsConst(createdEntries))
 		{
 			//first treat the directories
 			QString fileOrDirStr(root.absolutePath() + "/" + entry);
