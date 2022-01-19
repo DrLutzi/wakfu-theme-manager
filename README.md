@@ -4,11 +4,15 @@ WTM is a desktop application used to manage themes for the game [Wakfu](https://
 
 README in other languages: [Français](README_fr.md)
 
+## Changelog -- 1.1
+
+* Fixed bitly links.
+
 ## Installation
 
 Download the appropriate binaries for your machine bellow, unzip the archive, and open wtm.exe.
 
-[**Windows 7, 8, 10, 11 - 64-bit**](https://seafile.unistra.fr/f/10e7937e94444f6a90fa/?dl=1)
+[**Version 1.1 -- Windows 7, 8, 10, 11 - 64-bit**](https://seafile.unistra.fr/f/bbf689dd6b5244f182a6/?dl=1)
 
 ## Requirements
 
