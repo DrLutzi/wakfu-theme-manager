@@ -5,6 +5,7 @@
 #include <memory>
 #include <QProcess>
 #include <QSet>
+#include <QDebug>
 
 class Unzipper
 {

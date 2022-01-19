@@ -31,11 +31,11 @@ bool Unzipper::unzip(const QFile &zipFile, const QDir &outputDir, QObject *paren
 	m_oldEntryList = outputDir.entryList(QStringList(), QDir::NoDotAndDotDot|QDir::Files|QDir::Dirs);
 	QProcess unzipProcess(parent);
 	QStringList arguments = ms_arguments;
-	QString quote('\"');
 #if defined(Q_OS_WIN)
+	QString quote('\"');
 	arguments << quote + zipFile.fileName() + quote << quote + outputDir.absolutePath() + quote;
 #else
-	arguments << quote + zipFile.fileName() + quote << "-d" << quote + outputDir.absolutePath() + quote;
+	arguments << zipFile.fileName().replace(" ", "\\ ") << "-d" << outputDir.absolutePath().replace(" ", "\\ ");
 #endif
 	unzipProcess.setStandardErrorFile(outputDir.absolutePath() + "/unzip.log");
 	unzipProcess.start(ms_programName, arguments);
