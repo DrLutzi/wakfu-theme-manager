@@ -48,10 +48,7 @@ Chaque thème est représenté par son icône, son nom (qui est aussi le nom du 
 
 ### Construire un thème
 
-Les thèmes placés sur la liste de droite vont être utilisés pour construire un thème final. **Dans la plupart des cas, vous ne voulez qu'un seul thème sur la liste de droite**. Si plusieurs thèmes sont placés dans cette liste, leur importance est classée du haut vers le bas, le thème le plus haut étant le plus important. Par exemple, si vous avez deux thèmes A et B et que *A est au-dessus de B* :
-* Si A a une couleur ou une pixmap personnalisée que B n'a pas, celle de A va être utilisée pour le thème final;
-* Si B a une couleur ou une pixmap personnalisée que A n'a pas, celle de B va être utilisée pour le thème final;
-* Si A et B ont tous deux une couleur ou une pixmap personnalisée, *celle de A va être utilisée pour le thème final*.
+Les thèmes placés sur la liste de droite vont être utilisés pour construire un thème final. **Dans la plupart des cas, vous ne voulez qu'un seul thème sur la liste de droite**.
 
 Les actions suivantes sont associées à cette catégorie :
 
@@ -62,6 +59,20 @@ Les actions suivantes sont associées à cette catégorie :
 **Nettoyer thème** : supprime tous les fichiers de thème du dossier spécifié dans les paramètres (par défaut, le dossier est détecté et est le dossier de thème de votre jeu Wakfu).
 
 ![clearTheme](https://user-images.githubusercontent.com/15910330/149379263-4ecefbae-408f-47de-9230-2742b8f97695.gif)
+
+### Fusion de thèmes
+
+Si plusieurs thèmes sont placés dans la liste de droite, ils vont être fusionnés dans le thème final. Les thèmes ont une importance selon leur ordre dans la liste, du haut vers le bas, le thème le plus haut étant le plus important. Par exemple, si vous avez deux thèmes A et B et que *A est au-dessus de B* :
+* Si A a une couleur ou une pixmap personnalisée que B n'a pas, celle de A va être utilisée pour le thème final;
+* Si B a une couleur ou une pixmap personnalisée que A n'a pas, celle de B va être utilisée pour le thème final;
+* Si A et B ont tous deux une couleur ou une pixmap personnalisée, *celle de A va être utilisée pour le thème final*.
+* Toutes les pixmaps identiques au thème par défaut d'Ankama dans A ou dans B sont détectées et ne sont pas comptabilisées.
+
+Cette fonctionnalité est conçue pour être utilisée avec un macro thème accompagné d'un ou plusieurs micro thèmes. Par exemple, l'exemple ci-dessous reprend le thème sombre et *flat* d'Augaroma (mal épelé) et un thème qui modifie uniquement le fond du coeur de vie situé dans *themeSimple.png*.
+
+![fuseThemes](https://user-images.githubusercontent.com/15910330/150188934-ac94a1a0-bde2-459c-99fc-cbf660a415a6.gif)
+
+*Remarque* : Si cette fonctionnalité ne fonctionne pas correctement, vérifiez que les micro thèmes ne modifie pas les pixmaps par défaut voisines, notamment via votre application d'édition. WTM autorise une très petite différence accidentelle, mais toute modification dépassant ce seuil fera comptabiliser la pixmap correspondante comme une pixmap modifiées.
 
 ### Autres actions
 
@@ -91,7 +102,7 @@ Pour compiler :
 ```console
 qmake wtm.pro
 make
-cp config/config.json <build directory>
+cp config/config.json <répertoire de compilation>
 ```
 
 Ou configurez simplement le projet dans QtCreator, et copiez le fichier de configuration *config/config.json* dans le répertoire de compilation.
