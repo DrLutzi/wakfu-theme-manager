@@ -68,12 +68,17 @@ The following actions are associated with this category:
 
 ### Fuse themes
 
-If several themes are placed in the rightmost list when compiling themes, they will have an importance sorted from top to bottom, top being the most important. For instance, if you have two themes A and B and A is on top of B:
+If several themes are placed in the rightmost list when compiling themes, they will be merged in the final theme. Themes are attributed an importance depending on their order on the list, from top to bottom, top being the most important. For instance, if you have two themes A and B and A is on top of B:
 * If A has a custom color or pixmap that B does not have, A will override it;
 * If B has a custom color or pixmap that A does not have, B will override it;
 * If A and B have a custom color or pixmap, A will override it.
+* All pixmaps identical to those of the default theme of Ankama in A or B are detected and not taken in account.
+
+This feature is designed to be used with a macro theme along with one or several micro themes. For instance, the following example takes the dark flat theme of Augaroma (badly spelled) and a theme that modifies only the HP heart's background located in *themeSimple.png*.
 
 ![fuseThemes](https://user-images.githubusercontent.com/15910330/150188934-ac94a1a0-bde2-459c-99fc-cbf660a415a6.gif)
+
+*Note*: if this feature does not seem to work correctly, make sure your micro themes do not modify default neighbouring pixmaps, especially through an image editing application. WTM authorizes a very small accidental difference on each pixel, but any modification above this threshold will make the corresponding pixmap count as a modified pixmap.
 
 ### Other actions
 
