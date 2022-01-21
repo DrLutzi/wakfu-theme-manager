@@ -66,7 +66,7 @@ The following actions are associated with this category:
 
 ![clearTheme](https://user-images.githubusercontent.com/15910330/149379263-4ecefbae-408f-47de-9230-2742b8f97695.gif)
 
-### Fuse themes
+### Fusing themes
 
 If several themes are placed in the rightmost list when compiling themes, they will be merged in the final theme. Themes are attributed an importance depending on their order on the list, from top to bottom, top being the most important. For instance, if you have two themes A and B and A is on top of B:
 * If A has a custom color or pixmap that B does not have, A will override it;
