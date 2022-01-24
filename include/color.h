@@ -6,7 +6,8 @@
 class Color
 {
 public:
-	Color(const QString &id, const QString &color);
+	Color(const QString &id, const QString &colorStr);
+	Color(const QString &id, const QColor &color);
 
 	const QString &id() const;
 	const QColor &qcolor() const;

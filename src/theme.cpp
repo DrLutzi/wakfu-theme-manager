@@ -184,6 +184,28 @@ bool Theme::loadColors(const QDir &dir)
 	return b;
 }
 
+bool Theme::extractColorsFromJsonThemes()
+{
+	const QJsonValue &colorsValue = _jsonThemes["colors"];
+	const QJsonArray &colorsArray = colorsValue.toArray();
+	for(QJsonArray::ConstIterator cit = colorsArray.constBegin(); cit != colorsArray.constEnd(); ++cit)
+	{
+		const QJsonValue &colorValue = (*cit);
+		QColor qColor;
+		int r = colorValue["red"].toInt();
+		int g = colorValue["green"].toInt();
+		int b = colorValue["blue"].toInt();
+		float af = colorValue["alpha"].toInt()/100.0f;
+		qColor.setRed(r);
+		qColor.setGreen(g);
+		qColor.setBlue(b);
+		qColor.setAlphaF(af);
+		Color c(colorValue["id"].toString(), qColor);
+		m_colors.emplace(c);
+	}
+	return true;
+}
+
 bool Theme::saveColors(const QDir &dir) const
 {
 	QDir colorsPath(dir.absolutePath() + "/colors");

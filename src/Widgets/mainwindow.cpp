@@ -440,7 +440,9 @@ void MainWindow::initJson(bool forceReset)
     if(_jsonThemes.isEmpty() || forceReset)
     {
         QFile jsonThemeFile(m_parameters.themesPath.absolutePath() + "/theme.json");
-		bool b = jsonThemeFile.open(QIODevice::ReadOnly) && m_defaultThemePath.exists();
+		bool b = jsonThemeFile.open(QIODevice::ReadOnly) && m_defaultThemePath.exists()
+				&& Theme::colorsDir(m_defaultThemePath).exists()
+				&& Theme::imagesDir(m_defaultThemePath).exists();
         if(b)
         {
             _jsonThemes = QJsonDocument::fromJson(jsonThemeFile.readAll());
@@ -512,6 +514,10 @@ void MainWindow::downloadDefault()
                     QDir defaultTheme(m_defaultThemePath.absolutePath());
                     if(defaultTheme.exists())
                     {
+						//Create colors
+						m_defaultTheme.extractColorsFromJsonThemes();
+						m_defaultTheme.saveColors(defaultTheme);
+						//Load theme
                         m_defaultTheme.load(defaultTheme);
                     }
                     const QJsonArray &textureArray = _jsonThemes["textures"].toArray();

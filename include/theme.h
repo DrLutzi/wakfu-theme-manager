@@ -30,6 +30,7 @@ public:
 	void loadPixmaps(const QDir &dir);
 
 	bool loadColors(const QDir &dir);
+	bool extractColorsFromJsonThemes();
 	bool saveColors(const QDir &dir) const;
 	void fuseColors(const Theme *model);
 

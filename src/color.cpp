@@ -1,8 +1,13 @@
 #include "color.h"
 
-Color::Color(const QString &id, const QString &color) :
+Color::Color(const QString &id, const QString &colorStr) :
 	m_id(id),
-	m_color(readRGBA(color))
+	m_color(readRGBA(colorStr))
+{}
+
+Color::Color(const QString &id, const QColor &color) :
+	m_id(id),
+	m_color(color)
 {}
 
 const QString &Color::id() const

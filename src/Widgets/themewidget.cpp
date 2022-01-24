@@ -44,7 +44,7 @@ void ThemeWidget::createOrUpdateStyle()
 		{
 			const Theme *t = theme();
 			const Theme::ColorMapType &colors = t->colors();
-			Color c("defaultDarkGreyColor", "");
+			Color c("defaultDarkGreyColor", QString(""));
 			Theme::ColorMapType::const_iterator cit = colors.find(c);
 			if(cit == colors.end())
 			{
