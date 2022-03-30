@@ -24,6 +24,7 @@ Si l'application a téléchargé le thème par défaut correctement, un thème g
 
 ### Importer des thèmes
 
+**Attention : ne pas copier de fichiers manuellement dans le dossier de travail "themes" de l'application. Merci également d'utiliser des backups de vos fichiers de thèmes et de travail sur les thèmes lorsque vous manipulez l'application.**
 Il y a trois façons d'importer un thème, correspondant aux trois premiers boutons d'actions de la barre d'actions. Notez que les thèmes sont copiés dans le dossier "themes" de l'application à l'import (pas du jeu).
 
 **Importer dossier** : importe un dossier contenant un thème, ou un dossier contenant plusieurs dossiers de thème (auquel cas autant de thèmes sont importés que de dossiers de thèmes valides). 
@@ -39,6 +40,10 @@ Il y a trois façons d'importer un thème, correspondant aux trois premiers bout
 ![importUrl](https://user-images.githubusercontent.com/15910330/149379061-8731d136-7836-4e59-b3b2-84db62e82b97.gif)
 
 Une fois un thème importé, il devrait apparaître dans la liste de gauche.
+
+### Supprimer un thème
+
+Vous ne pouvez pas supprimer de thème sur l'application. Pour supprimer un thème, fermez l'application, rendez vous dans le dossier de travail "themes" de l'application et supprimez le dossier correspondant au thème que vous ne voulez plus voir.
 
 ### Manipuler les thèmes
 
