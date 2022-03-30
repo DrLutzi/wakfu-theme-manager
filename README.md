@@ -31,6 +31,7 @@ If the application downloaded the default theme correctly, a new disabled theme 
 
 ### Importing themes
 
+**WARNING: DO NOT COPY FILES DIRECTLY INTO THE WORKING FOLDER "themes" OF THE APPLICATION. Also, please use backups when using this application.**
 There are three ways to import a theme, corresponding to the three first action buttons.
 
 **Import folder**: imports a folder containing a theme, or a folder containing several theme folders (in which case there will be as many themes imported as there are valid theme folders).
@@ -46,6 +47,10 @@ There are three ways to import a theme, corresponding to the three first action 
 ![importUrl](https://user-images.githubusercontent.com/15910330/149379061-8731d136-7836-4e59-b3b2-84db62e82b97.gif)
 
 Once you imported a theme, it should appear in the leftmost list.
+
+### Removing themes
+
+You cannot remove themes from the application. To remove a theme, close the application, go to the "themes" folder of the application and remove the folder corresponding to the theme you do not want to see anymore.
 
 ### Manipulating themes
 
