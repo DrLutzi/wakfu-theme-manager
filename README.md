@@ -12,7 +12,7 @@ README in other languages: [Français](README_fr.md)
 
 Download the appropriate binaries for your machine bellow, unzip the archive, and open wtm.exe.
 
-[**Version 1.1 -- Windows 7, 8, 10, 11 - 64-bit**](https://bit.ly/3tI7XPM)
+[**Version 1.1 -- Windows 7, 8, 10, 11 - 64-bit**](https://seafile.unistra.fr/f/bbf689dd6b5244f182a6/?dl=1)
 
 ## Requirements
 
