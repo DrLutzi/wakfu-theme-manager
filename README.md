@@ -4,9 +4,10 @@ WTM is a desktop application used to manage themes for the game [Wakfu](https://
 
 README in other languages: [Français](README_fr.md)
 
-## Changelog -- 1.1
+## Changelog -- 1.2
 
-* Fixed bitly links.
+* Fixed Ankama's directories and their contents not being downloaded.
+* Updated the graphic on Ankama's content download.
 
 ## Installation
 
@@ -32,6 +33,7 @@ If the application downloaded the default theme correctly, a new disabled theme 
 ### Importing themes
 
 **WARNING: DO NOT COPY FILES DIRECTLY INTO THE WORKING FOLDER "themes" OF THE APPLICATION. Also, please use backups when using this application.**
+
 There are three ways to import a theme, corresponding to the three first action buttons.
 
 **Import folder**: imports a folder containing a theme, or a folder containing several theme folders (in which case there will be as many themes imported as there are valid theme folders).
