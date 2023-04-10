@@ -732,7 +732,8 @@ ThemeWidget *MainWindow::createOrUpdateOneExThemeWidget(Theme *theme)
 		{
 			extraTheme = new ThemeWidget(theme, ui->scrollAreaWidgetContents_used);
 			connect(extraTheme, &ThemeWidget::downloadInProcess, this, &MainWindow::on_downloadInProcess);
-			connect(extraTheme, &ThemeWidget::downloadProgressUpdate, m_progressBar, &QProgressBar::setValue);
+			connect(extraTheme, &ThemeWidget::progressUpdateRequired, m_progressBar, &QProgressBar::setValue);
+			connect(extraTheme, &ThemeWidget::messageUpdateRequired, ui->statusbar, &QStatusBar::showMessage);
 			m_extraThemeWidgets.push_back(extraTheme);
 			ui->scrollAreaWidgetContents_used->layout()->addWidget(extraTheme);
 		}

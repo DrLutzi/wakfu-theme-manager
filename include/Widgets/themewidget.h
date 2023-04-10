@@ -37,8 +37,9 @@ public:
 
 signals:
 
-	void downloadInProcess(bool);
-	void downloadProgressUpdate(int);
+	void downloadInProcess(bool b);
+	void progressUpdateRequired(int progress);
+	void messageUpdateRequired(const QString& message, int timeout=0);
 
 private slots:
 	void on_lineEdit_url_editingFinished();
