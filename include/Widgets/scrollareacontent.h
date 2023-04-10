@@ -21,11 +21,6 @@ public:
 	ThemeWidget *find(const QString &name);
 	bool remove(ThemeWidget *tw);
 	void getNeighbors(const QPoint &pos, ThemeWidget *&twUnder, ThemeWidget *&twAbove) const;
-
-private:
-
-	ScrollAreaContent *m_twin;
-
 };
 
 #endif // SCROLLAREACONTENT_H

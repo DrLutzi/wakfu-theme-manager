@@ -7,69 +7,30 @@ ScrollAreaContent::ScrollAreaContent(QWidget *parent) : QWidget(parent)
 
 void ScrollAreaContent::dropEvent(QDropEvent *event)
 {
-	assert(m_twin && event != nullptr);
-	QBoxLayout *l = dynamic_cast<QBoxLayout *>(layout());
-	assert(l != nullptr);
-	event->acceptProposedAction();
-	const QMimeData *mimeData = event->mimeData();
-	const QPoint &pos = event->pos();
-	if(mimeData->hasText())
-	{
-		QString text = mimeData->text(); //text should be a name
-		ThemeWidget* tw;
-		bool isInSelf = false;
-		int layoutIndex = 0, previousLayoutIndex = std::numeric_limits<int>::max();
-		if((tw = m_twin->find(text)))
-		{
-			m_twin->remove(tw);
-		}
-		else if((tw = find(text)))
-		{
-			isInSelf = true;
-		}
-		if(tw != nullptr)
-		{
-			tw->setTransparentAspect(false);
-			ThemeWidget *twUnder = nullptr, *twAbove = nullptr;
-			getNeighbors(pos, twUnder, twAbove);
-			if(isInSelf)
-			{
-				previousLayoutIndex = layout()->indexOf(tw);
-				remove(tw);
-			}
-			tw->setParent(this);
-			if(twAbove == nullptr)
-			{
-				l->addWidget(tw);
-			}
-			else if(twUnder == nullptr)
-			{
-				l->insertWidget(0, tw);
-			}
-			else
-			{
-				layoutIndex += layout()->indexOf(twUnder)+1;
-				if(layoutIndex > previousLayoutIndex)
-					--layoutIndex;
-				assert(layoutIndex != -1);
-				l->insertWidget(layoutIndex, tw);
-			}
-		}
-	}
+    assert(event != nullptr);
+    QBoxLayout *l = dynamic_cast<QBoxLayout *>(layout());
+    assert(l != nullptr);
+    event->acceptProposedAction();
+    const QMimeData *mimeData = event->mimeData();
+    const QPoint &pos = event->position().toPoint();
+    if(mimeData->hasText())
+    {
+
+    }
 }
 
 void ScrollAreaContent::dragEnterEvent(QDragEnterEvent *event)
 {
-	if (event->mimeData()->hasFormat("text/plain"))
-	{
+    if (event->mimeData()->hasFormat("text/plain"))
+    {
 
-		event->acceptProposedAction();
-	}
+        event->acceptProposedAction();
+    }
 }
 
 void ScrollAreaContent::resizeEvent(QResizeEvent *event)
 {
-	const QLayout *l = layout();
+    const QLayout *l = layout();
 	if(l != nullptr && event != nullptr)
 	{
 		QList<ThemeWidget *> listThemeWidget = this->findChildren<ThemeWidget *>();
@@ -78,11 +39,6 @@ void ScrollAreaContent::resizeEvent(QResizeEvent *event)
             tw->resize(event->size().width()-4, tw->height());
 		}
 	}
-}
-
-void ScrollAreaContent::setTwin(ScrollAreaContent *twin)
-{
-	m_twin = twin;
 }
 
 ThemeWidget* ScrollAreaContent::find(const QString &name)

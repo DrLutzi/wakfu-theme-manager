@@ -1,6 +1,6 @@
 #include "texture.h"
 
-extern QJsonDocument _jsonThemes;
+extern QJsonDocument jsonThemes;
 std::map<QString, QString, std::less<QString>> Texture::ms_pathToIdMap;
 
 Texture::Texture(const QString &id) :
@@ -39,7 +39,7 @@ bool Texture::loadPixmaps(const QDir &dir)
 {
 	m_pixmaps.clear();
 	QFileInfoList ls = dir.entryInfoList(QStringList() << "*.png", QDir::Files);
-	const QJsonValue &pixmapValues = _jsonThemes["pixmaps"];
+	const QJsonValue &pixmapValues = jsonThemes["pixmaps"];
 	for(QFileInfoList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
 	{
 		const QFileInfo &fileInfo = (*cit);
@@ -142,7 +142,7 @@ void Texture::unpack(const Texture *model)
 {
 	assert(!m_image.isNull());
 	m_pixmaps.clear();
-	const QJsonValue &pixmapValues = _jsonThemes["pixmaps"];
+	const QJsonValue &pixmapValues = jsonThemes["pixmaps"];
 	const QJsonArray &jsonArray = pixmapValues.toArray();
 	unsigned int index=0;
 	bool isSpecific = false;
@@ -178,7 +178,7 @@ void Texture::unpackSpecific(const Texture *model)
 {
 	assert(!m_image.isNull());
 
-	const QJsonValue &themeElementValues = _jsonThemes["themeElement"];
+	const QJsonValue &themeElementValues = jsonThemes["themeElement"];
 	const QJsonArray &jsonArray = themeElementValues.toArray();
 	unsigned int index=0;
 	bool isSpecific = true;

@@ -62,6 +62,17 @@ public:
 	const QUrl &remote() const;
 	bool unzip(const QFile &zipFile);
 
+	void setName(const QString &name);
+	void setAuthor(const QString &author);
+	void setVersion(int version);
+	void setImageRemote(const QUrl &url);
+	void setForumURL(const QUrl &url);
+
+	const QString &author() const;
+	const int &version() const;
+	const QUrl &imageRemote() const;
+	const QUrl &forumURL() const;
+
 	static inline QDir colorsDir(const QDir &dir) {return QDir(dir.absolutePath() + "/colors");}
 	static inline QDir imagesDir(const QDir &dir) {return QDir(dir.absolutePath() + "/images");}
 	static inline QString remoteFile(const QDir &dir) {return dir.absolutePath() + "/remote.txt";}
@@ -69,10 +80,14 @@ public:
 
 private:
 	QString	m_name;
+	QString m_author;
+	int m_version;
+	QUrl m_imageRemote;
+	QUrl m_forumURL;
 	QDir m_path;
 	TextureMapType m_textures;
 	ColorMapType m_colors;
-	QUrl m_remote;
+	QUrl m_contentRemote;
 };
 
 #endif // THEME_H

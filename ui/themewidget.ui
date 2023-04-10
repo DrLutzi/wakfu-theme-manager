@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>304</width>
+    <width>330</width>
     <height>86</height>
    </rect>
   </property>
@@ -80,78 +80,79 @@ border-width: 1px;</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="name">
         <property name="styleSheet">
          <string notr="true">border: 0px; background-color: rgba(0, 0, 0, 0)</string>
         </property>
         <property name="text">
-         <string>Label</string>
+         <string>Name</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="widget_2" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="spacing">
-          <number>2</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap resource="../resources/icons.qrc">:/resources/colored/colored/link.svg</pixmap>
-           </property>
-           <property name="scaledContents">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_url">
-           <property name="styleSheet">
-            <string notr="true">border: 1px solid rgba(50, 50, 50, 255);
-border-radius: 1 px; 
-padding: 0 1px;
-background: rgba(1, 1, 1, 0);</string>
-           </property>
-           <property name="maxLength">
-            <number>512</number>
-           </property>
-           <property name="clearButtonEnabled">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <widget class="QLabel" name="author">
+        <property name="text">
+         <string>Author</string>
+        </property>
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_forumURL">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>32</width>
+       <height>64</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+	border-color: rgba(255, 255, 255, 0);
+}
+QPushButton:hover
+{
+	background-color: rgba(167, 240, 255, 128);
+}
+QPushButton:pressed
+{
+	background-color: rgba(167, 240, 255, 192);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/icons.qrc">
+       <normaloff>:/resources/colored/colored/link.svg</normaloff>:/resources/colored/colored/link.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
     </widget>
    </item>
    <item>
@@ -197,19 +198,6 @@ QPushButton:pressed
       </size>
      </property>
     </widget>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

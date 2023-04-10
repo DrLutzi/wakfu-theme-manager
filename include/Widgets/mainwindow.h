@@ -52,8 +52,8 @@ public:
 private:
 	Ui::MainWindow *ui;
 	FileDownloader *m_fd;
+	FileDownloader *m_fdWTM;
 	QJsonDocument	m_configJson;
-	AppParameters	m_parameters;
 	QString			m_pixmapRelativePath;
 	QDir			m_defaultThemePath;
 	QFile			m_configFile;
@@ -67,8 +67,10 @@ private:
 
 	QProgressBar	*m_progressBar;
 
-	static void clearLayout(QLayout *layout);
-	void initJson(bool forceReset = false);
+    static void clearLayout(QLayout *layout);
+    void initWTMJson();
+    void initAnkamaJson(bool forceReset = false);
+	void downloadWTMThemes();
 	void downloadDefault();
 	void makeTheme();
 	void resetTheme();
@@ -91,8 +93,9 @@ private slots:
 	void on_openThemeRequired(QDir dir);
 	void createDefaultThemeWidget();
 	ThemeWidget *createOrUpdateOneExThemeWidget(Theme *theme);
-	void createAllExtraThemeWidgets();
-	void loadJsonFromInternet();
+    void createAllExtraThemeWidgets();
+    void loadWTMJsonFromWeb();
+    void loadAnkamaJsonFromWeb();
 	void on_actionDownload_triggered();
 	void on_actionOpen_triggered();
 	void on_actionOpen_Zip_triggered();
@@ -104,5 +107,6 @@ private slots:
 	void on_parametersChanged(AppParameters newParameters);
 	void on_actionImport_From_Url_triggered();
 	void on_urlProvided(QString name, QString urlStr);
+	void on_downloadInProcess(bool);
 };
 #endif // MAINWINDOW_H

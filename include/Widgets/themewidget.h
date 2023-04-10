@@ -38,12 +38,17 @@ public:
 signals:
 
 	void downloadInProcess(bool);
+	void downloadProgressUpdate(int);
 
 private slots:
 	void on_lineEdit_url_editingFinished();
 	void on_pushButton_pressed();
+	void on_pushButton_forumURL_pressed();
 
 private:
+
+	void moveAndReplaceFolderContents(const QString &fromDir, const QString &toDir);
+
 	Ui::ThemeWidget *ui;
 	Theme *m_theme;
 	QPixmap m_pixmap;

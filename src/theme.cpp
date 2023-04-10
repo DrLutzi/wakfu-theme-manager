@@ -1,12 +1,17 @@
 #include "theme.h"
 
-extern QJsonDocument _jsonThemes;
+extern QJsonDocument jsonThemes;
 
 Theme::Theme() :
 	m_name(),
 	m_path(),
+	m_author(),
+	m_version(0),
+	m_imageRemote(),
+	m_forumURL(),
 	m_textures(),
-	m_colors()
+	m_colors(),
+	m_contentRemote()
 {
 
 }
@@ -36,7 +41,7 @@ void Theme::load(const QDir &dir)
 	loadColors(dir);
 	QDir imageDir(Theme::imagesDir(dir.absolutePath()));
 	QStringList ls = imageDir.entryList(QStringList() << "*.png", QDir::Files);
-	const QJsonValue &textureValue = _jsonThemes["textures"];
+	const QJsonValue &textureValue = jsonThemes["textures"];
 	const QJsonArray &textureArray = textureValue.toArray();
 	for(QStringList::ConstIterator cit = ls.constBegin(); cit != ls.constEnd(); ++cit)
 	{
@@ -186,7 +191,7 @@ bool Theme::loadColors(const QDir &dir)
 
 bool Theme::extractColorsFromJsonThemes()
 {
-	const QJsonValue &colorsValue = _jsonThemes["colors"];
+	const QJsonValue &colorsValue = jsonThemes["colors"];
 	const QJsonArray &colorsArray = colorsValue.toArray();
 	for(QJsonArray::ConstIterator cit = colorsArray.constBegin(); cit != colorsArray.constEnd(); ++cit)
 	{
@@ -353,7 +358,7 @@ bool Theme::saveRemote() const
 	bool b = remoteFile.open(QIODevice::WriteOnly);
 	if(b)
 	{
-		remoteFile.write(m_remote.toString().toUtf8());
+		remoteFile.write(m_contentRemote.toString().toUtf8());
 		remoteFile.close();
 	}
 	return b;
@@ -369,7 +374,7 @@ bool Theme::loadRemote()
 		if(success)
 		{
 			QByteArray textContent = remoteFile.read(512);
-			m_remote = QUrl(QString(textContent));
+			m_contentRemote = QUrl(QString(textContent));
 			remoteFile.close();
 		}
 	}
@@ -378,17 +383,17 @@ bool Theme::loadRemote()
 
 void Theme::setRemote(const QUrl &url)
 {
-	m_remote = url;
+	m_contentRemote = url;
 }
 
 bool Theme::remoteIsValid() const
 {
-	return !m_remote.isEmpty() && m_remote.isValid();
+	return !m_contentRemote.isEmpty() && m_contentRemote.isValid();
 }
 
 const QUrl &Theme::remote() const
 {
-	return m_remote;
+	return m_contentRemote;
 }
 
 bool Theme::unzip(const QFile &zipFile)
@@ -482,4 +487,49 @@ bool Theme::unzip(const QFile &zipFile)
 			load(m_path);
 	}
 	return opIsSuccess;
+}
+
+void Theme::setName(const QString &name)
+{
+	m_name = name;
+}
+
+void Theme::setAuthor(const QString &author)
+{
+	m_author = author;
+}
+
+void Theme::setVersion(int version)
+{
+	m_version = version;
+}
+
+void Theme::setImageRemote(const QUrl &url)
+{
+	m_imageRemote = url;
+}
+
+void Theme::setForumURL(const QUrl &url)
+{
+	m_forumURL = url;
+}
+
+const QString &Theme::author() const
+{
+	return m_author;
+}
+
+const int &Theme::version() const
+{
+	return m_version;
+}
+
+const QUrl &Theme::imageRemote() const
+{
+	return m_imageRemote;
+}
+
+const QUrl &Theme::forumURL() const
+{
+	return m_forumURL;
 }

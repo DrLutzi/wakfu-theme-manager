@@ -30,7 +30,6 @@ INCLUDEPATH += $${INCLUDE_DIR} $${INCLUDE_WIDGETS_DIR}
 VPATH += $${SRC_DIR} $${SRC_WIDGETS_DIR} $${INCLUDE_DIR} $${INCLUDE_WIDGETS_DIR} $${UI_DIR}
 
 SOURCES += \
-	browsercontent.cpp \
 	dialogimporturl.cpp \
 	pixmap.cpp \
 	filedownloader.cpp \
@@ -46,7 +45,6 @@ SOURCES += \
 	unzipper.cpp
 
 HEADERS += \
-	browsercontent.h \
 	dialogimporturl.h \
 	filedownloader.h \
 	pixmap.h \
@@ -62,7 +60,6 @@ HEADERS += \
 	unzipper.h
 
 FORMS += \
-	browsercontent.ui \
 	dialogimporturl.ui \
 	formparameters.ui \
 	themewidget.ui \
