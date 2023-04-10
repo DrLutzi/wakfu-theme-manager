@@ -153,6 +153,7 @@ void ThemeWidget::downloadTheme()
 		QByteArray downloadedData = fd->downloadedData();
 		if((opIsSuccess = !downloadedData.isEmpty() && !downloadedData.isNull()))
 		{
+			emit downloadProgressUpdate(33);
 			QDir root = m_theme->path();
 			root.cdUp();
 			QFile tmpZipFile(root.absolutePath() + "/_tmpTheme_" + m_theme->name() + ".zip");
@@ -166,14 +167,17 @@ void ThemeWidget::downloadTheme()
 				if(opIsSuccess)
 				{
 //					m_theme->saveRemote();
+					emit downloadProgressUpdate(66);
 					moveAndReplaceFolderContents(m_theme->path().absolutePath(), appParameters.outputPath.absolutePath());
 					createOrUpdateStyle();
+					emit downloadProgressUpdate(100);
 				}
 			}
 			fd->deleteLater();
 		}
 		emit downloadInProcess(false);
 	});
+	emit downloadProgressUpdate(0);
 	fd->launchDownload();
 }
 
