@@ -40,72 +40,10 @@ void ThemeWidget::createOrUpdateStyle()
 	{
 		ui->name->setText(m_theme->name());
 		ui->author->setText(m_theme->author());
+		ui->pushButton_forumURL->setToolTip(tr("Forum:") + " " + m_theme->forumURL().url());
+		ui->pushButton->setToolTip(tr("Download:") + " " + m_theme->remote().url());
 
 		//TODO: download and set image, or load it if it was already pre-downloaded.
-
-		//Old version, I need to delete this later.
-
-//		QColor qcolor;
-//		if(m_theme->colors().size()>0)
-//		{
-//			const Theme *t = theme();
-//			const Theme::ColorMapType &colors = t->colors();
-//			Color c("defaultDarkGreyColor", QString(""));
-//			Theme::ColorMapType::const_iterator cit = colors.find(c);
-//			if(cit == colors.end())
-//			{
-//				const Color &color = *m_theme->colors().begin();
-//				qcolor = color.qcolor();
-//			}
-//			else
-//			{
-//				const Color &color = *cit;
-//				qcolor = color.qcolor();
-//			}
-//			QString style = "border-radius : 1px; border-width: 1.3px; border-color: rgb(%1, %2, %3);";
-//			ui->label_pix->setStyleSheet(style.arg(std::min(qcolor.red(), 220)).arg(std::min(qcolor.green(), 220)).arg(std::min(qcolor.blue(), 220)));
-//		}
-//		else
-//		{
-//			QString style = "border-radius : 1px; border-width: 1.3px; border-color: rgb(%1, %2, %3);";
-//			ui->label_pix->setStyleSheet(style.arg(0).arg(0).arg(0));
-//		}
-//        if(!setImage(QFile(m_theme->path().absolutePath() + "/theme.png")))
-//		{
-//			if(!setImage(QFile(m_theme->path().absolutePath() + "/images/dungeon.png")))
-//			{
-//				QPixmap pixmapFillColor(1, 1);
-//				qcolor.setRedF(qcolor.redF() + (1.0-qcolor.redF())/2.0);
-//				qcolor.setGreenF(qcolor.greenF() + (1.0-qcolor.greenF())/2.0);
-//				qcolor.setBlueF(qcolor.blueF() + (1.0-qcolor.blueF())/2.0);
-//				pixmapFillColor.fill(qcolor);
-//				m_pixmap = pixmapFillColor;
-//				m_dragPixmap = m_pixmap.scaled(32, 32, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::FastTransformation);
-//				ui->label_pix->setPixmap(m_pixmap);
-//			}
-//		}
-	}
-}
-
-void ThemeWidget::mousePressEvent(QMouseEvent *event)
-{
-	assert(m_theme);
-	if (event->button() == Qt::LeftButton)
-	{
-		QDrag *drag = new QDrag(this);
-
-        QMimeData *mimeData = new QMimeData;
-		mimeData->setText(m_theme->name());
-		drag->setMimeData(mimeData);
-		drag->setPixmap(m_dragPixmap);
-		setTransparentAspect(true);
-        Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
-        if(dropAction == Qt::IgnoreAction)
-        {
-            drag->deleteLater();
-            mimeData->deleteLater();
-        }
-		setTransparentAspect(false);
 	}
 }
 
@@ -184,10 +122,6 @@ void ThemeWidget::downloadTheme()
 	fd->launchDownload();
 }
 
-void ThemeWidget::on_lineEdit_url_editingFinished()
-{
-}
-
 void ThemeWidget::on_pushButton_pressed()
 {
 	downloadTheme();
@@ -204,12 +138,13 @@ void ThemeWidget::on_pushButton_forumURL_pressed()
 	}
 }
 
-void ThemeWidget::moveAndReplaceFolderContents(const QString &fromDir, const QString &toDir)
+bool ThemeWidget::moveAndReplaceFolderContents(const QString &fromDir, const QString &toDir, bool removeOrigin)
 {
 	QDirIterator it(fromDir, QDirIterator::Subdirectories);
 	QDir dir(fromDir);
 	const int absSourcePathLength = dir.absoluteFilePath(fromDir).length();
-	while (it.hasNext())
+	bool b = true;
+	while (it.hasNext() && b)
 	{
 		it.next();
 		const auto fileInfo = it.fileInfo();
@@ -226,13 +161,15 @@ void ThemeWidget::moveAndReplaceFolderContents(const QString &fromDir, const QSt
 			else if(fileInfo.isFile())
 			{
 				//Copy File to target directory
-
 				//Remove file at target location, if it exists, or QFile::copy will fail
 				QFile::remove(constructedAbsolutePath);
-				QFile::copy(fileInfo.absoluteFilePath(), constructedAbsolutePath);
-				QFile::remove(fileInfo.absoluteFilePath());
+				b = QFile::copy(fileInfo.absoluteFilePath(), constructedAbsolutePath);
+				if(removeOrigin)
+					QFile::remove(fileInfo.absoluteFilePath());
 			}
 		}
 	}
-	dir.removeRecursively();
+	if(removeOrigin)
+		dir.removeRecursively();
+	return b;
 }

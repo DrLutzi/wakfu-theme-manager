@@ -54,7 +54,7 @@
             <x>0</x>
             <y>0</y>
             <width>806</width>
-            <height>422</height>
+            <height>444</height>
            </rect>
           </property>
           <property name="acceptDrops">
@@ -67,38 +67,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>844</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionOpen"/>
-    <addaction name="actionOpen_Zip"/>
-    <addaction name="actionImport_From_Url"/>
-   </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-    <addaction name="actionMake_theme"/>
-    <addaction name="actionReset"/>
-    <addaction name="separator"/>
-    <addaction name="actionDownload"/>
-    <addaction name="separator"/>
-    <addaction name="actionParameters"/>
-    <addaction name="separator"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -130,7 +98,6 @@
    <addaction name="actionOpen_Zip"/>
    <addaction name="actionImport_From_Url"/>
    <addaction name="separator"/>
-   <addaction name="actionMake_theme"/>
    <addaction name="actionReset"/>
    <addaction name="separator"/>
    <addaction name="actionDownload"/>
@@ -143,10 +110,13 @@
      <normaloff>:/resources/colored/colored/folder-plus.svg</normaloff>:/resources/colored/colored/folder-plus.svg</iconset>
    </property>
    <property name="text">
-    <string>Import Folder</string>
+    <string>Export Folder</string>
+   </property>
+   <property name="iconText">
+    <string>Export Folder</string>
    </property>
    <property name="toolTip">
-    <string>Import folder: Imports a theme folder, or a folder containing several theme folders.</string>
+    <string>Export Folder: copies a folder containing a theme to Wakfu.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -160,13 +130,13 @@
   <action name="actionDownload">
    <property name="icon">
     <iconset resource="../resources/icons.qrc">
-     <normaloff>:/resources/colored/colored/download.svg</normaloff>:/resources/colored/colored/download.svg</iconset>
+     <normaloff>:/resources/colored/colored/download_ankama.svg</normaloff>:/resources/colored/colored/download_ankama.svg</iconset>
    </property>
    <property name="text">
-    <string>Update Default Theme</string>
+    <string>Download default theme</string>
    </property>
    <property name="toolTip">
-    <string>Update: downloads and imports the latest default theme json file, textures, and colors.</string>
+    <string>Download default: downloads the latest default theme json file, textures, and colors, into themes/ankama.</string>
    </property>
   </action>
   <action name="actionSave">
@@ -198,7 +168,7 @@
     <string>Reset theme</string>
    </property>
    <property name="toolTip">
-    <string>Reset theme: remove theme files in the specified output path.</string>
+    <string>Reset theme: remove the theme files of Wakfu.</string>
    </property>
   </action>
   <action name="actionParameters">
@@ -222,10 +192,10 @@
      <normaloff>:/resources/colored/colored/file-plus.svg</normaloff>:/resources/colored/colored/file-plus.svg</iconset>
    </property>
    <property name="text">
-    <string>Import Zip</string>
+    <string>Export Zip</string>
    </property>
    <property name="toolTip">
-    <string>Import Zip: unzips and imports a .zip file containing a theme.</string>
+    <string>Export Zip: unzips and exports the theme of a .zip file to Wakfu.</string>
    </property>
   </action>
   <action name="actionImport_From_Url">
@@ -234,10 +204,10 @@
      <normaloff>:/resources/colored/colored/link.svg</normaloff>:/resources/colored/colored/link.svg</iconset>
    </property>
    <property name="text">
-    <string>Import From Url</string>
+    <string>Export From Url</string>
    </property>
    <property name="toolTip">
-    <string>Import From Url: downloads, extracts and imports a .zip file containing a theme.</string>
+    <string>Export From Url: downloads, extracts and exports the theme of a .zip file.</string>
    </property>
   </action>
  </widget>

@@ -405,7 +405,7 @@ bool Theme::unzip(const QFile &zipFile)
 		QDir colorsDir(Theme::colorsDir(dir).absolutePath());
 		QDir imagesDir(Theme::imagesDir(dir).absolutePath());
 		if(!colorsDir.exists() && !imagesDir.exists())
-		{
+		{//TODO: I believe a function in MainWindow does this check better already
 			QStringList entries = dir.entryList(QStringList(), QDir::NoDotAndDotDot|QDir::Dirs);
 			for(QStringList::const_iterator cit = entries.constBegin(); cit != entries.constEnd() && !found; ++cit)
 			{
@@ -430,9 +430,6 @@ bool Theme::unzip(const QFile &zipFile)
 	if(opIsSuccess)
 	{
 		QStringList createdEntries = unzipper.createdEntries();
-		m_path.mkpath(m_path.absolutePath());
-		QDir correctColorsDir(Theme::colorsDir(m_path));
-		QDir correctImagesDir(Theme::imagesDir(m_path));
 		for(const QString &entry : qAsConst(createdEntries))
 		{
 			//first treat the directories
@@ -440,32 +437,41 @@ bool Theme::unzip(const QFile &zipFile)
 			QFileInfo entryInfo(fileOrDirStr);
 			if(entryInfo.isDir())
 			{
-				QDir colorsDir;
-				QDir imagesDir;
 				if(entryInfo.baseName() == "colors" || entryInfo.baseName() == "images")
 				{
 					//case where the zip file contains colors or images
-					colorsDir.setPath(Theme::colorsDir(root).absolutePath());
-					imagesDir.setPath(Theme::imagesDir(root).absolutePath());
-					correctColorsDir.removeRecursively();
-					correctImagesDir.removeRecursively();
-					colorsDir.rename(colorsDir.absolutePath(), correctColorsDir.absolutePath());
-					imagesDir.rename(imagesDir.absolutePath(), correctImagesDir.absolutePath());
+					if(!m_path.exists())
+						m_path.mkdir(".");
+					root.rename(entryInfo.baseName(), m_path.absolutePath() + "/" + entryInfo.baseName());
 				}
 				else
 				{ //case where the zip file contains one or several sub folder(s) containing the theme
-					QDir unzippedThemeDir(fileOrDirStr);
-					QDir actualThemeDir(unzippedThemeDir);
-					m_path.removeRecursively();
+					QDir unzippedDir(fileOrDirStr);
+					QDir actualThemeDir(unzippedDir);
 					bool foundThemeDir = findThemeRecursively(actualThemeDir);
 					if(foundThemeDir)
 						qDebug() << "Found theme directory: " << actualThemeDir;
 					else
-						qDebug() << "Unable to find theme directory. Defaulting to " << actualThemeDir;
-					actualThemeDir.rename(actualThemeDir.absolutePath(), m_path.absolutePath());
-					if(unzippedThemeDir.exists())
 					{
-						unzippedThemeDir.removeRecursively();
+						qDebug() << "Unable to find theme directory. Defaulting to " << actualThemeDir;
+						opIsSuccess = false;
+					}
+					//Sometimes the directory created already corresponds to path(), and can cause the renaming to fail.
+					if(m_path==unzippedDir && actualThemeDir != unzippedDir)
+					{
+						int t=time(0);
+						QString newDirName(root.absolutePath() + "/_tmp_theme_" + QString::number(t));
+						actualThemeDir.rename(actualThemeDir.absolutePath(), newDirName);
+						unzippedDir.removeRecursively();
+						actualThemeDir.rename(newDirName, m_path.absolutePath());
+					}
+					else
+					{
+						actualThemeDir.rename(actualThemeDir.absolutePath(), m_path.absolutePath());
+						if(unzippedDir.exists())
+						{
+							unzippedDir.removeRecursively();
+						}
 					}
 				}
 			}

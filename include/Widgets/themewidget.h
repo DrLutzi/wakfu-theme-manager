@@ -23,7 +23,6 @@ public:
 	explicit ThemeWidget(Theme *theme, QWidget *parent = nullptr);
 	~ThemeWidget();
 
-	void mousePressEvent(QMouseEvent *event);
 	bool setImage(const QFile &file);
 
 	void createOrUpdateStyle();
@@ -35,6 +34,8 @@ public:
 	void setTransparentAspect(bool b);
 	void downloadTheme();
 
+	static bool moveAndReplaceFolderContents(const QString &fromDir, const QString &toDir, bool removeOrigin=true);
+
 signals:
 
 	void downloadInProcess(bool b);
@@ -42,13 +43,10 @@ signals:
 	void messageUpdateRequired(const QString& message, int timeout=0);
 
 private slots:
-	void on_lineEdit_url_editingFinished();
 	void on_pushButton_pressed();
 	void on_pushButton_forumURL_pressed();
 
 private:
-
-	void moveAndReplaceFolderContents(const QString &fromDir, const QString &toDir);
 
 	Ui::ThemeWidget *ui;
 	Theme *m_theme;

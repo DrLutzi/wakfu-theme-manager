@@ -35,10 +35,28 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">border: 1px solid black;
+   <string notr="true">QPushButton
+{
+border-color: rgba(255, 255, 255, 0);
+background-color: white;
+border-radius: 4px;
+}
+QPushButton:hover
+{
+	background-color: rgba(167, 240, 255, 128);
+}
+QPushButton:pressed
+{
+	background-color: rgba(167, 240, 255, 192);
+}
+
+QFrame#ThemeWidget
+{
+border: 1px solid black;
 border-radius: 8px;
 background-color: white;
-border-width: 2px;</string>
+border-width: 2px;
+}</string>
   </property>
   <property name="frameShape">
    <enum>QFrame::Box</enum>
@@ -65,8 +83,7 @@ border-width: 2px;</string>
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-radius : 0px;
-border-width: 1px;</string>
+      <string notr="true">border : 1px solid black;</string>
      </property>
      <property name="text">
       <string/>

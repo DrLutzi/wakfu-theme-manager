@@ -45,7 +45,9 @@ public:
 
 	bool saveConfigurationFile();
 	void resetDefaultThemeWidget();
-	void openTheme(QString str);
+	void openThemeFolderOrFile(const QString &str);
+	bool openThemeFolder(QDir &dir);
+	bool openThemeZip(QFile &file);
 
 	AppParameters *parameters();
 
@@ -92,8 +94,8 @@ private slots:
 	void updateFromThemesDir();
 	void on_openThemeRequired(QDir dir);
 	void createDefaultThemeWidget();
-	ThemeWidget *createOrUpdateOneExThemeWidget(Theme *theme);
-    void createAllExtraThemeWidgets();
+	ThemeWidget *createOneThemeWidget(Theme *theme);
+    void createAllThemeWidgets();
     void loadWTMJsonFromWeb();
     void loadAnkamaJsonFromWeb();
 	void on_actionDownload_triggered();

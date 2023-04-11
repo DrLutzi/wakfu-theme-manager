@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->setupUi(this);
 	jsonExternalThemesLink = QUrl("https://drive.google.com/uc?export=download&id=1wl19UjiqJlJpGTPfX4PLTWTdvVBsdaGo");
 	connect(this, &MainWindow::messageUpdateRequired, ui->statusbar, &QStatusBar::showMessage);
-	connect(this, &MainWindow::extraThemeWidgetCreationOrUpdateRequired, this, &MainWindow::createOrUpdateOneExThemeWidget);
+	connect(this, &MainWindow::extraThemeWidgetCreationOrUpdateRequired, this, &MainWindow::createOneThemeWidget);
 	connect(this, &MainWindow::openThemeRequired, this, &MainWindow::on_openThemeRequired);
 	connect(this, &MainWindow::defaultThemeWidgetCreationRequired, this, &MainWindow::createDefaultThemeWidget);
 	connect(this, &MainWindow::updateFromThemesDirRequired, this, &MainWindow::updateFromThemesDir);
@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
 	loadConfigurationFile();
 	initWTMJson();
 	//initAnkamaJson();
-	//importAllThemesThreaded();
 }
 
 MainWindow::~MainWindow()
@@ -70,6 +69,7 @@ bool MainWindow::loadConfigurationFile()
 		QJsonDocument configFileJson = QJsonDocument::fromJson(configFileContent.toUtf8());
 		appParameters.jsonUrl.setUrl(configFileJson["json_url"].toString());
 		appParameters.themesPath.setPath(configFileJson["themes_path"].toString());
+		appParameters.themesPath.mkdir(".");
 		QString output_path(configFileJson["output_path"].toString());
 		if(output_path.isNull() || output_path.isEmpty())
 		{
@@ -81,7 +81,7 @@ bool MainWindow::loadConfigurationFile()
 		{
 			appParameters.outputPath.setPath(output_path);
 		}
-		m_defaultThemePath.setPath(appParameters.themesPath.absolutePath() + "/default");
+		m_defaultThemePath.setPath(appParameters.themesPath.absolutePath() + "/ankama");
 	}
 	return b;
 }
@@ -227,26 +227,36 @@ void MainWindow::resetDefaultThemeWidget()
 	}
 }
 
-void MainWindow::openTheme(QString str)
+void MainWindow::openThemeFolderOrFile(const QString &str)
 {
-	auto findAppropriateSaveName = [] (QDir &directory)
-	{
-		QDir directory_copy(directory);
-		bool canSave = false;
-		int i = 0;
-		while(!canSave)
-		{
-			if((canSave = !directory_copy.exists()))
-			{
-				directory = directory_copy;
-			}
-			else
-			{
-				directory_copy.setPath(directory.absolutePath() + " (" + QString::number(++i) + ")");
-			}
-		}
-	};
+	bool opIsSuccess=false;
 
+	if(str.isEmpty() || str.isNull())
+		return;
+	QFileInfo fileInfo(str);
+	if(fileInfo.isDir())
+	{
+		QDir dir(str);
+		opIsSuccess = openThemeFolder(dir);
+	}
+	else if(fileInfo.isFile() && fileInfo.suffix() == "zip")
+	{
+		emit progressUpdateRequired(0);
+		emit messageUpdateRequired(tr("Extracting theme..."));
+		QFile file(str);
+		opIsSuccess = openThemeZip(file);
+	}
+	else
+	{
+		emit messageUpdateRequired(QString(tr("Error while attempting to open theme(s): no .zip file or folder selected.")));
+	}
+	emit progressUpdateRequired(100);
+	return;
+}
+
+bool MainWindow::openThemeFolder(QDir &dir)
+{
+	bool opIsSuccess = true;
 	//moves one up if the directory is "images" or "colors" (misunderstanding from the user).
 	auto correctIfDirIsImagesOrColors = [&] (QDir &themeDir) -> bool
 	{
@@ -263,110 +273,71 @@ void MainWindow::openTheme(QString str)
 		return dirIsValid;
 	};
 
-	bool opIsSuccess=false;
-
-	auto openAndImportExistingThemeDir = [&] (QDir &themeDir) -> bool
+	if(dir.exists())
 	{
-		bool isThemeDir = false;
-		if(themeFolderIsValid(themeDir))
-		{
-			isThemeDir = true;
-			opIsSuccess=true;
-			//Case this is a theme folder
-			QString dirEntryName(themeDir.dirName());
-			Theme tmpTheme;
-			tmpTheme.load(themeDir);
-			QDir dirSaveTheme(appParameters.themesPath.absolutePath() + "/" + dirEntryName);
-			findAppropriateSaveName(dirSaveTheme);
-			tmpTheme.save(dirSaveTheme);
-			Theme *theme = importOneTheme(dirSaveTheme);
-			if(theme != nullptr)
-			{
-				emit extraThemeWidgetCreationOrUpdateRequired(theme);
-			}
-		}
-		return isThemeDir;
-	};
-
-	if(!str.isEmpty() && !str.isNull())
-	{
-		QFileInfo fileInfo(str);
-		if(fileInfo.isDir())
-		{
-			QDir dir(str);
-			if(dir.exists())
-			{
-				//First check if this is a theme folder
-				if(correctIfDirIsImagesOrColors(dir) && !openAndImportExistingThemeDir(dir))
-				{
-					emit progressUpdateRequired(0);
-					const QStringList lsDir = dir.entryList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
-					int i = 0;
-					for(const QString &strEntry : lsDir)
-					{
-						QDir dirEntry(dir.absolutePath() + "/" + strEntry);
-						openAndImportExistingThemeDir(dirEntry);
-						emit progressUpdateRequired((float(++i)/lsDir.size())*100);
-					}
-				}
-			}
-			if(!opIsSuccess)
-			{
-				emit messageUpdateRequired(QString(tr("Error while attempting to open theme(s): no valid theme folder found.")));
-			}
-		}
-		else if(fileInfo.isFile() && fileInfo.suffix() == "zip")
+		if(correctIfDirIsImagesOrColors(dir) && !themeFolderIsValid(dir))
 		{
 			emit progressUpdateRequired(0);
-			QFile file(str);
-			opIsSuccess = file.open(QIODevice::ReadOnly);
-			if(opIsSuccess)
+			const QStringList lsDir = dir.entryList(QStringList(), QDir::Dirs | QDir::NoDotAndDotDot);
+			for(const QString &strEntry : lsDir)
 			{
-				file.close();
-				emit progressUpdateRequired(20);
-				if(opIsSuccess)
-				{
-					std::vector<Theme *>::iterator it;
-					if((it = findTheme(fileInfo.baseName())) != m_extraThemes.end())
-					{ //Theme already exists
-						Theme *theme = (*it);
-						opIsSuccess = theme->unzip(QFile(str));
-						emit extraThemeWidgetCreationOrUpdateRequired(theme);
-					}
-					else
-					{
-						QDir themeDir = appParameters.themesPath.absolutePath() + "/" + fileInfo.baseName();
-						QDir colorsDirTrick(Theme::colorsDir(themeDir));
-						colorsDirTrick.mkpath(colorsDirTrick.absolutePath());
-						//the following function works only if colors or images exists
-						Theme *theme = importOneTheme(themeDir);
-						opIsSuccess = theme->unzip(QFile(str));
-						emit extraThemeWidgetCreationOrUpdateRequired(theme);
-					}
-					emit progressUpdateRequired(100);
-					if(opIsSuccess)
-					{
-						emit updateFromThemesDirRequired();
-						emit messageUpdateRequired(tr("Successfully unzipped and imported theme archive."));
-					}
-					else
-					{
-						emit messageUpdateRequired(QString(tr("Error while attempting to open theme: unable to find or use an unzip program.")));
-					}
-				}
-			}
-			if(!opIsSuccess)
-			{
-				emit messageUpdateRequired(QString(tr("Error while attempting to open theme: unable to unzip file.")));
+				QDir dirEntry(dir.absolutePath() + "/" + strEntry);
+				if(themeFolderIsValid(dirEntry))
+					opIsSuccess &= ThemeWidget::moveAndReplaceFolderContents(dirEntry.absolutePath(), appParameters.outputPath.absolutePath(), false);
 			}
 		}
-		else
+		else if (themeFolderIsValid(dir))
 		{
-			emit messageUpdateRequired(QString(tr("Error while attempting to open theme(s): no .zip file or folder selected.")));
+			opIsSuccess &= ThemeWidget::moveAndReplaceFolderContents(dir.absolutePath(), appParameters.outputPath.absolutePath(), false);
 		}
 	}
-	emit progressUpdateRequired(100);
-	return;
+	if(!opIsSuccess)
+	{
+		emit messageUpdateRequired(QString(tr("Error while attempting to open theme(s): no valid theme folder found.")));
+	}
+	return opIsSuccess;
+}
+
+bool MainWindow::openThemeZip(QFile &file)
+{
+	bool opIsSuccess = file.open(QIODevice::ReadOnly);
+	QFileInfo fileInfo(file);
+	if(opIsSuccess)
+	{
+		file.close();
+		if(opIsSuccess)
+		{
+			std::vector<Theme *>::iterator it;
+			QDir themeDir = appParameters.themesPath.absolutePath() + "/" + fileInfo.baseName();
+			emit progressUpdateRequired(33);
+			//the following function works only if colors or images exists
+			Theme theme;
+			theme.setPath(themeDir);
+			opIsSuccess = theme.unzip(file);
+			if(opIsSuccess)
+			{
+				emit messageUpdateRequired(tr("Exporting theme..."));
+				emit progressUpdateRequired(66);
+				QDir themePath(theme.path());
+				opIsSuccess &= openThemeFolder(themePath);
+				themePath.removeRecursively();
+				if(opIsSuccess)
+				{
+					emit messageUpdateRequired(tr("Theme extracted and exported with success."));
+					emit progressUpdateRequired(100);
+				}
+			}
+			else
+			{
+				emit messageUpdateRequired(QString(tr("Error while attempting to open theme: unable to find or use an unzip program.")));
+			}
+		}
+	}
+	if(!opIsSuccess)
+	{
+		emit messageUpdateRequired(QString(tr("Error while attempting to open theme: unable to unzip file.")));
+	}
+	return opIsSuccess;
 }
 
 AppParameters *MainWindow::parameters()
@@ -462,10 +433,10 @@ void MainWindow::downloadWTMThemes()
 		theme->setImageRemote(image);
 		theme->setForumURL(forum);
 
-		theme->setPath(appParameters.themesPath.absolutePath());
+		theme->setPath(appParameters.themesPath.absolutePath() + "/" + name);
 
 		m_extraThemes.push_back(theme);
-		createOrUpdateOneExThemeWidget(theme);
+		createOneThemeWidget(theme);
 	}
 }
 
@@ -633,7 +604,7 @@ void MainWindow::resetTheme()
 std::vector<Theme *>::iterator MainWindow::findTheme(const QString &name)
 {
 	std::vector<Theme *>::iterator it = m_extraThemes.end();
-	if(!name.isEmpty() && !name.isNull() && name != "default")
+	if(!name.isEmpty() && !name.isNull() && name != "ankama")
 	{
 		it = std::find_if(m_extraThemes.begin(), m_extraThemes.end(), [&] (Theme *theme) -> bool
 						  {
@@ -647,8 +618,7 @@ bool MainWindow::themeFolderIsValid(const QDir &dir)
 {
 	QDir colorsDir(Theme::colorsDir(dir));
 	QDir imagesDir(Theme::imagesDir(dir));
-	QFile remoteFile(Theme::remoteFile(dir));
-	return ((imagesDir.exists() && !imagesDir.isEmpty()) || (colorsDir.exists() && !colorsDir.isEmpty()) || remoteFile.exists());
+	return ((imagesDir.exists() && !imagesDir.isEmpty()) || (colorsDir.exists() && !colorsDir.isEmpty()));
 }
 
 ///SLOTS
@@ -685,7 +655,7 @@ void MainWindow::updateFromThemesDir()
 		{
 			QDir dir(dirStr);
 			QString dirName(dir.dirName());
-			if(dirName == "default")
+			if(dirName == "ankama")
 			{
 				m_defaultTheme.load(m_defaultThemePath);
 			}
@@ -706,7 +676,7 @@ void MainWindow::on_openThemeRequired(QDir dir)
 		Theme *theme = importOneTheme(dir);
 		if(theme != nullptr)
 		{
-			createOrUpdateOneExThemeWidget(theme);
+			createOneThemeWidget(theme);
 		}
 	}
 }
@@ -719,34 +689,23 @@ void MainWindow::createDefaultThemeWidget()
 	m_defaultThemeWidget->setToolTip(tr("Default theme downloaded and imported correctly."));
 }
 
-ThemeWidget *MainWindow::createOrUpdateOneExThemeWidget(Theme *theme)
+ThemeWidget *MainWindow::createOneThemeWidget(Theme *theme)
 {
 	ThemeWidget *extraTheme = nullptr;
-	if(theme != nullptr)
+	if(theme == nullptr)
 	{
-		std::vector<ThemeWidget *>::iterator it = std::find_if(m_extraThemeWidgets.begin(), m_extraThemeWidgets.end(), [&] (ThemeWidget *tw) -> bool
-															   {
-																   return tw && tw->theme() == theme;
-															   });
-		if(it == m_extraThemeWidgets.end())
-		{
-			extraTheme = new ThemeWidget(theme, ui->scrollAreaWidgetContents_used);
-			connect(extraTheme, &ThemeWidget::downloadInProcess, this, &MainWindow::on_downloadInProcess);
-			connect(extraTheme, &ThemeWidget::progressUpdateRequired, m_progressBar, &QProgressBar::setValue);
-			connect(extraTheme, &ThemeWidget::messageUpdateRequired, ui->statusbar, &QStatusBar::showMessage);
-			m_extraThemeWidgets.push_back(extraTheme);
-			ui->scrollAreaWidgetContents_used->layout()->addWidget(extraTheme);
-		}
-		else
-		{
-			extraTheme = (*it);
-			extraTheme->createOrUpdateStyle();
-		}
+		return extraTheme;
 	}
+	extraTheme = new ThemeWidget(theme, ui->scrollAreaWidgetContents_used);
+	connect(extraTheme, &ThemeWidget::downloadInProcess, this, &MainWindow::on_downloadInProcess);
+	connect(extraTheme, &ThemeWidget::progressUpdateRequired, m_progressBar, &QProgressBar::setValue);
+	connect(extraTheme, &ThemeWidget::messageUpdateRequired, ui->statusbar, &QStatusBar::showMessage);
+	m_extraThemeWidgets.push_back(extraTheme);
+	ui->scrollAreaWidgetContents_used->layout()->addWidget(extraTheme);
 	return extraTheme;
 }
 
-void MainWindow::createAllExtraThemeWidgets()
+void MainWindow::createAllThemeWidgets()
 {
 	delete m_defaultThemeWidget;
 	m_defaultThemeWidget = nullptr;
@@ -811,22 +770,16 @@ void MainWindow::on_actionOpen_triggered()
 {
 	setAllWidgetsEnabled(false);
 	QString str = QFileDialog::getExistingDirectory(this, tr("Open a theme folder/a folder containing theme folders"), QDir::homePath());
-	QThread *thread = QThread::create([this, str]() {openTheme(str);});
-	connect(thread, &QThread::finished, this, &MainWindow::enableAllWidgets);
-	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-	connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, thread, &QThread::quit);
-	thread->start();
+	openThemeFolderOrFile(str);
+	setAllWidgetsEnabled(true);
 }
 
 void MainWindow::on_actionOpen_Zip_triggered()
 {
 	setAllWidgetsEnabled(false);
 	QString str = QFileDialog::getOpenFileName(this, tr("Open a .zip archive containing a theme"), QDir::homePath(), "*.zip");
-	QThread *thread = QThread::create([this, str]() {openTheme(str);});
-	connect(thread, &QThread::finished, this, &MainWindow::enableAllWidgets);
-	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-	connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, thread, &QThread::quit);
-	thread->start();
+	openThemeFolderOrFile(str);
+	setAllWidgetsEnabled(true);
 }
 
 void MainWindow::on_actionExport_triggered()
@@ -911,15 +864,9 @@ void MainWindow::on_parametersChanged(AppParameters newParameters)
 		m_extraThemes.clear();
 		if(!m_defaultTheme.isImported())
 		{
-			m_defaultThemePath.setPath(appParameters.themesPath.absolutePath() + "/default");
+			m_defaultThemePath.setPath(appParameters.themesPath.absolutePath() + "/ankama");
 			on_actionDownload_triggered();
 		}
-		//If required, I need to call the update function
-
-//		else
-//		{
-//			importAllThemesThreaded();
-//		}
 	}
 	setAllWidgetsEnabled(true);
 }
