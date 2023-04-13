@@ -38,12 +38,13 @@ void ThemeWidget::createOrUpdateStyle()
 {
 	if(m_theme)
 	{
+		//Texts + tooltips sets
 		ui->name->setText(m_theme->name());
 		ui->author->setText(m_theme->author());
 		ui->pushButton_forumURL->setToolTip(tr("Forum:") + " " + m_theme->forumURL().url());
 		ui->pushButton->setToolTip(tr("Download:") + " " + m_theme->remote().url());
 
-		//TODO: download and set image
+		//Image download
 		if(m_theme->imageRemote().isValid())
 		{
 			downloadImage();
@@ -158,8 +159,8 @@ void ThemeWidget::on_pushButton_pressed()
 		ui->pushButton->setEnabled(true); // Re-enable the button
 	});
 	connect(timer, &QTimer::timeout, &QObject::deleteLater);
-	timer->start();
 	downloadTheme();
+	timer->start();
 }
 
 

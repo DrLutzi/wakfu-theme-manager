@@ -474,15 +474,27 @@ void MainWindow::downloadDefault()
 			const QJsonValue &value = (*cit);
 			QString texturePath = value["path"].toString();
 			QFileInfo fileInfo(texturePath);
-			texturePath = fileInfo.baseName() + ".png";
-			FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/images/" + texturePath);
+			QString originalPath = fileInfo.filePath();
+
+			// Replace "theme" with an empty string to remove it from the path
+			QString modifiedPath = originalPath.replace("theme/", "");
+
+			// Replace ".tga" with ".png" to change the file extension
+			modifiedPath.replace(".tga", ".png");
+
+			FileDownloader *fd = new FileDownloader("https://wakfu.cdn.ankama.com/gamedata/theme/" + modifiedPath);
 			connect(fd, &FileDownloader::errorMsg, ui->statusbar, &QStatusBar::showMessage);
-			connect(fd, &FileDownloader::downloaded, this, [&, fd, maxProgress](QUrl url2)
+			connect(fd, &FileDownloader::downloaded, this, [&, fd, maxProgress, modifiedPath](QUrl url2)
 			{
-				QDir defaultThemeImagePath(Theme::imagesDir(m_defaultThemePath));
+				QFile file(m_defaultThemePath.absolutePath() + "/" + modifiedPath, this);
+				QFileInfo fileInfo(file.fileName());
+				QDir parentDir = fileInfo.dir();
+				if(!parentDir.exists())
+				{
+					parentDir.mkpath(parentDir.absolutePath());
+				}
 				QPixmap textureImage;
 				textureImage.loadFromData(fd->downloadedData());
-				QFile file(defaultThemeImagePath.absolutePath() + "/" + url2.fileName(), this);
 				if(!textureImage.save(file.fileName(), "PNG"))
 				{
 					qDebug() << QString(tr("Failed to save Image ")) + file.fileName();
@@ -745,7 +757,6 @@ void MainWindow::loadAnkamaJsonFromWeb()
 {
 	ui->actionDownload->setEnabled(false);
 	ui->actionMake_theme->setEnabled(false);
-	ui->actionReset->setEnabled(false);
 	if(m_defaultThemeWidget != nullptr)
 	{
 		m_defaultThemeWidget->setEnabled(false);

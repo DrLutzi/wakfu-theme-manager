@@ -96,7 +96,6 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionOpen_Zip"/>
-   <addaction name="actionImport_From_Url"/>
    <addaction name="separator"/>
    <addaction name="actionReset"/>
    <addaction name="separator"/>
