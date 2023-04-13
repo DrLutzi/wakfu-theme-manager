@@ -438,6 +438,7 @@ void MainWindow::downloadWTMThemes()
 		m_extraThemes.push_back(theme);
 		createOneThemeWidget(theme);
 	}
+	setAllWidgetsEnabled(true);
 }
 
 void MainWindow::downloadDefault()
@@ -584,21 +585,21 @@ void MainWindow::makeTheme()
 
 void MainWindow::resetTheme()
 {
-	emit messageUpdateRequired(QString(tr("Restoring default theme...")));
-	if(!m_defaultTheme.isLoaded())
+	emit messageUpdateRequired(tr("Removing theme in ") + appParameters.outputPath.absolutePath() + " ...");
+	emit progressUpdateRequired(0);
+	QDir images(Theme::imagesDir(appParameters.outputPath));
+	QDir colors(Theme::colorsDir(appParameters.outputPath));
+	if(images.exists())
 	{
-		m_defaultTheme.load(m_defaultThemePath);
+		images.removeRecursively();
 	}
-	if(m_defaultTheme.isLoaded())
+	emit progressUpdateRequired(50);
+	if(colors.exists())
 	{
-		//m_defaultTheme.save(_parameters.outputPath);
-		m_defaultTheme.useToRemoveImagesIn(appParameters.outputPath);
-		emit messageUpdateRequired(QString(tr("Finished restoring default theme.")));
+		colors.removeRecursively();
 	}
-	else
-	{
-		emit messageUpdateRequired(QString(tr("Unable to restore default theme (did you download it first?).")));
-	}
+	emit messageUpdateRequired(tr("Successfully reset theme in ") + appParameters.outputPath.absolutePath());
+	emit progressUpdateRequired(100);
 }
 
 std::vector<Theme *>::iterator MainWindow::findTheme(const QString &name)
@@ -750,8 +751,6 @@ void MainWindow::loadAnkamaJsonFromWeb()
 		m_defaultThemeWidget->setEnabled(false);
 	}
 	downloadDefault();
-
-	return;
 }
 
 void MainWindow::on_actionDownload_triggered()
@@ -827,14 +826,10 @@ void MainWindow::on_actionMake_theme_triggered()
 void MainWindow::on_actionReset_triggered()
 {
 	setAllWidgetsEnabled(false);
-
-	QThread *thread = QThread::create([this]() {resetTheme();});
-	connect(thread, &QThread::started, m_progressBar, [this]{m_progressBar->setValue(20);});
-	connect(thread, &QThread::finished, m_progressBar, [this]{m_progressBar->setValue(100);});
-	connect(thread, &QThread::finished, this, &MainWindow::enableAllWidgets);
-	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-	connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, thread, &QThread::quit);
-	thread->start();
+	QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Warning"),
+		tr("This action will remove theme folders and files within ") + appParameters.outputPath.absolutePath() + tr(". Do you want to continue?"));
+	if(reply == QMessageBox::Yes)
+		resetTheme();
 }
 
 void MainWindow::on_actionParameters_triggered()
