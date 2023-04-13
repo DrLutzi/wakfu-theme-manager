@@ -27,7 +27,7 @@ bool ThemeWidget::setImage(const QFile &file)
 	bool b = m_pixmap.load(file.fileName());
 	if(b)
 	{
-		m_pixmap = m_pixmap.scaled(64, 64, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
+		m_pixmap = m_pixmap.scaled(128, 128, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
 		ui->label_pix->setPixmap(m_pixmap);
 		m_dragPixmap = m_pixmap.scaled(32, 32, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
 	}
@@ -96,7 +96,7 @@ void ThemeWidget::downloadTheme()
 		if((opIsSuccess = !downloadedData.isEmpty() && !downloadedData.isNull()))
 		{
 			emit messageUpdateRequired(tr("Saving theme..."));
-			emit progressUpdateRequired(33);
+			emit progressUpdateRequired(66);
 			QDir root = m_theme->path();
 			root.cdUp();
 			QFile tmpZipFile(root.absolutePath() + "/_tmpTheme_" + m_theme->name() + ".zip");
@@ -110,7 +110,7 @@ void ThemeWidget::downloadTheme()
 				if(opIsSuccess)
 				{
 					emit messageUpdateRequired(tr("Exporting theme..."));
-					emit progressUpdateRequired(66);
+					emit progressUpdateRequired(88);
 					moveAndReplaceFolderContents(m_theme->path().absolutePath(), appParameters.outputPath.absolutePath());
 					createOrUpdateStyle();
 					emit messageUpdateRequired(tr("Theme downloaded and exported with success."));
@@ -190,12 +190,12 @@ bool ThemeWidget::moveAndReplaceFolderContents(const QString &fromDir, const QSt
 				//Remove file at target location, if it exists, or QFile::copy will fail
 				QFile::remove(constructedAbsolutePath);
 				b = QFile::copy(fileInfo.absoluteFilePath(), constructedAbsolutePath);
-				if(removeOrigin)
+				if(removeOrigin && b)
 					QFile::remove(fileInfo.absoluteFilePath());
 			}
 		}
 	}
-	if(removeOrigin)
+	if(removeOrigin && b)
 		dir.removeRecursively();
 	return b;
 }
