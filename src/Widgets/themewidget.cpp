@@ -150,6 +150,15 @@ void ThemeWidget::downloadImage()
 
 void ThemeWidget::on_pushButton_pressed()
 {
+	QTimer *timer = new QTimer;
+	ui->pushButton->setEnabled(false);
+	timer->setInterval(30000);
+	connect(timer, &QTimer::timeout, this, [this]()
+	{
+		ui->pushButton->setEnabled(true); // Re-enable the button
+	});
+	connect(timer, &QTimer::timeout, &QObject::deleteLater);
+	timer->start();
 	downloadTheme();
 }
 
