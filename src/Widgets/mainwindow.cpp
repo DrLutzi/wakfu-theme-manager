@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 	m_progressBar(nullptr)
 {
 	ui->setupUi(this);
-	jsonExternalThemesLink = QUrl("https://drive.google.com/uc?export=download&id=1wl19UjiqJlJpGTPfX4PLTWTdvVBsdaGo");
+	jsonExternalThemesLink = QUrl("https://drive.google.com/uc?export=download&id=1_36tA1LPK2Y3vCdlUKrI5r09CE1XDuao");
 	connect(this, &MainWindow::messageUpdateRequired, ui->statusbar, &QStatusBar::showMessage);
 	connect(this, &MainWindow::extraThemeWidgetCreationOrUpdateRequired, this, &MainWindow::createOneThemeWidget);
 	connect(this, &MainWindow::openThemeRequired, this, &MainWindow::on_openThemeRequired);

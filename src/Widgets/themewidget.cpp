@@ -43,7 +43,11 @@ void ThemeWidget::createOrUpdateStyle()
 		ui->pushButton_forumURL->setToolTip(tr("Forum:") + " " + m_theme->forumURL().url());
 		ui->pushButton->setToolTip(tr("Download:") + " " + m_theme->remote().url());
 
-		//TODO: download and set image, or load it if it was already pre-downloaded.
+		//TODO: download and set image
+		if(m_theme->imageRemote().isValid())
+		{
+			downloadImage();
+		}
 	}
 }
 
@@ -119,6 +123,28 @@ void ThemeWidget::downloadTheme()
 	});
 	emit messageUpdateRequired(tr("Downloading theme..."));
 	emit progressUpdateRequired(0);
+	fd->launchDownload();
+}
+
+void ThemeWidget::downloadImage()
+{
+	FileDownloader *fd = new FileDownloader(m_theme->imageRemote(), this);
+	fd->connect(fd, &FileDownloader::errorMsg, this, [] (QString errorMsg, int timeout)
+	{
+		(void) timeout;
+		qDebug() << errorMsg;
+	});
+	fd->connect(fd, &FileDownloader::downloaded, this, [this, fd] ()
+	{
+		bool opIsSuccess;
+		QByteArray downloadedData = fd->downloadedData();
+		if((opIsSuccess = !downloadedData.isEmpty() && !downloadedData.isNull()))
+		{
+			QPixmap image;
+			image.loadFromData(downloadedData);
+			ui->label_pix->setPixmap(image);
+		}
+	});
 	fd->launchDownload();
 }
 

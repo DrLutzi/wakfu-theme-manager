@@ -99,7 +99,8 @@ border-width: 2px;
       <item>
        <widget class="QLabel" name="name">
         <property name="styleSheet">
-         <string notr="true">border: 0px; background-color: rgba(0, 0, 0, 0)</string>
+         <string notr="true">border: 0px; background-color: rgba(0, 0, 0, 0); font-weight: bold
+</string>
         </property>
         <property name="text">
          <string>Name</string>

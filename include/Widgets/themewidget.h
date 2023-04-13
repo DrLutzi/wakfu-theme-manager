@@ -33,6 +33,7 @@ public:
 
 	void setTransparentAspect(bool b);
 	void downloadTheme();
+	void downloadImage();
 
 	static bool moveAndReplaceFolderContents(const QString &fromDir, const QString &toDir, bool removeOrigin=true);
 
