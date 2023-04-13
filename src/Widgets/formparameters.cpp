@@ -45,7 +45,7 @@ void FormParameters::on_pushButton_themes_path_released()
 	{
 		QDir dir(str);
 		m_parametersNotSaved.themesPath = dir;
-		ui->lineEdit_themes_path->setText(m_parametersNotSaved.themesPath.absolutePath());
+//		ui->lineEdit_themes_path->setText(m_parametersNotSaved.themesPath.absolutePath());
 	}
 }
 
@@ -112,14 +112,14 @@ void FormParameters::updateStyleSheetOfJsonUrl()
 
 void FormParameters::updateStyleSheetOfThemesPath()
 {
-	if(checkValidityOfThemesPath())
-	{
-		ui->lineEdit_themes_path->setStyleSheet(styleSheetLineEditOkay);
-	}
-	else
-	{
-		ui->lineEdit_themes_path->setStyleSheet(styleSheetLineEditWarning);
-	}
+//	if(checkValidityOfThemesPath())
+//	{
+//		ui->lineEdit_themes_path->setStyleSheet(styleSheetLineEditOkay);
+//	}
+//	else
+//	{
+//		ui->lineEdit_themes_path->setStyleSheet(styleSheetLineEditWarning);
+//	}
 }
 
 void FormParameters::updateStyleSheetOfOutputPath()
@@ -138,7 +138,7 @@ void FormParameters::updateAllLineEdits()
 {
 	ui->lineEdit_json_url->setText(m_parametersNotSaved.jsonUrl.toString());
 	ui->lineEdit_output_path->setText(m_parametersNotSaved.outputPath.absolutePath());
-	ui->lineEdit_themes_path->setText(m_parametersNotSaved.themesPath.absolutePath());
+//	ui->lineEdit_themes_path->setText(m_parametersNotSaved.themesPath.absolutePath());
 }
 
 void FormParameters::on_pushButton_reset_released()
