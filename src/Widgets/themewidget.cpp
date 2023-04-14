@@ -122,6 +122,7 @@ void ThemeWidget::downloadTheme()
 		}
 		emit downloadInProcess(false);
 	});
+	fd->connect(fd, &FileDownloader::updateProgress, this, &ThemeWidget::on_updateProgress);
 	emit messageUpdateRequired(tr("Downloading theme..."));
 	emit progressUpdateRequired(0);
 	fd->launchDownload();
@@ -172,6 +173,12 @@ void ThemeWidget::on_pushButton_forumURL_pressed()
 		if(forumURL.isValid() && !forumURL.isLocalFile())
 			QDesktopServices::openUrl(forumURL);
 	}
+}
+
+void ThemeWidget::on_updateProgress(quint64 bytesReceived, quint64 bytesTotal)
+{
+	double ratio = double(bytesReceived)/bytesTotal;
+	emit progressUpdateRequired(ratio*100);
 }
 
 bool ThemeWidget::moveAndReplaceFolderContents(const QString &fromDir, const QString &toDir, bool removeOrigin)

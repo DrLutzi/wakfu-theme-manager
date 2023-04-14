@@ -727,11 +727,6 @@ void MainWindow::createAllThemeWidgets()
 	{
 		delete (*it);
 	}
-	//The following lines were used when having a default theme was necessary.
-//	if(m_defaultTheme.isImported())
-//	{
-//		emit defaultThemeWidgetCreationRequired();
-//	}
 	m_extraThemeWidgets.reserve(m_extraThemes.size());
 	for(std::vector<Theme *>::iterator it = m_extraThemes.begin(); it != m_extraThemes.end(); ++it) //TODO : should be const iterator
 	{

@@ -16,7 +16,9 @@ void FileDownloader::launchDownload()
 {
 	qDebug() << "Launching download request of link: " << m_url;
 	QNetworkRequest request(m_url);
-	m_WebCtrl.get(request);
+	QNetworkReply *reply = m_WebCtrl.get(request);
+	connect(reply, &QNetworkReply::downloadProgress, this, &FileDownloader::updateProgress);
+	//Connect the return value of get and connect it to a slot that emits a new signal
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* pReply)
@@ -51,4 +53,9 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 QByteArray FileDownloader::downloadedData() const
 {
 	return m_DownloadedData;
+}
+
+void FileDownloader::on_updateProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+	emit updateProgress(bytesReceived, bytesTotal);
 }

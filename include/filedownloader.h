@@ -21,9 +21,11 @@ public:
 signals:
 	void downloaded(QUrl url);
 	void errorMsg(QString errorMsg, int timeout = 0);
+	void updateProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 private slots:
 	void fileDownloaded(QNetworkReply* pReply);
+	void on_updateProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 private:
 	QNetworkAccessManager	m_WebCtrl;

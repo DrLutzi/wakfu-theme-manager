@@ -46,6 +46,7 @@ signals:
 private slots:
 	void on_pushButton_pressed();
 	void on_pushButton_forumURL_pressed();
+	void on_updateProgress(quint64 bytesReceived, quint64 bytesTotal);
 
 private:
 
