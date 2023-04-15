@@ -6,9 +6,11 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	QTranslator translator;
-	if (QLocale::system().language() == QLocale::French)
+	QStringList languageList = QLocale::system().uiLanguages();
+	if (!languageList.isEmpty())
 	{
-		QString translatorFile(QString("wtm_fr_FR.qm"));
+		QString primaryUiLanguage = languageList.first();
+		QString translatorFile(QString("wtm_" + primaryUiLanguage + ".qm"));
 		bool b = translator.load(translatorFile, QCoreApplication::applicationDirPath());
 		if(b)
 		{
