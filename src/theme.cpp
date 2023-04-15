@@ -4,11 +4,11 @@ extern QJsonDocument jsonThemes;
 
 Theme::Theme() :
 	m_name(),
-	m_path(),
 	m_author(),
 	m_version(0),
 	m_imageRemote(),
 	m_forumURL(),
+	m_path(),
 	m_textures(),
 	m_colors(),
 	m_contentRemote()

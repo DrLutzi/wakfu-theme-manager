@@ -250,6 +250,7 @@ void MainWindow::openThemeFolderOrFile(const QString &str)
 	{
 		emit messageUpdateRequired(QString(tr("Error while attempting to open theme(s): no .zip file or folder selected.")));
 	}
+	(void) opIsSuccess;
 	emit progressUpdateRequired(100);
 	return;
 }
@@ -307,7 +308,6 @@ bool MainWindow::openThemeZip(QFile &file)
 		file.close();
 		if(opIsSuccess)
 		{
-			std::vector<Theme *>::iterator it;
 			QDir themeDir = appParameters.themesPath.absolutePath() + "/" + fileInfo.baseName();
 			emit progressUpdateRequired(33);
 			//the following function works only if colors or images exists
@@ -486,6 +486,7 @@ void MainWindow::downloadDefault()
 			connect(fd, &FileDownloader::errorMsg, ui->statusbar, &QStatusBar::showMessage);
 			connect(fd, &FileDownloader::downloaded, this, [&, fd, maxProgress, modifiedPath](QUrl url2)
 			{
+				(void) url2;
 				QFile file(m_defaultThemePath.absolutePath() + "/" + modifiedPath, this);
 				QFileInfo fileInfo(file.fileName());
 				QDir parentDir = fileInfo.dir();
@@ -836,6 +837,7 @@ void MainWindow::on_actionReset_triggered()
 		tr("This action will remove theme folders and files within ") + appParameters.outputPath.absolutePath() + tr(". Do you want to continue?"));
 	if(reply == QMessageBox::Yes)
 		resetTheme();
+	setAllWidgetsEnabled(true);
 }
 
 void MainWindow::on_actionParameters_triggered()
