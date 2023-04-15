@@ -6,4 +6,5 @@ set configFile=%1\config\config.json
 set configDest=%2\config.json
 copy %translationFile% %translationDest%
 copy %configFile% %configDest%
+if not exist "%2\themes" mkdir %2\themes
 pause
