@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 	createScrollAreas();
 	loadConfigurationFile();
 	initWTMJson();
+	checkOutputExistence();
 	//initAnkamaJson();
 }
 
@@ -91,17 +92,26 @@ void MainWindow::checkOutputExistence()
 	if(!appParameters.outputPath.exists())
 	{
 		QMessageBox::information(this, tr("Information"), tr("The program could not find the \"theme\" folder of Wakfu at its usual place. Please provide it to continue."));
-		QDir str = QFileDialog::getExistingDirectory(this, tr("Choose the \"theme\" or \"zaap\" folder of your game"), QDir::homePath());
-		if(str.dirName() == "zaap")
+		QString dirStr = QFileDialog::getExistingDirectory(this, tr("Choose the \"theme\" or \"zaap\" folder of your game"), QDir::homePath());
+		QDir dir(dirStr);
+		if(dirStr.isNull() || dirStr.isEmpty())
 		{
-			str.setPath(str.absolutePath() + "/wakfu/theme");
+			return;
 		}
-		else if(str.dirName() != "theme")
+		if(dir.dirName() == "zaap")
+		{
+			dir.setPath(dir.absolutePath() + "/wakfu/theme");
+		}
+		else if(dir.dirName() != "theme")
 		{
 			emit messageUpdateRequired(tr("Warning: the provided folder is not \"theme\" or \"zaap\"."));
 		}
-		appParameters.outputPath.setPath(str.absolutePath());
+		appParameters.outputPath.setPath(dir.absolutePath());
 		saveConfigurationFile();
+	}
+	else
+	{
+		emit messageUpdateRequired(tr("Found Wakfu theme folder: ") + appParameters.outputPath.absolutePath());
 	}
 }
 
