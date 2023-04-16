@@ -28,9 +28,9 @@ Otherwise, the game's "theme" folder will be written on the status bar.
 
 ### Working with themes
 
-**WARNING: DO NOT COPY FILES DIRECTLY INTO THE WORKING FOLDER "themes" OF THE APPLICATION, AND DO NOT CREATE YOUR CUSTOM THEMES DIRECTLY IN YOUR GAME'S THEME FOLDERS. Please use backups when using this application: while work was done to limit the risk of lost data, the application HAS to occasionally remove some files and folders in order to work properly.**
+**WARNING: DO NOT COPY FILES DIRECTLY INTO THE WORKING FOLDER "themes" OF THE APPLICATION, AND DO NOT CREATE YOUR CUSTOM THEMES DIRECTLY IN YOUR GAME'S THEME FOLDERS. Please use backups when using this application: while work was done to limit the risk of loss of data, the application HAS to occasionally remove some files and folders in order to work properly.**
 
-![wtm_tuto](https://user-images.githubusercontent.com/15910330/232262445-7e62a5a3-8c0a-4ac2-83ee-590c783549a7.png)
+<img src="https://user-images.githubusercontent.com/15910330/232262445-7e62a5a3-8c0a-4ac2-83ee-590c783549a7.png" width="500">
 
 1. **Export folder**: copies and paste a folder containing a theme into the game's "theme" folder.
 2. **Export Zip**: imports a .zip archive containing a theme. If this does not work, make sure your archive meets the requirements described in #community-themes.
