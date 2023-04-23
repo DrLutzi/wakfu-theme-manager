@@ -1,23 +1,27 @@
 # Wakfu Theme Manager (WTM)
 
-WTM is a desktop application used to manage themes for the game [Wakfu](https://www.wakfu.com). It cannot be used to edit themes, but rather to efficiently download, update, import, manage and combine fan-made themes.
+WTM is a desktop application used to manage themes for the game [Wakfu](https://www.wakfu.com). It is used to efficiently download and update community-made themes.
 
 README in other languages: [Français](README_fr.md)
-
-## Changelog -- 2.0
-
-* The application now allows users to download and install community themes with a single button.
-* The merging of several themes was removed to decrease the complexity.
 
 ## Installation
 
 Download the appropriate binaries for your machine bellow, unzip the archive, and open wtm.exe.
 
-[**Version 2.0 -- Windows 7, 8, 10, 11 - 64-bit**](https://www.dropbox.com/s/hjz7ipk6kw6rikj/WTM_2_0.zip?dl=1)
+[**Release 2.0.1 -- Windows 7, 8, 10, 11 - 64-bit**](https://www.dropbox.com/s/hulzkqkdnffz6e0/WTM_2_0_1.zip?dl=1)
 
 ## Requirements
 
 On Windows, *powershell 3.0 or more* must be installed, and on other OS, *unzip* must be installed.
+
+## Changelog
+
+**2.0.1**
+* Fixed the download for some versions of Windows.
+
+**2.0.0**
+* The application now allows users to download and install community themes with a single button.
+* The merging of several themes was removed to decrease the complexity.
 
 ## Usage
 
@@ -44,12 +48,13 @@ Otherwise, the game's "theme" folder will be written on the status bar.
 
 The main list shows you themes that I registered. The list is automatically updated when I update it remotely. If you want more themes shown, contact me on discord (Lutzi#3767) with a link to the forum page of the custom theme you want.
 
-**Creators**: 
+**Creators:**
 
 For your theme to be on the list, please make sure of the following:
 * You made a forum post with your download link.
 * The theme has the form of a .zip file that can be downloaded.
 * The theme archive does not contain another archive.
+* I am aware that your theme exists.
 
 If you submit a theme to me, you can attach a 128x128 picture representing your theme.
 
