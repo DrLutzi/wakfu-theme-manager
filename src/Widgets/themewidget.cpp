@@ -112,11 +112,28 @@ void ThemeWidget::downloadTheme()
 				{
 					emit messageUpdateRequired(tr("Exporting theme..."));
 					emit progressUpdateRequired(88);
-					moveAndReplaceFolderContents(m_theme->path().absolutePath(), appParameters.outputPath.absolutePath());
-					createOrUpdateStyle();
-					emit messageUpdateRequired(tr("Theme downloaded and exported with success."));
-					emit progressUpdateRequired(100);
+					if (moveAndReplaceFolderContents(m_theme->path().absolutePath(), appParameters.outputPath.absolutePath()))
+					{
+						createOrUpdateStyle();
+						emit messageUpdateRequired(tr("Theme downloaded and exported with success."));
+						emit progressUpdateRequired(100);
+					}
+					else
+					{
+						emit messageUpdateRequired(tr("Error exporting theme: files could not be moved."));
+						emit progressUpdateRequired(0);
+					}
 				}
+				else
+				{
+					emit messageUpdateRequired(tr("Error saving theme: could not unzip theme."));
+					emit progressUpdateRequired(0);
+				}
+			}
+			else
+			{
+				emit messageUpdateRequired(tr("Error saving theme: could not create the zip file."));
+				emit progressUpdateRequired(0);
 			}
 			fd->deleteLater();
 		}

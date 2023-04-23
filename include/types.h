@@ -6,7 +6,7 @@
 
 #ifdef Q_OS_LINUX
 	static const QString _defaultThemeDirectory (QDir::homePath() + "/.config/zaap/wakfu/theme");
-#elif defined(Q_OS_WIN32)
+#elif defined(Q_OS_WIN)
 	static const QString _defaultThemeDirectory (QDir::homePath() + "/AppData/Roaming/zaap/wakfu/theme");
 #endif
 	static const QString _defaultJsonThemeUrl ("https://wakfu.cdn.ankama.com/gamedata/theme/theme.json");

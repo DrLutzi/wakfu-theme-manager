@@ -570,12 +570,27 @@ p, li { white-space: pre-wrap; }
         <translation>Export du thème...</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/themewidget.cpp" line="117"/>
+        <location filename="../src/Widgets/themewidget.cpp" line="118"/>
         <source>Theme downloaded and exported with success.</source>
         <translation>Thème téléchargé et exporté avec succès.</translation>
     </message>
     <message>
-        <location filename="../src/Widgets/themewidget.cpp" line="126"/>
+        <location filename="../src/Widgets/themewidget.cpp" line="123"/>
+        <source>Error exporting theme: files could not be moved.</source>
+        <translation>Erreur en exportant le thème : les fichiers n&apos;ont pas pu être bougés.</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/themewidget.cpp" line="129"/>
+        <source>Error saving theme: could not unzip theme.</source>
+        <translation>Erreur en sauvegardant le thème : impossible de décompresser le thème.</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/themewidget.cpp" line="135"/>
+        <source>Error saving theme: could not create the zip file.</source>
+        <translation>Erreur en sauvegardant le thème : impossible de créer l&apos;archive.</translation>
+    </message>
+    <message>
+        <location filename="../src/Widgets/themewidget.cpp" line="143"/>
         <source>Downloading theme...</source>
         <translation>Téléchargement du thème...</translation>
     </message>
