@@ -2,7 +2,7 @@
 
 WTM is a desktop application used to manage themes for the game [Wakfu](https://www.wakfu.com). It is used to efficiently download and update community-made themes.
 
-README in other languages: [Français](README_fr.md)
+**README in other languages: [Français](README_fr.md)**
 
 ## Installation
 
@@ -12,7 +12,7 @@ Download the appropriate binaries for your machine bellow, unzip the archive, an
 
 ## Requirements
 
-On Windows, *powershell 3.0 or more* must be installed, and on other OS, *unzip* must be installed.
+On Windows, *powershell 3.0 or more* must be installed (which is the case by default), and on other OS, *unzip* must be installed.
 
 ## Changelog
 
