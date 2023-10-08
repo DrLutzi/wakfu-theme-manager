@@ -5,9 +5,9 @@
 #include <QUrl>
 
 #ifdef Q_OS_LINUX
-	static const QString _defaultThemeDirectory (QDir::homePath() + "/.config/zaap/wakfu/theme");
+	static const QString _defaultThemeDirectory (QDir::homePath() + "/.config/zaap/gamesLogs/wakfu/theme");
 #elif defined(Q_OS_WIN)
-	static const QString _defaultThemeDirectory (QDir::homePath() + "/AppData/Roaming/zaap/wakfu/theme");
+	static const QString _defaultThemeDirectory (QDir::homePath() + "/AppData/Roaming/zaap/gamesLogs/wakfu/theme");
 #endif
 	static const QString _defaultJsonThemeUrl ("https://wakfu.cdn.ankama.com/gamedata/theme/theme.json");
 

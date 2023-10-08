@@ -58,7 +58,7 @@ void FormParameters::on_pushButton_output_path_released()
 		QDir dir(str);
 		if(dir.dirName() == "zaap")
 		{
-			dir.setPath(dir.absolutePath() + "/wakfu/theme");
+			dir.setPath(dir.absolutePath() + "/gamesLogs/wakfu/theme");
 		}
 		m_parametersNotSaved.outputPath.setPath(dir.absolutePath());
 		ui->lineEdit_output_path->setText(m_parametersNotSaved.outputPath.absolutePath());

@@ -100,7 +100,7 @@ void MainWindow::checkOutputExistence()
 		}
 		if(dir.dirName() == "zaap")
 		{
-			dir.setPath(dir.absolutePath() + "/wakfu/theme");
+			dir.setPath(dir.absolutePath() + "gamesLogs/wakfu/theme");
 		}
 		else if(dir.dirName() != "theme")
 		{
@@ -860,27 +860,8 @@ void MainWindow::on_actionParameters_triggered()
 void MainWindow::on_parametersChanged(AppParameters newParameters)
 {
 	setAllWidgetsEnabled(false);
-	bool themesPathChanged = newParameters.themesPath != appParameters.themesPath;
 	appParameters = newParameters;
 	saveConfigurationFile();
-	if(themesPathChanged)
-	{
-		for(auto &tw : m_extraThemeWidgets)
-		{
-			tw->deleteLater();
-		}
-		m_extraThemeWidgets.clear();
-		for(Theme *t : m_extraThemes)
-		{
-			delete t;
-		}
-		m_extraThemes.clear();
-		if(!m_defaultTheme.isImported())
-		{
-			m_defaultThemePath.setPath(appParameters.themesPath.absolutePath() + "/ankama");
-			on_actionDownload_triggered();
-		}
-	}
 	setAllWidgetsEnabled(true);
 }
 
