@@ -6,7 +6,7 @@ WTM est une application de bureau utilisée pour gérer les thèmes du jeu [Wakf
 
 Téléchargez les fichiers et l'exécutable pour votre machine, décompressez l'archive et ouvrez l'exécutable.
 
-[**Release 2.0.1 -- Windows 7, 8, 10, 11 - 64-bit**](https://www.dropbox.com/s/hulzkqkdnffz6e0/WTM_2_0_1.zip?dl=1)
+[**Release 2.1.0 -- Windows 7, 8, 10, 11 - 64-bit**](https://www.dropbox.com/scl/fi/t2ccpp5w1iu3qhq3lwz3s/WTM_2_1_0.zip?rlkey=kaf765wyrpbptblnz127soxyf&dl=1)
 
 ## Requirements
 
