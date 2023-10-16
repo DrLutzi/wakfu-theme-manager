@@ -6,13 +6,19 @@ WTM est une application de bureau utilisée pour gérer les thèmes du jeu [Wakf
 
 Téléchargez les fichiers et l'exécutable pour votre machine, décompressez l'archive et ouvrez l'exécutable.
 
-[**Release 2.1.0 -- Windows 7, 8, 10, 11 - 64-bit**](https://www.dropbox.com/scl/fi/t2ccpp5w1iu3qhq3lwz3s/WTM_2_1_0.zip?rlkey=kaf765wyrpbptblnz127soxyf&dl=1)
+[**Release 2.1.1 -- Windows 7, 8, 10, 11 - 64-bit**](https://www.dropbox.com/scl/fi/tfbuwgus5kfy9i2s46pfd/WTM_2_1_1.zip?rlkey=r2tvdhijm5b34gynovbz0425y&dl=1)
 
 ## Requirements
 
 Pour Windows, *powershell 3.0 ou +* doit être installé (c'est le cas par défaut), et dans d'autres systèmes d'exploitation, *unzip* doit être installé.
 
 ## Changelog
+
+**2.1.1**
+* Correction d'une erreur de désarchivage pour Windows 11.
+
+**2.1.0**
+* Changement du chemin vers le jeu, en accordance avec le nouveau.
 
 **2.0.1**
 * Correction du téléchargement pour certaines versions de Windows.
@@ -63,7 +69,7 @@ Si vous me soumettez un thème, vous pouvez y attacher une image de 128x128 repr
 
 ## Code
 
-Les demandes d'extraction (pull requests) sont les bienvenues. Pour les changements majeurs, veuillez ouvrir une *issue* d'abord pour discuter de ce que vous souhaitez modifier. Si vous avez une suggestion mais n'êtes pas familiarisé avec la programmation en C++, veuillez ouvrir une *issue*.
+Les *pull requests* sont les bienvenues. Pour les changements majeurs, veuillez ouvrir une *issue* d'abord pour discuter de ce que vous souhaitez modifier. Si vous avez une suggestion mais n'êtes pas familiarisé avec la programmation en C++, veuillez ouvrir une *issue*.
 
 ### Compilation
 
