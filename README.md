@@ -1,3 +1,5 @@
+#⚠️ WARNING: CURRENTLY NOT WORKING AS PER THE 1.82 UPDATE ⚠️
+
 # Wakfu Theme Manager (WTM)
 
 WTM is a desktop application used to manage themes for the game [Wakfu](https://www.wakfu.com). It is used to efficiently download and update community-made themes.
