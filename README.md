@@ -1,4 +1,6 @@
-# ⚠️ WARNING: CURRENTLY NOT WORKING AS PER THE 1.82 UPDATE ⚠️
+# ⚠️ WARNING: WTM down as of WAKFU 1.82 UPDATE ⚠️
+The 1.82 introduces a new way of using several themes and moving them around. This effectively obsoletes the first core purpose of this application, which is to change the theme on-demand.
+The other core purpose, updating themes, is still relevant: however, the application is not fit for the current new structure of the themes folder, hence it cannot be expected to work currently.
 
 # Wakfu Theme Manager (WTM)
 
